@@ -234,6 +234,18 @@ export const useHouse = create<EngineState>((set, get) => {
     },
 
     go: (room, albumId) => {
+      if (room === "decks") {
+        // One authoritative DJ audio surface: stop/unmount the house player
+        // before opening the independent Backspin performance booth.
+        playRequest += 1;
+        if (audio) {
+          audio.pause();
+          audio.removeAttribute("src");
+          audio.load();
+        }
+        stopNativeForEmbed();
+        set({ embed: "", status: "idle", message: "", queue: [], cursor: 0, sleepAt: 0, analyzed: false });
+      }
       const id = albumId || (room === "album" ? get().albumId : "");
       set({ room, albumId: room === "album" ? id : "" });
       const next = room === "album" && id ? `#/album/${id}` : `#/${room}`;

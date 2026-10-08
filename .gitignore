@@ -3,3 +3,6 @@ node_modules/
 .github_repo
 .env
 .env.*
+
+# Generated from the integrity-pinned Backspin96 source archive
+public/backspin96/

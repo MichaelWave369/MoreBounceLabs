@@ -29,6 +29,19 @@ for (const utility of [".max-w-6xl", ".grid", ".flex", ".rounded-3xl", ".bg-heat
 const js = assets.filter((name) => name.endsWith(".js")).map((name) => readFileSync(join(root, "assets", name), "utf8")).join("\n");
 assert.ok(js.includes("catalog/albums.json"), "Built app must request its catalog");
 assert.ok(js.includes("MoreBounceLabs"), "Bundled UI should use the new site identity");
+assert.ok(js.includes("Backspin"), "The Decks room must contain Backspin integration");
+const backspinStaged = existsSync("vendor/backspin96-source.zip");
+if (backspinStaged) {
+  const staged = join(root, "backspin96");
+  for (const path of ["index.html", "app.js", "audio/engine.js", "audio/backspin-processor.js", "library/suno-crate-bridge.js", "LICENSE", "mbl-stage.json"]) {
+    assert.ok(existsSync(join(staged, path)), `Backspin runtime missing ${path} from Pages output`);
+  }
+  const manifest = JSON.parse(readFileSync(join(staged, "mbl-stage.json"), "utf8"));
+  assert.equal(manifest.engine, "Backspin96");
+  assert.equal(manifest.sourceVersion, "1.5.0");
+} else {
+  assert.ok(!existsSync(join(root, "backspin96/mbl-stage.json")), "Cannot advertise an unverified Backspin booth");
+}
 assert.ok(js.includes("InfinityLens369"), "Visual Lab should contain InfinityLens guest stage");
 assert.ok(js.includes("mbl-infinitylens-v1"), "Visual Lab should include the versioned visual bridge");
 assert.ok(js.includes("cosmic-drift"), "Guest scene controls must appear in MBL build");
