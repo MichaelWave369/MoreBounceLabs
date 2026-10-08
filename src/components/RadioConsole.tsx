@@ -1,19 +1,12 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { AlertCircle, Headphones, RadioTower, RotateCcw } from "lucide-react";
-import { collectStation } from "../../scripts/house-logic.mjs";
+import { buildRadioProgram, RADIO_PROGRAMS, stationBandIndices } from "../../scripts/radio-programs.mjs";
 import { currentTrack, useHouse, type Album, type QueueItem } from "@/lib/engine";
 
 type Band = "AM" | "FM" | "SAT" | "ALL";
 type MotionKey = "ambient" | "pulse" | "sweep" | "trails" | "dust";
 const ART = import.meta.env.BASE_URL + "radio/mbl-radio-console.png";
-const STATION_PRESETS = [
-  { id: "solar", title: "Solar Bounce FM", band: "AM" as Band, caption: "Warm grooves, retro bounce, dimensional static.", source: "funk", hz: 104.3 },
-  { id: "trucker", title: "Night Trucker", band: "FM" as Band, caption: "Midnight highway transmissions, drifting toward dawn.", source: "night", hz: 92.6 },
-  { id: "porch", title: "Porch Static", band: "FM" as Band, caption: "Curious frequencies from the outside edge.", source: "weird", hz: 98.1 },
-  { id: "desert", title: "Deep Desert AM", band: "AM" as Band, caption: "Deep-space expeditions crossing the desert.", source: "space", hz: 88.4 },
-  { id: "orbit", title: "Orbit Lounge", band: "SAT" as Band, caption: "Dream tides, ocean signals, late-night orbit.", source: "orbit", hz: 107.7 },
-] as const;
-
+const STATION_PRESETS = RADIO_PROGRAMS;
 type RadioPreset = (typeof STATION_PRESETS)[number];
 const MOTION_DEFAULT: Record<MotionKey, boolean> = { ambient: true, pulse: true, sweep: true, trails: true, dust: true };
 const HOTSPOTS = {
@@ -57,14 +50,13 @@ export function RadioConsole({ albums, onPlay, reduced }: {
   const [artReady, setArtReady] = useState<boolean | null>(null);
 
   const selected = STATION_PRESETS[stationIndex];
-  const available = useMemo(() => STATION_PRESETS.map((preset) => collectStation(albums, preset.source)), [albums]);
-  const tunedIndices = STATION_PRESETS.map((_item, index) => index).filter(
-    (i) => (band === "ALL" || STATION_PRESETS[i].band === band) && available[i].length,
-  );
+  const available = useMemo(() => STATION_PRESETS.map((preset) => buildRadioProgram(albums, preset.id)), [albums]);
+  const tunedIndices = stationBandIndices(STATION_PRESETS, band, available.map((rows) => rows.length));
   const actuallyPlaying = house.status === "playing" && !house.embed;
   const isEmbedded = Boolean(house.embed);
   const liveOutput = actuallyPlaying || isEmbedded;
   const now = currentTrack(house);
+  const selectedSongs = available[stationIndex] || [];
   const effects = motion && !reduced;
 
   useEffect(() => { if (reduced) setMotion(false); }, [reduced]);
@@ -86,8 +78,8 @@ export function RadioConsole({ albums, onPlay, reduced }: {
     }
     setStationIndex(index);
     setMessage(play
-      ? "Tuned to " + STATION_PRESETS[index].title + ". If the official Suno embed appears, use Play inside it."
-      : "Dial tuned to " + STATION_PRESETS[index].title + ". Press Power to listen.");
+      ? "Tuned to " + STATION_PRESETS[index].title + ": " + items.length + " real MBL catalog songs queued. Use Play inside the official Suno player."
+      : "Dial tuned to " + STATION_PRESETS[index].title + ". Press Tune & Play to load this station.");
     if (play) onPlay(items);
   }
 
@@ -100,8 +92,7 @@ export function RadioConsole({ albums, onPlay, reduced }: {
 
   function setFrequencyBand(next: Band) {
     setBand(next);
-    const index = STATION_PRESETS.findIndex((preset, i) =>
-      (next === "ALL" || preset.band === next) && available[i].length);
+    const index = stationBandIndices(STATION_PRESETS, next, available.map((rows) => rows.length))[0] ?? -1;
     if (index !== -1) {
       setStationIndex(index);
       setMessage(next + " selected. Press the highlighted station or Power to play.");
@@ -150,7 +141,7 @@ export function RadioConsole({ albums, onPlay, reduced }: {
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.19em] text-amber">Global Broadcast Network · MBL</p>
           <h1 className="font-display text-4xl sm:text-5xl">Radio Control Room</h1>
-          <p className="mt-2 text-sm text-mist">The original retro CB / satellite console, with a real tuner on top.</p>
+          <p className="mt-2 text-sm text-mist">Five hand-curated MBL stations. The illuminated console buttons, dial and labeled presets tune the same real-song programs.</p>
         </div>
         <span className="rounded-full border border-amber/40 bg-surface px-4 py-2 text-xs font-semibold text-amber">
           {isEmbedded ? "OFFICIAL SUNO PLAYER" : actuallyPlaying ? "AUDIO ON AIR" : "TRANSMITTER READY"}
@@ -221,7 +212,7 @@ export function RadioConsole({ albums, onPlay, reduced }: {
             <p className="text-xs font-semibold uppercase tracking-widest text-amber">Now tuning · {selected.band} {selected.hz.toFixed(1)}</p>
             <h2 className="font-display text-2xl">{selected.title}</h2>
             <p className="text-sm text-mist">{selected.caption}</p>
-            <p className="mt-1 text-xs text-mist">{available[stationIndex].length} catalog tracks · {now.track ? "House track: " + now.track.title : "Select a station to start listening"}</p>
+            <p className="mt-1 text-xs text-mist">{selectedSongs.length} curated catalog tracks · {now.track ? "House selection: " + now.track.title : "Select a station to start listening"}</p>
           </div>
           <button className="min-h-11 rounded-full bg-amber px-5 font-semibold text-ink" type="button" onClick={() => tune(stationIndex)}>
             <Headphones size={16} className="mr-2 inline" /> Tune &amp; Play
@@ -233,9 +224,23 @@ export function RadioConsole({ albums, onPlay, reduced }: {
             <button key={preset.id} type="button" aria-pressed={index === stationIndex}
               onClick={() => tune(index)}
               className={"min-h-10 rounded-full border px-3 text-xs " + (index === stationIndex ? "border-amber bg-amber/20 text-cream" : "border-line text-mist")}>
-              {preset.title}
+              {preset.title} · {preset.hz.toFixed(1)} · {available[index].length} songs
             </button>
           ))}
+        </div>
+        <div className="mt-4 rounded-xl border border-amber/20 bg-bg/50 p-3" aria-label="Station playlist preview">
+          <div className="flex flex-wrap justify-between gap-2 text-xs">
+            <strong className="text-amber">On this frequency · {selected.title}</strong>
+            <span className="text-mist">Real Suno songs · curated round-robin between albums</span>
+          </div>
+          <ol className="mt-2 grid gap-1 text-sm text-mist sm:grid-cols-2">
+            {selectedSongs.slice(0, 6).map((item, index) => (
+              <li key={item.albumId + ":" + item.index}>
+                <span className="text-amber">{index + 1}.</span> {item.title} <span className="text-xs">· {item.albumTitle}</span>
+              </li>
+            ))}
+          </ol>
+          {selectedSongs.length > 6 && <p className="mt-2 text-xs text-mist">And {selectedSongs.length - 6} more songs. Tune &amp; Play loads the full playlist; the provider controls playback.</p>}
         </div>
         <div className="mt-4 grid gap-4 border-t border-line pt-4 sm:grid-cols-2 lg:grid-cols-4">
           <label className="flex flex-col gap-1 text-xs text-mist">
@@ -258,7 +263,7 @@ export function RadioConsole({ albums, onPlay, reduced }: {
           </div>
         </div>
         <p className="mt-3 flex items-start gap-2 text-xs text-mist" role="status" aria-live="polite"><AlertCircle size={14} className="mt-0.5 shrink-0" /> {message || (reduced ? "Your reduced-motion setting is active." : "Click a station or a radio control. Each knob hotspot has a keyboard-accessible action.")}</p>
-        <p className="mt-2 text-xs text-mist">Stations are curated MBL album-title collections. AM, FM and SAT are themed presets, not RF broadcasts. Signal effects are ambient unless authorized native audio is playing. Suno may require pressing Play in its official iframe below.</p>
+        <p className="mt-2 text-xs text-mist">Five programmed stations use verified, deliberately selected MBL albums. AM, FM and SAT denote listening themes, not live terrestrial RF streams. Signal effects are ambient unless authorized native audio is playing. Suno may require pressing Play in its official iframe below.</p>
       </div>
     </section>
   );
