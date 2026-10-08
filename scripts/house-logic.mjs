@@ -129,8 +129,9 @@ export function parseHash(hash) {
     .replace(/^#\/?/, "")
     .split("/")
     .filter(Boolean);
-  const room = parts[0] || "lobby";
-  const known = new Set(["lobby", "vault", "timeline", "lounge", "lab", "radio", "decks", "desk", "album"]);
+  // Preserve old shared links after Lounge is retired.
+  const room = parts[0] === "lounge" ? "desk" : (parts[0] || "lobby");
+  const known = new Set(["lobby", "vault", "timeline", "lab", "radio", "decks", "desk", "album"]);
   if (!known.has(room)) return { room: "lobby", albumId: "", track: "" };
   if (room === "album") return { room, albumId: parts[1] || "", track: parts[2] || "" };
   return { room, albumId: "", track: "" };
