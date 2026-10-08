@@ -54,7 +54,7 @@ test("exports enrich missing readable names without altering DJ creative metadat
   const hydrated = prepareMixForExport(oldShape,albums);
   assert.ok(hydrated.tracks.every(t => t.albumTitle && t.artist && t.trackTitle));
   assert.deepEqual(hydrated.tracks.map(t=>t.energy),mix.tracks.map(t=>t.energy));
-  assert.equal(hydrated.tracks[2].trackTitle,"4. Tunnel Bloom");
+  assert.equal(hydrated.tracks[2].trackTitle,"Tunnel Bloom", "Exported display title omits legacy numbering");
   assert.deepEqual(decodeMix(encodeMix(hydrated),albums).mix,
     validateMix(hydrated,albums).mix, "Reloaded mix remains catalog-safe");
 });
@@ -86,7 +86,7 @@ test("responsive UI provides Desk switch, per-position errors and version histor
   assert.match(ui, /prepareMixForExport\(selected, albums\)/);
   assert.match(ui, /Copy validation JSON/);
   assert.match(desk, /Open Agent Mix Studio/);
-  assert.match(desk, /Desk QA R23/);
+  assert.match(desk, /Desk QA R25/);
   assert.match(desk, /mix-changelog\.txt/);
   assert.match(desk, /cleanCatalogTrackNumber\(song.title\)/);
   assert.match(player,/house.room === "lab" \|\| house.room === "desk"/);

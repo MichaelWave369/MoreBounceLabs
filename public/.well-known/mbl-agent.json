@@ -1,0 +1,12 @@
+{
+  "name": "MoreBounceLabs Mix Exchange v1",
+  "version": "mbl-mix-v1",
+  "manifest": "https://michaelwave369.github.io/MoreBounceLabs/agent/mix-manifest-v1.json",
+  "schema": "https://michaelwave369.github.io/MoreBounceLabs/agent/mix-schema-v1.json",
+  "directory": "https://michaelwave369.github.io/MoreBounceLabs/agent/",
+  "catalog": "https://michaelwave369.github.io/MoreBounceLabs/catalog/albums.json",
+  "authority": {
+    "validation": "read-only",
+    "playbackRequiresHumanApproval": true
+  }
+}

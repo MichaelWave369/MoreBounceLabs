@@ -23,8 +23,15 @@
       "sideEffects": false,
       "canPlayAudio": false
     },
-    "onAlbumIdWhitespace": "reject",
-    "catalogWarnings": "Optional advisory receipt attached on export; always revalidate against current catalog."
+    "onAlbumIdWhitespace": "reject with structured albumId_whitespace error including zero-based trackIndex and raw albumId",
+    "catalogWarnings": "Optional advisory receipt attached on export; always revalidate against current catalog.",
+    "errorCodes": {
+      "album_missing": "Known format but album ID not in current catalog",
+      "track_missing": "Known album but out-of-range track index",
+      "albumId_whitespace": "Raw album ID has leading or trailing whitespace; no trimming",
+      "invalid_mix": "Malformed or otherwise invalid mix"
+    },
+    "readableTrackTitles": "Export omits catalog-leading song numbers where titles match the canonical record; albumId/index remain unchanged."
   },
   "limits": {
     "maxTracks": 40,
@@ -51,5 +58,8 @@
     ]
   },
   "llms": "https://michaelwave369.github.io/MoreBounceLabs/llms.txt",
-  "changelog": "https://michaelwave369.github.io/MoreBounceLabs/agent/mix-changelog.txt"
+  "changelog": "https://michaelwave369.github.io/MoreBounceLabs/agent/mix-changelog.txt",
+  "directory": "https://michaelwave369.github.io/MoreBounceLabs/agent/",
+  "wellKnown": "https://michaelwave369.github.io/MoreBounceLabs/.well-known/mbl-agent.json",
+  "savePolicy": "One browser-local chip per creator type + creator name + mix name. Saving same identity overwrites the existing mix, never grants playback."
 }

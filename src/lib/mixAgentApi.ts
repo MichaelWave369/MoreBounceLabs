@@ -1,4 +1,4 @@
-import { validateMix, type CatalogAlbum, type MixValidationIssue } from "@/lib/mixExchange";
+import { MixTrackInputError, validateMix, type CatalogAlbum, type MixValidationIssue } from "@/lib/mixExchange";
 
 export type AgentValidation = {
   ok: boolean;
@@ -44,6 +44,11 @@ export function installReadOnlyMixApi(catalog: readonly CatalogAlbum[]): () => v
         }),
       };
     } catch (e) {
+      if (e instanceof MixTrackInputError) {
+        return { ok: false, errors: [{ code: e.code, trackIndex: e.trackIndex,
+          albumId: e.albumId, message: e.message }],
+          warnings: [], queue: [], tracks: [] };
+      }
       return { ok: false, errors: [{ code: "invalid_mix", trackIndex: null, albumId: null,
         message: e instanceof Error ? e.message : "Unable to validate mix." }],
         warnings: [], queue: [], tracks: [] };

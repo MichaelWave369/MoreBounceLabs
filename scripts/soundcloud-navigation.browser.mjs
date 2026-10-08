@@ -307,6 +307,19 @@ async function main() {
     assert.equal(api?.ok, false, "Read-only agent validator should reject missing catalog tracks");
     assert.equal(api?.errors[0]?.code, "album_missing", "Agent validation errors must be structured");
     assert.deepEqual(api?.queue, [], "Read-only API must never load or change the music queue");
+    const invalidAlbumId = await page.evaluate(() => window.mblMix?.validate({
+      format: "mbl-mix-v1", name: "Whitespace case", creator: { type: "agent", name: "QA Bot" },
+      description: "Exact IDs only",
+      tracks: [{ albumId: "trunk-funk ", index: 0, transition: "cut" }],
+    }));
+    assert.equal(invalidAlbumId?.ok, false);
+    assert.equal(invalidAlbumId?.errors[0]?.code, "albumId_whitespace");
+    assert.equal(invalidAlbumId?.errors[0]?.trackIndex, 0);
+    assert.equal(invalidAlbumId?.errors[0]?.albumId, "trunk-funk ");
+    assert.deepEqual(invalidAlbumId?.queue, [], "Whitespace error must not create a playable queue");
+    const importButton = await page.getByRole("button", { name: "Review imported JSON" }).boundingBox();
+    assert.ok(importButton && importButton.y + importButton.height <= 800,
+      "Quick import action must be above the 800px fold after opening Mix Studio at 1280px width");
     await page.getByRole("button", { name: "Review imported JSON" }).click();
     await page.getByRole("status").getByText("Invalid JSON", { exact: false }).waitFor({ state: "visible" });
     await page.getByRole("textbox", { name: "Import agent-created mix JSON" }).fill(
@@ -318,6 +331,25 @@ async function main() {
     await page.getByRole("alert").getByText("missing-in-public-catalog", { exact: false }).waitFor({ state: "visible" });
     assert.equal(await page.getByRole("button", { name: "Play approved mix" }).isDisabled(), true,
       "Untrusted mixes with missing tracks must never play without a valid catalog");
+    // A second save of the same named set must overwrite the browser-local
+    // chip, not create two identical-looking choices.
+    await page.getByRole("textbox", { name: "Import agent-created mix JSON" }).fill(
+      JSON.stringify({ format:"mbl-mix-v1", name:"R25 Browser Set",
+        creator:{type:"agent",name:"QA Bot"}, description:"Valid real album song",
+        tracks:[{albumId:"trunk-funk",index:0,transition:"cut"}] })
+    );
+    await page.getByRole("button", { name: "Review imported JSON" }).click();
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    assert.equal(await page.getByRole("button", { name: /R25 Browser Set · QA Bot/ }).count(), 1,
+      "Double saving should update the existing browser-local mix chip");
+    await page.getByRole("status").getByText("Existing mix updated", {exact:false}).waitFor({state:"visible"});
+    const agentIndex = await page.request.get(base + "agent/");
+    assert.equal(agentIndex.status(), 200, "Agent directory must resolve on project GitHub Pages");
+    assert.match(await agentIndex.text(), /Agent Mix Exchange v1/);
+    const agentPointer = await page.request.get(base + ".well-known/mbl-agent.json");
+    assert.equal(agentPointer.status(), 200);
+    assert.equal((await agentPointer.json()).authority.playbackRequiresHumanApproval, true);
     await checkPage(page);
 
     // The approved artwork may still be awaiting the one-time owner upload

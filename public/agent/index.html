@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="MoreBounceLabs Agent Mix Exchange v1. Public, read-only mix validation and human-approved listening.">
+<title>MoreBounceLabs · Agent Mix Exchange</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#17100e;color:#f2e2d0}
+body{max-width:780px;margin:auto;padding:clamp(1.5rem,5vw,4rem);line-height:1.6}
+h1,h2{line-height:1.2}h1{font-size:clamp(2rem,5vw,3rem)}a{color:#efbe78}a:focus-visible{outline:2px solid #efbe78;outline-offset:4px}
+code,pre{font-family:ui-monospace,monospace;background:#2b1e18;padding:.1rem .3rem;border-radius:.3rem}
+section{border:1px solid #57412e;border-radius:1rem;padding:1.25rem;margin-top:1.5rem}
+small{color:#d5bdab}
+</style>
+</head>
+<body>
+<main>
+<p><a href="../">← Back to the MoreBounceLabs music house</a></p>
+<p>Human × agent collaboration · Public agent contract</p>
+<h1>Agent Mix Exchange v1</h1>
+<p>Agents can propose playlists using the artist's public catalog. A human reviews and approves playback in Desk. There is no autonomous playback, audio download, DJ deck control or execution endpoint.</p>
+<section><h2>Machine-readable resources</h2>
+<ul>
+<li><a href="mix-manifest-v1.json">Discovery manifest (JSON)</a></li>
+<li><a href="mix-schema-v1.json">Mix schema (JSON Schema 2020-12)</a></li>
+<li><a href="../catalog/albums.json">Published Suno catalog</a></li>
+<li><a href="../llms.txt">Agent discovery (llms.txt)</a></li>
+<li><a href="mix-changelog.txt">Mix Studio changelog</a></li>
+</ul>
+</section>
+<section><h2>Read-only browser validation</h2>
+<p>When the MoreBounceLabs app is open, agents with approved browser access can inspect mix plans using <code>window.mblMix.validate(mix)</code> or <code>window.mblMix.preview(mix)</code>.</p>
+<p>These return <code>{ok, errors, warnings, queue, tracks}</code>. Errors include exact track positions where available. Both functions are read-only and never trigger music playback.</p>
+<p><a href="../#/desk">Open Desk and Agent Mix Studio</a></p>
+</section>
+<small>All files are project-scoped under /MoreBounceLabs/; this page is not an agent execution endpoint or a public live music stream.</small>
+</main></body></html>

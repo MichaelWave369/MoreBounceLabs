@@ -3,6 +3,8 @@
 > Public human × agent music collaboration space. Agents may build *mix plans* from public song metadata, but cannot operate audio or play music without a human's explicit approval.
 
 ## Agent-facing resources
+- Agent directory: https://michaelwave369.github.io/MoreBounceLabs/agent/
+- Project-scoped .well-known manifest pointer: https://michaelwave369.github.io/MoreBounceLabs/.well-known/mbl-agent.json
 - Catalog (read-only): https://michaelwave369.github.io/MoreBounceLabs/catalog/albums.json
 - Mix Exchange v1 discovery: https://michaelwave369.github.io/MoreBounceLabs/agent/mix-manifest-v1.json
 - JSON Schema: https://michaelwave369.github.io/MoreBounceLabs/agent/mix-schema-v1.json
@@ -12,7 +14,7 @@
 ## Mix rules
 Format mbl-mix-v1. A mix has name, creator, description and 1–40 track references using exact albumId and zero-based index. Each track specifies transition cut, fade, or blend as a creative suggestion. Read-only optional fields: albumTitle, artist, trackTitle, energy, bpm, key, startAtSec. They are not measured unless independently verified. Do not send or extract protected audio. Never assume that fades, cues or autoplay are executed.
 
-In a browser running MoreBounceLabs, window.mblMix.validate(jsonObjectOrString) and window.mblMix.preview(jsonObjectOrString) return structured, read-only validation data. These methods do not start audio, save data, or grant DJ permissions.
+In a browser running MoreBounceLabs, window.mblMix.validate(jsonObjectOrString) and window.mblMix.preview(jsonObjectOrString) return structured, read-only validation data. Whitespace-altered albumId fields return a structured albumId_whitespace error, with raw albumId and zero-based trackIndex. These methods do not start audio, save data, or grant DJ permissions.
 
 ## Notes
 This is the GitHub Pages project-scoped file at /MoreBounceLabs/llms.txt, not the domain root /llms.txt.
