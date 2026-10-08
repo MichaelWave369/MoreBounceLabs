@@ -136,7 +136,7 @@ async function main() {
     await nav.getByRole("button", { name: "Radio" }).click();
     await page.getByRole("heading", { name: "Radio Control Room" }).waitFor({ state: "visible" });
     await checkPage(page);
-    await page.getByRole("button", { name: "Scan next" }).click();
+    await page.getByRole("button", { name: "Scan next", exact: true }).click();
     await page.getByRole("heading", { name: "Night Trucker" }).waitFor({ state: "visible" });
     await page.getByRole("button", { name: "Tune & Play" }).click();
     await page.getByText("Night Trucker").first().waitFor({ state: "visible" });
