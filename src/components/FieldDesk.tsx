@@ -41,15 +41,19 @@ export function FieldDesk({ albums, playlists, history, onSave, onPlay }: {
       )}
       <div className="mbl-field-desk-vignette absolute inset-0" aria-hidden="true" />
       <div className="relative z-10 flex min-h-[960px] flex-col p-4 sm:p-6 lg:p-9">
-        <header className="max-w-xl rounded-2xl border border-white/10 bg-[#140d0bc9] px-5 py-4 shadow-xl backdrop-blur-sm">
+        <header className={`max-w-xl rounded-2xl border border-white/10 bg-[#140d0bc9] shadow-xl backdrop-blur-sm ${workspace === "mix" ? "px-4 py-3" : "px-5 py-4"}`}>
           <p className="text-xs font-bold uppercase tracking-[0.21em] text-amber">MoreBounceLabs · Creative headquarters</p>
-          <h1 className="mt-2 font-display text-4xl sm:text-5xl">The Desk</h1>
-          <p className="mt-2 max-w-md text-sm text-[#e6d5c5]">
-            The workshop behind the music. Save your sets, organize the queue, and explore the records you've played.
-          </p>
-          <p className="mt-2 text-xs text-[#cbb8a4]">
-            This is your own browser's workspace. Personal playlists and listening history are stored locally.
-          </p>
+          <h1 className={`font-display ${workspace === "mix" ? "mt-1 text-2xl" : "mt-2 text-4xl sm:text-5xl"}`}>The Desk</h1>
+          {workspace === "desk" && (
+            <>
+              <p className="mt-2 max-w-md text-sm text-[#e6d5c5]">
+                The workshop behind the music. Save your sets, organize the queue, and explore the records you've played.
+              </p>
+              <p className="mt-2 text-xs text-[#cbb8a4]">
+                This is your own browser's workspace. Personal playlists and listening history are stored locally.
+              </p>
+            </>
+          )}
           <div className="mt-3 flex flex-wrap gap-2">
             <button type="button" onClick={() => setWorkspace("mix")} aria-pressed={workspace === "mix"}
               className={`min-h-11 rounded-xl border px-4 text-sm ${workspace === "mix" ? "border-fuchsia-300 bg-fuchsia-700/70" : "border-fuchsia-300/50"}`}>Open Agent Mix Studio</button>
@@ -57,7 +61,7 @@ export function FieldDesk({ albums, playlists, history, onSave, onPlay }: {
               className={`min-h-11 rounded-xl border px-4 text-sm ${workspace === "desk" ? "border-amber bg-amber/20" : "border-white/20"}`}>Desk workbench</button>
           </div>
           <p className="mt-3 text-xs text-[#cbb8a4]">
-            Desk QA R23 · Mix Exchange v1 · <a className="underline" href={import.meta.env.BASE_URL + "agent/mix-changelog.txt"} target="_blank" rel="noopener noreferrer">View changelog</a>
+            Desk QA R25 · Mix Exchange v1 · <a className="underline" href={import.meta.env.BASE_URL + "agent/mix-changelog.txt"} target="_blank" rel="noopener noreferrer">View changelog</a>
           </p>
         </header>
 
