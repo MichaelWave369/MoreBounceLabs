@@ -488,3 +488,36 @@
     transition: none !important;
   }
 }
+
+
+/* Field Desk HQ. Original supplied artwork is a fixed, unmodified backdrop. */
+.mbl-field-desk-art {
+  z-index: -2;
+  object-position: center 34%;
+  user-select: none;
+  pointer-events: none;
+}
+.mbl-field-desk-vignette {
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(18, 11, 7, .50) 0%, rgba(18, 11, 7, .05) 18%, rgba(16, 10, 7, .05) 45%, rgba(12, 8, 6, .78) 78%, rgba(12, 8, 6, .93) 100%),
+    linear-gradient(90deg, rgba(12, 8, 6, .26), transparent 55%);
+}
+.mbl-field-desk-panel {
+  background: rgba(23, 13, 11, .88);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, .35);
+  backdrop-filter: blur(12px);
+}
+.mbl-field-desk-panel input:focus-visible,
+.mbl-field-desk-panel button:focus-visible {
+  outline: 2px solid #f0bb62;
+  outline-offset: 2px;
+}
+@media (max-width: 700px) {
+  .mbl-field-desk-art { object-position: 50% 38%; }
+  .mbl-field-desk-vignette {
+    background: linear-gradient(180deg, rgba(14, 9, 7, .54), rgba(14, 9, 7, .06) 20%, rgba(14, 9, 7, .6) 45%, #150e0bd9 74%, #150e0bf2);
+  }
+  .mbl-field-desk-panel { background: rgba(23, 13, 11, .94); }
+}
