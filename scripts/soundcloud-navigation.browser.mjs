@@ -7,7 +7,7 @@
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
-import { resolve, relative, extname, sep } from "node:path";
+import { resolve, extname, sep } from "node:path";
 import { chromium } from "playwright";
 
 const root = resolve("dist-pages");
@@ -95,7 +95,6 @@ async function main() {
     const nav = page.getByRole("navigation", { name: "Rooms" });
     await page.getByRole("button", { name: /Dimensional Shift/ }).first().click();
     await page.locator('iframe[title^="SoundCloud playlist:"]').waitFor({ state: "visible" });
-    await page.getByText("Official SoundCloud", { exact: false }).first().waitFor({ state: "visible" }).catch(() => {});
     // Allow widget READY bindings to register before navigating away.
     await page.waitForTimeout(250);
     await nav.getByRole("button", { name: "Timeline" }).click();
