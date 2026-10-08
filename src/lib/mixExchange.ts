@@ -22,6 +22,8 @@ export type ExchangeMix = {
   creator: { type: "agent" | "human"; name: string };
   description: string;
   tracks: MixTrack[];
+  /** Advisory export receipt; ALWAYS revalidate against the current catalog. */
+  catalogWarnings?: MixValidationIssue[];
 };
 export type CatalogAlbum = { id: string; title: string; artist?: string; tracks: { title: string; duration?: number; bpm?: number; key?: string }[] };
 export type MixValidationIssue = {
@@ -83,6 +85,7 @@ export function validateMix(raw: unknown, catalog: readonly CatalogAlbum[]): Mix
     if (!item || typeof item !== "object" || Array.isArray(item)) throw new Error(location + ": expected a track object.");
     const t = item as Record<string, unknown>;
     const albumId = str(t.albumId, 160, location + " album ID");
+    if (t.albumId !== albumId) throw new Error(location + " (" + JSON.stringify(t.albumId) + "): albumId must match the catalog exactly; remove leading/trailing whitespace.");
     const context = location + " (" + albumId + ")";
     if (!Number.isInteger(t.index) || (t.index as number) < 0 || (t.index as number) > 200)
       throw new Error(context + ": invalid track index; use a zero-based integer between 0 and 200.");
@@ -131,6 +134,31 @@ export function validateMix(raw: unknown, catalog: readonly CatalogAlbum[]): Mix
   return { mix: { format: "mbl-mix-v1", name, creator, description: v.description, tracks },
     ok: errors.length === 0, errors, warnings, missing, queue };
 }
+/**
+ * Prepare a human-reviewed mix for saving, sharing or JSON download.
+ * Never change the canonical albumId/index or silently replace a submitted
+ * mismatched title. Fill *missing* readable values only; preserve warnings as
+ * an advisory receipt that cannot grant playback permission.
+ */
+export function prepareMixForExport(mix: ExchangeMix, catalog: readonly CatalogAlbum[]): ExchangeMix {
+  const review = validateMix(mix, catalog);
+  if (!review.ok) throw new Error("Cannot export an unplayable mix: catalog references are missing.");
+  const tracks = review.mix.tracks.map((item) => {
+    const album = catalog.find((candidate) => candidate.id === item.albumId)!;
+    const song = album.tracks[item.index]!;
+    return {
+      ...item,
+      albumTitle: item.albumTitle || album.title,
+      ...(album.artist ? { artist: item.artist || album.artist } : {}),
+      trackTitle: item.trackTitle || song.title,
+    };
+  });
+  return {
+    ...review.mix, tracks,
+    ...(review.warnings.length ? { catalogWarnings: review.warnings } : {}),
+  };
+}
+
 export function queueMix(mix: ExchangeMix, catalog: readonly CatalogAlbum[]): { albumId: string; index: number }[] {
   const review = validateMix(mix, catalog);
   if (!review.ok) throw new Error("This mix references missing catalog tracks. Review before playback.");
