@@ -22,7 +22,7 @@ test("verified SoundCloud archive preserves the 18-album baseline plus approved 
     assert.equal(url.origin, "https://soundcloud.com");
     assert.match(url.pathname, /^\/microneesia\/sets\/[a-z0-9-]+$/);
     const cover = new URL(album.cover);
-    assert.match(cover.hostname, /^i\\d+\\.sndcdn\\.com$/);
+    assert.match(cover.hostname, /^i\d+\.sndcdn\.com$/);
     assert.match(cover.pathname, /^\/artworks-[A-Za-z0-9-]+-(?:t500x500|large|original)\.jpg$/);
   }
 });
