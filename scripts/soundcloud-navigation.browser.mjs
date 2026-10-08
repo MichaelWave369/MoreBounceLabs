@@ -269,7 +269,22 @@ async function main() {
     await page.getByRole("heading", { name: "Now playing & queue" }).waitFor({ state: "visible" });
     await page.getByRole("button", { name: "Save queue" }).waitFor({ state: "visible" });
     await page.getByRole("button", { name: "Export catalog" }).waitFor({ state: "visible" });
+    // Desk keeps its artwork and queue in Workbench mode; the Mix Studio
+    // opens near the top on demand instead of hiding below the long desk.
+    await page.getByRole("button", { name: "Open Agent Mix Studio" }).click();
     await page.getByRole("heading", { name: "Agent Mix Studio" }).waitFor({ state: "visible" });
+    const api = await page.evaluate(() => {
+      const safe = window.mblMix;
+      if (!safe) return null;
+      return safe.validate({
+        format: "mbl-mix-v1", name: "QA", creator: { type: "agent", name: "QA Bot" },
+        description: "A guarded agent sample",
+        tracks: [{ albumId: "does-not-exist", index: 0, transition: "cut" }],
+      });
+    });
+    assert.equal(api?.ok, false, "Read-only agent validator should reject missing catalog tracks");
+    assert.equal(api?.errors[0]?.code, "album_missing", "Agent validation errors must be structured");
+    assert.deepEqual(api?.queue, [], "Read-only API must never load or change the music queue");
     await page.getByRole("button", { name: "Review imported JSON" }).click();
     await page.getByRole("status").getByText("Invalid JSON", { exact: false }).waitFor({ state: "visible" });
     await page.getByRole("textbox", { name: "Import agent-created mix JSON" }).fill(
