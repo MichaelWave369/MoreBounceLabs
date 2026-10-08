@@ -272,3 +272,13 @@ CI checks the image hash/dimensions and verifies that Pages includes the identic
 ## Rung 16: Backspin poster filename repair
 
 The exact original image was uploaded to `public/backspin96-decks-art.png` when PR #15 was merged, but the Decks UI was still requesting `backspin96-poster.png`. That mismatch displayed the fallback placeholder even though the real asset was present. The runtime now uses the actual committed filename; the asset integrity gate requires the file and verifies its original SHA-256 plus dimensions, while the Pages verifier requires the copied file in the static output. Missing artwork is no longer allowed to pass CI silently.
+
+## PR #17: Lab is exclusively InfinityLens369
+
+**Lab → Infinity Lab** now opens straight into the original InfinityLens369 interactive fractal portal. The old MBL visual mode button row and inline `VizCanvas` have been removed from **Lab only**, so there is no second competing visual stage and no redundant local-only audio-analysis claim above InfinityLens.
+
+The established **mbl-infinitylens-v1** cross-origin message bridge still controls the real InfinityLens renderer: eight scene modes, four palettes, safe mode, reset, and fullscreen. The iframe expands to 560px tall on small screens, 740px on medium, and 840px on large screens; Lab has the wider performance-room layout. InfinityLens mounts automatically when the Lab route becomes active and unmounts on exit, so it does **not** consume WebGL resources while browsing Vault, Decks or other rooms. **Stop InfinityLens** explicitly unloads it; Launch restores it. Users with reduced-motion preference retain a stationary on-demand alternative and an external link instead of forced motion.
+
+The previous built-in `VizCanvas` is still available inside **Listening Lounge**. This PR does **not** remove legacy modes from Lounge or change the music player, timeline, Radio, Backspin, catalogs, or InfinityLens project's own repository.
+
+CI has a new static test checking Lab contains only InfinityLens, and the Chromium suite now uses an isolated, network-free InfinityLens iframe stub to test handshake, mode selection, absence of legacy Lab canvas/mode buttons, and iframe teardown on navigation. The synthetic stub does not certify live remote InfinityLens network behavior; test the deployed page after merge.
