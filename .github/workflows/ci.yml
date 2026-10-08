@@ -23,7 +23,7 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: TypeScript
         run: npm run typecheck
-      - name: Unit tests
-        run: npm test
+      - name: Music house regression tests
+        run: node --test scripts/house-logic.test.mjs
       - name: Production build
         run: npm run build
