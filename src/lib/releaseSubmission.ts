@@ -6,6 +6,7 @@
 export type ReleaseProvider = "soundcloud" | "suno";
 export type ReleaseDraft = {
   kind: "mbl-release-v1";
+  mode?: "auto";
   provider: ReleaseProvider;
   url: string;
   year: number;
@@ -35,6 +36,26 @@ export function normalizeReleaseUrl(provider: ReleaseProvider, input: string): s
   } catch {
     return null;
   }
+}
+
+/**
+ * URL-only owner import request. No credentials in browser code. A SoundCloud
+ * release can publish with verified title/art and an explicitly unknown song
+ * count; Suno is held for manual song ID verification until a trusted album
+ * track listing is available.
+ */
+export function autoReleaseDraft(link: string, year: number): ReleaseDraft {
+  let provider: ReleaseProvider;
+  try {
+    const host = new URL(link.trim()).hostname.toLowerCase();
+    if (host === "soundcloud.com") provider = "soundcloud";
+    else if (host === "suno.com") provider = "suno";
+    else throw Error();
+  } catch { throw new Error("Paste a public SoundCloud album/sets URL or Suno album URL."); }
+  const url = normalizeReleaseUrl(provider, link);
+  if (!url) throw new Error("This URL isn't a supported public artist album link.");
+  if (!Number.isInteger(year) || year < 1990 || year > 2100) throw new Error("Enter a valid release year.");
+  return { kind: "mbl-release-v1", mode: "auto", provider, url, year };
 }
 
 export function parseSunoTracks(input: string): { title: string; sunoId: string }[] {
