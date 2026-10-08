@@ -133,8 +133,8 @@ export function HouseApp() {
               <i />
               <i />
             </span>
-            <span className="font-display text-2xl tracking-tight">MicTek House</span>
-            <span className="mt-0.5 block text-xs uppercase tracking-[0.18em] text-amber">More Bounce Labs</span>
+            <span className="font-display text-2xl tracking-tight">MoreBounceLabs</span>
+            <span className="mt-0.5 block text-xs uppercase tracking-[0.18em] text-amber">MBL</span>
           </button>
           <nav className="flex flex-1 gap-1 overflow-x-auto" aria-label="Rooms">
             {ROOMS.map(([id, label]) => (
@@ -781,7 +781,7 @@ function Player({ onLounge }: { onLounge: () => void }) {
             <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold uppercase tracking-wider text-amber">Official Suno player</p>
               <p className="truncate font-semibold">{track?.title || "Selected song"}</p>
-              <p className="truncate text-xs text-mist">{album?.title || "MicTek House"}</p>
+              <p className="truncate text-xs text-mist">{album?.title || "MoreBounceLabs"}</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <button
@@ -828,7 +828,7 @@ function Player({ onLounge }: { onLounge: () => void }) {
           {album?.cover ? <img src={album.cover} alt="" className="h-12 w-12 rounded-lg object-cover" /> : <Disc3 />}
           <span className="min-w-0">
             <span className="block truncate">{track?.title || "Nothing playing"}</span>
-            <span className="block truncate text-sm text-mist">{album?.title || "MicTek House"}</span>
+            <span className="block truncate text-sm text-mist">{album?.title || "MoreBounceLabs"}</span>
           </span>
         </button>
         <div>
