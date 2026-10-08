@@ -26,6 +26,7 @@ jobs:
           node-version: '22'
 
       - name: Validate owned release and prepare catalog entry
+        id: prepare
         env:
           MBL_ISSUE_BODY: ${{ github.event.issue.body }}
         run: node scripts/import-release.mjs
@@ -35,12 +36,17 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           RUN_ID: ${{ github.run_id }}
+          NEEDS_MANUAL_SUNO: ${{ steps.prepare.outputs.needs_manual_suno }}
         shell: bash
         run: |
           set -euo pipefail
           git add public/catalog/albums.json src/data/soundcloud-albums.json
           if git diff --cached --quiet; then
-            gh issue comment "$ISSUE_NUMBER" --body "This release is already present in the MBL catalogs. No duplicate was added."
+            if [[ "$NEEDS_MANUAL_SUNO" == "true" ]]; then
+              gh issue comment "$ISSUE_NUMBER" --body "Auto New Album received your public Suno album link, but couldn't safely verify the full song list from an official public metadata API. **Nothing was imported or published.** To finish, open [the MBL Vault](https://michaelwave369.github.io/MoreBounceLabs/#/vault), choose **Update albums → Manual details**, and provide the album title, public artwork URL and each song title + official Suno song ID. That guarded form will create a PR for your review. We won't fabricate a record with zero playable songs."
+            else
+              gh issue comment "$ISSUE_NUMBER" --body "This release is already present in the MBL catalogs. No duplicate was added."
+            fi
             exit 0
           fi
           branch="catalog/release-issue-${ISSUE_NUMBER}-${RUN_ID}"
