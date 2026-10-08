@@ -54,7 +54,7 @@ test("exports enrich missing readable names without altering DJ creative metadat
   const hydrated = prepareMixForExport(oldShape,albums);
   assert.ok(hydrated.tracks.every(t => t.albumTitle && t.artist && t.trackTitle));
   assert.deepEqual(hydrated.tracks.map(t=>t.energy),mix.tracks.map(t=>t.energy));
-  assert.equal(hydrated.tracks[2].trackTitle,"4. Tunnel Bloom");
+  assert.equal(hydrated.tracks[2].trackTitle,"Tunnel Bloom", "Exported display title omits legacy numbering");
   assert.deepEqual(decodeMix(encodeMix(hydrated),albums).mix,
     validateMix(hydrated,albums).mix, "Reloaded mix remains catalog-safe");
 });
