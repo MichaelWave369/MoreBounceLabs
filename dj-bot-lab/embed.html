@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Simulated embedded audio player</title>
+<style>
+body{margin:0;background:#16120e;color:#f2e7cf;font:16px system-ui;padding:1rem}
+button{background:#e4a04a;border:0;border-radius:12px;padding:12px 18px;font-weight:700;cursor:pointer;margin-right:12px}
+[data-dj-current],[data-dj-duration]{font-variant-numeric:tabular-nums}
+</style></head>
+<body>
+<p>Synthetic iframe player. No copyrighted music or network audio.</p>
+<p data-dj-state="ready" aria-live="polite">Ready</p>
+<div><span data-dj-current>0:00</span> / <span data-dj-duration>0:04</span></div>
+<button type="button" data-dj-play>Play</button>
+<button type="button" data-dj-pause>Pause</button>
+<script>
+let clock = 0;
+let status = "ready";
+let timer = null;
+const state = document.querySelector("[data-dj-state]");
+const elapsed = document.querySelector("[data-dj-current]");
+function display() {
+  state.dataset.djState = status;
+  state.textContent = status;
+  elapsed.textContent = "0:" + String(clock).padStart(2, "0");
+}
+document.querySelector("[data-dj-play]").addEventListener("click", () => {
+  if (clock >= 4) clock = 0;
+  status = "playing";
+  display();
+  clearInterval(timer);
+  timer = setInterval(() => {
+    if (status !== "playing") return;
+    clock++;
+    if (clock >= 4) {
+      clock = 4;
+      status = "ended";
+      clearInterval(timer);
+    }
+    display();
+  }, 180);
+});
+document.querySelector("[data-dj-pause]").addEventListener("click", () => {
+  status = "paused";
+  clearInterval(timer);
+  display();
+});
+</script>
+</body></html>

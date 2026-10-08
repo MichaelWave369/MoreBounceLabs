@@ -93,3 +93,20 @@ This is intentionally an honest two-source adapter, not an attempt to control or
 ## Public brand
 
 The **site and application** are named **MoreBounceLabs**, shortened to **MBL** in compact UI. The old public-facing “MicTek House” branding has been removed from the navigation, player, browser title, PWA/OG metadata, static Pages HTML and no-script message. Artist attribution and pre-existing technical paths/legacy repository links are retained where they still have meaning.
+
+## Experimental MBL DJ Bot Lab (local only)
+
+The first DJ Bot rung lives in `scripts/dj-bot-lab.mjs`. **It does not operate Suno.** It opens a private local Playwright browser with a simulated embedded player hosted on two different localhost ports. The bot reads **visible clock labels and the player state**, clicks the iframe's Play button, observes the real *playing → ended* progression, selects the next synthetic song, and clicks Play again. The acceptance test requires **10 starts, 10 completions, and 9 transitions**.
+
+```bash
+npm install
+npx playwright install chromium
+npm run dj:lab
+# On a desktop with a graphical display:
+npm run dj:lab:headed
+npm run dj:lab:unit
+```
+
+This is a proof of browser automation, **not evidence that the official Suno iframe supports automated operation or that GitHub Pages can do this**. Playwright is a local desktop process, not a feature installed in listeners' browsers. The code has no configurable target URL and no Suno access, credentials, downloads, or control bypass.
+
+Timer-based inference is deliberately conservative: a countdown reaching the duration is **not** enough to advance if the player is paused or buffering. The controlled iframe also exposes a separate *ended* state, and the bot requires having observed *playing* before accepting it. For a real external embed, missing observability and gesture/autoplay restrictions remain unresolved. A production continuous radio system should use music files hosted under the artist's control, with normal HTML audio `ended` events.
