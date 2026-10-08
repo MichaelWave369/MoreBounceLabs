@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { ArrowUpRight, RefreshCw, X } from "lucide-react";
 import {
   buildReleaseDraft, normalizeReleaseUrl, releaseIssueUrl, type ReleaseProvider,
@@ -39,7 +39,7 @@ export function UpdateAlbums({ albums }: { albums: Album[] }) {
     } finally { setChecking(false); }
   }
 
-  function submit(event: React.FormEvent<HTMLFormElement>) {
+  function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setProblem("");
     try {
