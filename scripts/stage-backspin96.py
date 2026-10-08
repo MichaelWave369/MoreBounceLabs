@@ -78,10 +78,26 @@ def stage() -> int:
         html = (staged / "index.html").read_text(encoding="utf-8")
         if './app.js' not in html or './styles.css' not in html:
             raise ValueError("Backspin HTML must use its project-relative assets.")
+        # Copy-only integration: the original pinned ZIP is not modified.
+        # The appended adapter is part of the *generated* Pages copy and uses
+        # the original engine's module-local variables to expose only status
+        # and vetted scratch/release operations to the same-origin MBL parent.
+        bridge_source = ROOT / "scripts" / "backspin-overlay-bridge.js"
+        if not bridge_source.is_file():
+            raise ValueError("Required Backspin poster adapter is missing.")
+        app = staged / "app.js"
+        source_text = app.read_text(encoding="utf-8")
+        # Install immediately after construction of the trusted engine rather
+        # than waiting until the end of a potentially slow graphics bootstrap.
+        anchor = "const system = new BackspinMixerSystem();"
+        if source_text.count(anchor) != 1:
+            raise ValueError("Backspin v1.5.0 engine insertion point changed; refusing unsafe adapter patch.")
+        app.write_text(source_text.replace(anchor, anchor + "\n" +
+                       bridge_source.read_text(encoding="utf-8") + "\n", 1), encoding="utf-8")
         (staged / "mbl-stage.json").write_text(json.dumps({
             "engine": "Backspin96", "sourceVersion": "1.5.0",
             "sourceSHA256": digest, "scope": "local-user-imports-only",
-            "host": "MoreBounceLabs GitHub Pages",
+            "host": "MoreBounceLabs GitHub Pages", "overlayBridgeVersion": 1,
         }, indent=2) + "\n", encoding="utf-8")
         if DEST.exists():
             shutil.rmtree(DEST)

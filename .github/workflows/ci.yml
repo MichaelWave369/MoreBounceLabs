@@ -37,6 +37,8 @@ jobs:
         run: npm run verify:pages
       - name: Verify approved radio art when available
         run: node scripts/check-radio-art.mjs
+      - name: Verify exact original Backspin poster when available
+        run: node scripts/check-backspin-poster.mjs
 
   dj-bot-lab:
     name: Opt-in DJ Bot fixture smoke
@@ -54,6 +56,8 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Verify ten synthetic songs transition
         run: npm run dj:lab
+      - name: Stage the original Backspin engine and poster adapter
+        run: python3 scripts/stage-backspin96.py
       - name: Build static site for browser navigation regression
         run: npm run build:pages
       - name: SoundCloud player teardown and cross-room navigation smoke

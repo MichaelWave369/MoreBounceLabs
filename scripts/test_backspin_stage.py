@@ -28,6 +28,7 @@ class StageBackspinTests(unittest.TestCase):
         payloads = {name: "/* fixture */" for name in stage.REQUIRED}
         payloads["index.html"] = '<link href="./styles.css"><script src="./app.js"></script>'
         payloads["LICENSE"] = "MIT License"
+        payloads["app.js"] = "const system = new BackspinMixerSystem();"
         payloads.update(extra or {})
         with zipfile.ZipFile(stage.SOURCE, "w", compression=zipfile.ZIP_DEFLATED) as archive:
             for name, data in payloads.items():
@@ -47,6 +48,14 @@ class StageBackspinTests(unittest.TestCase):
         self.assertTrue((stage.DEST / "audio" / "mixer-law.js").is_file())
         marker = (stage.DEST / "mbl-stage.json").read_text()
         self.assertIn(stage.EXPECTED_SHA256, marker)
+        self.assertIn('"overlayBridgeVersion": 1', marker)
+        staged_app = (stage.DEST / "app.js").read_text(encoding="utf-8")
+        self.assertIn("window.__MBL_BACKSPIN", staged_app)
+        self.assertIn("setJogRatio(", staged_app)
+        with zipfile.ZipFile(stage.SOURCE) as archive:
+            original = archive.read(self.base + "/app.js").decode("utf-8")
+        self.assertEqual(original, "const system = new BackspinMixerSystem();")
+        self.assertNotIn("window.__MBL_BACKSPIN", original)
         self.assertFalse((stage.DEST / "docs").exists())
 
     def test_archive_sha_mismatch_blocks_unreviewed_content(self):

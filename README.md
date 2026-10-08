@@ -228,3 +228,42 @@ CI validates the exact image hash, dimensions and built Pages copy whenever the 
 
 **Engineering:** The Radio stage is a real DOM control map over the unmodified artwork, not a new screenshot or a second music player. The existing persistent mini-player remains visible (unless you're in Backspin Decks), and no audio is extracted from a third-party iframe. Browser regression tests enter Radio, scan to a new preset, tune/play, leave for Vault, and verify the page remains usable.
 
+
+
+## PR #15: Backspin '96 Poster DJ Booth
+
+The **Decks** tab gets a new poster-first design based on the original uploaded artwork:
+`ChatGPT Image Aug 5, 2026, 10_39_01 AM.png`.
+
+**The image is preserved exactly, not regenerated.** It sits underneath genuine React controls mapped to the **existing Backspin v1.5.0 AudioWorklet**. The source ZIP remains SHA-pinned and unmodified. The GitHub Pages staging script adds a narrow, same-origin adapter to its generated `app.js` only, exposing deck status plus Backspin's existing `setJogRatio` and `releaseJog` scratch functions; no independent or simulated audio engine is created.
+
+### Required art upload, one time
+Download the original art from this ChatGPT conversation or its original uploaded source, keep the PNG bytes unchanged, and upload it directly to the **PR #15 branch** with the exact repository path:
+
+```
+public/backspin96-poster.png
+```
+
+Expected **SHA-256** (1055×1491 PNG):
+
+```
+0f2764175607d944ac3be89e62ba114953d3bb9b7307e5e20be0421806d47bcf
+```
+
+CI checks the image hash/dimensions and verifies that Pages includes the identical file when present. **Keep the PR in draft until the uploaded image is present and CI has been rerun.** Without it, the controls still work over a clear art-pending fallback; an alternate stock image is never substituted.
+
+### Controls on the original poster
+- Click the vinyl platter A/B to play or pause after loading a track. **Drag the vinyl platter to scratch**: pointer angular velocity is bounded and routed directly to Backspin's AudioWorklet scratch/release commands.
+- Hotspot buttons for Cue A/B, hot cue A1/B1, Start Dual Audio, Auto Mix and emergency Stop Both; one real crossfader slider appears over the battle mixer.
+- A touch-sized control rail directly under the poster supports local file import, loading decks, Play/Pause, Cue, four hot cues per deck, full crossfade, Auto Mix and emergency Stop. The rail is the small-screen control fallback.
+- **Advanced rig & crates** expands the original Backspin iframe, including all detailed EQ, filters, loops, track browser, waveform, recording, and MIDI. **The iframe remains mounted even when collapsed**, so performance doesn't stop just because a listener closes the advanced pane.
+- All old audio-safety rules remain: deliberate user gesture to start AudioWorklet, authorized user-loaded audio only, no SoundCloud/Suno stream download or capture. GitHub Pages still uses non-isolated copy transport and requires latency qualification on target devices.
+
+### Implementation and verification
+- Stage adapter: `scripts/backspin-overlay-bridge.js`; inserted *after* original module code only into temporary Pages runtime.
+- Original ZIP remains immutable with the exact pre-existing expected digest in `scripts/stage-backspin96.py`.
+- Snapshot/status are read over same-origin iframe access only. The bridge does not expose arbitrary selectors, URLs, messages, or sensitive data.
+- CI unit tests assert the integration does not contaminate the original archive. Pages assertions check the staged adapter. Chromium visits Decks, observes the original iframe engine/bridge, opens and closes the advanced rig, and navigates back to Vault.
+- The poster is art, not a semantic UI. Actual controls live in focusable buttons and range inputs over it, with keyboard names and a separate touch rail. Reduced-motion preferences disable decorative platter glow animations.
+
+**Note:** The artist's poster has promotional claims about whole-catalog mixing; those claims remain part of the unchanged artwork. The actual playable Backspin library consists of audio the listener has locally imported and is authorized to use. Merely seeing MBL's Suno/SoundCloud albums in the Vault does not grant downloadable files to the DJ engine.

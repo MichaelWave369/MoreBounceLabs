@@ -31,7 +31,10 @@ const server = createServer(async (req, res) => {
     if (!pathname.startsWith(prefix)) {
       res.writeHead(404); res.end("Not Found"); return;
     }
-    const rel = decodeURIComponent(pathname.slice(prefix.length)) || "index.html";
+    const decoded = decodeURIComponent(pathname.slice(prefix.length));
+    // GitHub Pages serves directory/index.html for URLs ending in slash.
+    // Our local regression server must match that behavior for Backspin.
+    const rel = !decoded || decoded.endsWith("/") ? decoded + "index.html" : decoded;
     const absolute = resolve(root, rel);
     if (absolute !== root && !absolute.startsWith(root + sep)) {
       res.writeHead(403); res.end("Forbidden"); return;
@@ -143,7 +146,49 @@ async function main() {
     await nav.getByRole("button", { name: "Vault" }).click();
     await checkPage(page);
     await page.getByRole("heading", { name: "Record vault" }).waitFor({ state: "visible" });
-        assert.deepEqual(errors, [], "No uncaught JS errors during SoundCloud navigation: " + errors.join(" | "));
+        // Full Backspin is loaded from the integrity-pinned archive. Verify the
+    // original app module exposes the same-origin scratch adapter through
+    // its iframe, and that poster mode can open the original advanced rig.
+    await nav.getByRole("button", { name: "Decks" }).click();
+    await page.getByRole("heading", { name: "Backspin '96 · The Vinyl World" }).waitFor({ state: "visible" });
+    const rig = page.locator('iframe[title="Original Backspin 96 DJ engine and advanced controls"]');
+    await rig.waitFor({ state: "attached", timeout: 15000 });
+    try {
+      await page.waitForFunction(() => {
+        const frame = document.querySelector('iframe[title="Original Backspin 96 DJ engine and advanced controls"]');
+        try { return frame?.contentWindow?.__MBL_BACKSPIN?.version === 1; }
+        catch { return false; }
+      }, undefined, { timeout: 12000 });
+    } catch (error) {
+      const detail = await rig.evaluate((frame) => {
+        try {
+          return {
+            src: frame.getAttribute("src"),
+            frameUrl: frame.contentWindow?.location.href,
+            readyState: frame.contentDocument?.readyState,
+            audioStartPresent: Boolean(frame.contentDocument?.getElementById("startAudio")),
+            adapterPresent: Boolean(frame.contentWindow?.__MBL_BACKSPIN),
+          };
+        } catch (e) { return { inaccessible: String(e) }; }
+      });
+      throw new Error("Backspin iframe adapter not ready: " + JSON.stringify(detail)
+        + "; browser exceptions: " + errors.join(" | ") + "; " + String(error));
+    }
+    const bridge = await rig.evaluate((frame) => {
+      const controller = frame.contentWindow.__MBL_BACKSPIN;
+      return controller.snapshot();
+    });
+    assert.equal(bridge.ready, false, "Audio must require an explicit user gesture");
+    assert.equal(bridge.A.loaded, false, "No bundled DJ audio may preload");
+    assert.equal(bridge.B.loaded, false, "No bundled DJ audio may preload");
+    await page.getByRole("button", { name: "Advanced rig & crates" }).click();
+    await page.frameLocator('iframe[title="Original Backspin 96 DJ engine and advanced controls"]')
+      .locator("#startAudio").waitFor({ state: "visible" });
+    await page.getByRole("button", { name: "Hide advanced rig" }).click();
+    await nav.getByRole("button", { name: "Vault" }).click();
+    await checkPage(page);
+
+    assert.deepEqual(errors, [], "No uncaught JS errors during SoundCloud navigation: " + errors.join(" | "));
     console.log("PASS SoundCloud navigation: player → Timeline → Vault → player → Lobby → Vault → close → direct Timeline refresh; no blank screen or JS exceptions.");
   } finally {
     await browser?.close();
