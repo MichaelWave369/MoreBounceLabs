@@ -78,3 +78,14 @@ This repo includes a separate static build so GitHub Pages does not need TanStac
 **Important GitHub setting:** Under **Settings → Pages → Build and deployment**, choose **Source: GitHub Actions**. If Pages has never been enabled, this one-time repository setting may be required before the deploy job succeeds. No repository secrets or paid hosting are needed.
 
 This is a **second deployment target**. The original `mictek-house` GitHub Pages site remains unchanged, and this build does not attempt to host a server-side auth/database backend. Hash routes like `#/album/trunk-funk/3` remain on the same static `index.html` path and are safe to refresh. The catalog request uses Vite's base URL, so it resolves to `/MoreBounceLabs/catalog/albums.json` on Pages, not the domain root. It is still subject to Suno/media-host playback rules and browser restrictions.
+
+## Unified playback controls
+
+The public catalog includes 344 Suno clips with undocumented clip-host URLs. The main player now **opens the official Suno embed first** for those tracks, instead of attempting a blocked direct stream and showing a second player beneath fake controls.
+
+- **Suno embed mode:** only the official embedded player offers Play, Pause, seek, and volume. The house shows an honest selected-track label and explicit **Previous song / Next song** selectors. Selecting another song reloads the embed; **automatic advance, exact playback state, native volume, seek, sleep timer, and Media Session controls are not supported for cross-origin embeds**.
+- **Native mode:** independent artist-hosted HTTPS audio uses the house transport controls, seek, queue, speed, media session and sleep timer.
+- **Fallback:** if native playback for a track with a valid Suno ID fails, transition to the official embed and stop/clear the native audio element.
+- **Visualizer:** Suno embed mode is ambient only; it does not claim access to audio analysis.
+
+This is intentionally an honest two-source adapter, not an attempt to control or bypass Suno's cross-origin player. The Site cannot directly start the music inside a third-party iframe; visitors must tap Play inside the official player. The existing catalog is unchanged.
