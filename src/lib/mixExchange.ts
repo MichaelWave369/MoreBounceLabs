@@ -49,10 +49,14 @@ export type MixReview = {
  */
 export class MixTrackInputError extends Error {
   readonly code = "albumId_whitespace" as const;
-  constructor(readonly trackIndex: number, readonly albumId: string) {
+  readonly trackIndex: number;
+  readonly albumId: string;
+  constructor(trackIndex: number, albumId: string) {
     super("Track " + (trackIndex + 1) + " (" + JSON.stringify(albumId) +
       "): albumId must match the catalog exactly; remove leading/trailing whitespace.");
     this.name = "MixTrackInputError";
+    this.trackIndex = trackIndex;
+    this.albumId = albumId;
   }
 }
 
