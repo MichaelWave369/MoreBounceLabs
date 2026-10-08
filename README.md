@@ -131,3 +131,27 @@ Two independently deployed repositories must have matching versions:
 **Security/permission boundary:** MBL accepts messages only from the correct iframe window at the exact InfinityLens origin, on the matching protocol/version. InfinityLens validates that commands come only from the trusted MBL embedding parent and permits an explicit four-action allowlist. Neither side receives auth, arbitrary scripts, file data, or direct third-party audio access. The iframe remains isolated. **Suno audio cannot be bridged via this mechanism.** Real audio reactivity requires a separately authorized local/native audio source and an explicit opt-in.
 
 Run `node --experimental-strip-types --test scripts/infinity-bridge.test.mjs` to check the host protocol invariants.
+
+## Decks takeover: Backspin '96 v1.5.0 (PR #9)
+
+The Decks room is now reserved for the **original Backspin '96 dual-AudioWorklet DJ booth**. The old demo two-`<audio>` mixer is removed. The MBL bottom mini-player is hidden in Decks, and entering Decks clears/stops the existing MBL playback so the DJ rig owns the audio.
+
+**One source import is needed to activate the real booth.** The uploaded artist-owned original archive is not automatically accessible to GitHub Actions. Commit that exact Backspin v1.5.0 ZIP, unchanged, to **`vendor/backspin96-source.zip`** on this PR's branch (GitHub: Add file → Upload files). Expected SHA-256:
+
+```
+0653316cf3e6a8f331d56089d6d79916b3543497519a4b3fb1d911d06bb5bd6e
+```
+
+On GitHub Actions, `python3 scripts/stage-backspin96.py` validates the archive hash and ZIP paths, then copies the original approved runtime to `public/backspin96/`. The GitHub Pages build includes it under `/MoreBounceLabs/backspin96/`. Runtime stage marker `mbl-stage.json` lets the Decks room distinguish an actually published booth from an empty/unavailable source pack. The original engine, worker, scratch timeline and Suno download crate library are **not rewritten**. A clean install can be tested with:
+
+```bash
+python3 scripts/stage-backspin96.py
+npm run build:pages
+npm run verify:pages
+```
+
+**Do not merge before committing the original source archive** if you expect the full booth to appear on the public site immediately. Without it, the rest of MBL still deploys safely, and Decks shows an honest source-pack-pending panel instead of pretending to be Backspin.
+
+**Audio and storage boundaries:** Backspin requires a visitor-initiated gesture to initialize its AudioWorklets. Visitors bring their own authorized downloaded audio; Suno embeds are not mixed, captured, or downloaded. Backspin's IndexedDB crate data remains in the browser's origin storage. GitHub Pages does not provide the custom COOP/COEP headers from Backspin's local Python server, so the non-isolated copy transport is used; actual scratching, latency, recording, and long-session reliability **must** be qualified on the deployed site before declaring it production-ready. On Decks exit, the iframe unmounts. For uninterrupted independent DJ sessions, use **Open standalone booth**.
+
+The included original `LICENSE` is staged with the app. Reference source: user-supplied `Backspin96_Library_Reliability_Recovery_Phase6A3_v1.5.0.zip`.
