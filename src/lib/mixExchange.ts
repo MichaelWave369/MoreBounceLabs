@@ -173,7 +173,7 @@ export function newMixFromQueue(
       const album = catalog.find((a) => a.id === item.albumId);
       return {
         ...item, transition: "cut",
-        ...(album ? { albumTitle: album.title, artist: album.artist || "", trackTitle: album.tracks[item.index]?.title } : {}),
+        ...(album ? { albumTitle: album.title, ...(album.artist ? { artist: album.artist } : {}), trackTitle: album.tracks[item.index]?.title } : {}),
       };
     }),
   };
