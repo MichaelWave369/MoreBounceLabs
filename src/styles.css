@@ -528,3 +528,12 @@
 .player-safe-embed-lab {
   padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
 }
+
+
+/* The historical Timeline may contain dozens of large covers. Let modern
+   browsers skip layout/paint work for entire offscreen year chapters while
+   keeping every album in the DOM and accessible to search and navigation. */
+.timeline-era {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 640px;
+}
