@@ -1,6 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Outfit:wght@400;500;600&display=swap");
 @import "tailwindcss";
 
+/*
+ * The GitHub Pages Vite build uses root="pages", but the actual Tailwind
+ * classes live in src/components. Explicit sources are needed or the static
+ * build ships only preflight/theme CSS (unstyled navigation and giant covers).
+ *
+ * Paths are relative to this stylesheet, not the Vite root.
+ */
+@source "./components";
+@source "./pages-main.tsx";
+@source "./routes";
+
 @theme {
   --font-display: "Fraunces", ui-serif, Georgia, serif;
   --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
