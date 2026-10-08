@@ -68,6 +68,11 @@ if (backspinStaged) {
 }
 assert.ok(js.includes("The Desk"), "Desk must contain the new image-first HQ");
 assert.ok(js.includes("Agent Mix Studio"), "A public agent/human mix exchange must be present in Desk");
+assert.ok(existsSync(join(root, "agent/mix-schema-v1.json")), "Public agent Mix Exchange schema must ship with Pages");
+assert.ok(existsSync(join(root, "agent/mix-manifest-v1.json")), "Public agent discovery manifest must ship with Pages");
+const mixManifest = JSON.parse(readFileSync(join(root, "agent/mix-manifest-v1.json"), "utf8"));
+assert.equal(mixManifest.format, "mbl-mix-v1", "Agent manifest must retain the supported mix format");
+assert.equal(mixManifest.validation.requiresHumanApproval, true, "Agent manifest must preserve human playback approval");
 assert.ok(js.includes("Play approved mix"), "Imported mixes must require explicit user approval before playback");
 assert.ok(js.includes("desk-room-bg.png"), "Desk must request its approved original background");
 if (existsSync("public/desk/desk-room-bg.png")) {
