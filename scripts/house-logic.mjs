@@ -102,6 +102,27 @@ export function safeHttps(url) {
   }
 }
 
+/**
+ * Select a single honest playback UI. Existing catalog clip URLs are
+ * undocumented Suno/CloudFront endpoints, so prefer the official embed
+ * rather than attempting a blocked stream and showing duplicate controls.
+ * Artist-hosted HTTPS audio retains the native player.
+ * @param {{ src?: string, sunoId?: string } | undefined} track
+ * @returns {{ kind: "embed" | "native" | "none", url: string }}
+ */
+export function playbackSource(track) {
+  const direct = safeHttps(track?.src);
+  const embed = safeEmbed(track?.sunoId);
+  let isSunoClip = false;
+  if (direct) {
+    const host = new URL(direct).hostname.toLowerCase();
+    isSunoClip = host === "d2lwuy8qc234o3.cloudfront.net" || host === "cdn1.suno.ai" || host === "cdn2.suno.ai";
+  }
+  if (embed && (!direct || isSunoClip)) return { kind: "embed", url: embed };
+  if (direct && !isSunoClip) return { kind: "native", url: direct };
+  return { kind: "none", url: "" };
+}
+
 /** @param {string} hash */
 export function parseHash(hash) {
   const parts = String(hash || "")
