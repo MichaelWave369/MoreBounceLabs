@@ -20,6 +20,7 @@ import { BackspinDecks } from "@/components/BackspinDecks";
 import { SoundCloudShelf } from "@/components/SoundCloudShelf";
 import { MusicTimeline } from "@/components/MusicTimeline";
 import { RadioConsole } from "@/components/RadioConsole";
+import { UpdateAlbums } from "@/components/UpdateAlbums";
 
 const ROOMS = [
   ["lobby", "Lobby"],
@@ -204,6 +205,7 @@ export function HouseApp() {
         {house.room === "vault" && (
           <Vault
             albums={filtered}
+            fullCatalog={albums}
             layout={layout}
             sort={sort}
             setLayout={setLayout}
@@ -346,6 +348,7 @@ function Lobby({
 
 function Vault({
   albums,
+  fullCatalog,
   layout,
   sort,
   setLayout,
@@ -357,6 +360,7 @@ function Vault({
   onSelectSoundCloud,
 }: {
   albums: Album[];
+  fullCatalog: Album[];
   query: string;
   selectedSoundCloud: string | null;
   onSelectSoundCloud: (id: string | null) => void;
@@ -370,7 +374,10 @@ function Vault({
   return (
     <section>
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <h1 className="font-display text-4xl">Record vault</h1>
+        <div>
+          <h1 className="font-display text-4xl">Record vault</h1>
+          <UpdateAlbums albums={fullCatalog} />
+        </div>
         <div className="flex flex-wrap gap-2">
           <select className="min-h-11 rounded-full bg-surface px-3" value={sort} aria-label="Sort albums" onChange={(e) => setSort(e.target.value as typeof sort)}>
             <option value="listed">As listed</option>
