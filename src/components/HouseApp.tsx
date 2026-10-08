@@ -21,6 +21,7 @@ import { SoundCloudShelf } from "@/components/SoundCloudShelf";
 import { MusicTimeline } from "@/components/MusicTimeline";
 import { RadioConsole } from "@/components/RadioConsole";
 import { UpdateAlbums } from "@/components/UpdateAlbums";
+import { installReadOnlyMixApi } from "@/lib/mixAgentApi";
 
 const ROOMS = [
   ["lobby", "Lobby"],
@@ -74,6 +75,8 @@ export function HouseApp() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => installReadOnlyMixApi(house.albums), [house.albums]);
 
   useEffect(() => {
     if (reduced || house.room !== "lobby") return;
@@ -131,7 +134,7 @@ export function HouseApp() {
   }
 
   return (
-    <div className={`${house.embed ? (house.room === "lab" ? "player-safe-embed-lab" : "player-safe-embed") : "player-safe"} min-h-screen bg-bg text-cream`}>
+    <div className={`${house.embed ? (house.room === "lab" || house.room === "desk" ? "player-safe-embed-lab" : "player-safe-embed") : "player-safe"} min-h-screen bg-bg text-cream`}>
       <header className="sticky top-0 z-20 border-b border-line bg-bg/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
           <button
@@ -250,7 +253,7 @@ export function HouseApp() {
         {house.ready && house.room === "album" && !openAlbum && <p>That album is not in the catalog.</p>}
       </main>
 
-      {house.room !== "decks" && !(house.room === "vault" && selectedSoundCloud) && <Player onQueue={() => navigateRoom("desk")} inLab={house.room === "lab"} />}
+      {house.room !== "decks" && !(house.room === "vault" && selectedSoundCloud) && <Player onQueue={() => navigateRoom("desk")} inLab={house.room === "lab" || house.room === "desk"} />}
     </div>
   );
 }
@@ -540,7 +543,7 @@ function Player({ onQueue, inLab }: { onQueue: () => void; inLab: boolean }) {
               <p className="truncate text-xs text-mist">{album?.title || "MoreBounceLabs"}</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              {inLab && <span className="text-xs text-amber">Music player moved below Lab to keep fractals unobstructed.</span>}
+              {inLab && <span className="text-xs text-amber">Suno player placed below the workspace to keep your controls unobstructed.</span>}
               <button
                 className="min-h-11 rounded-full border border-line px-3 text-xs disabled:cursor-not-allowed disabled:opacity-40"
                 disabled={house.cursor <= 0}
