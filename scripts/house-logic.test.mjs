@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
-import { collectStation, fmt, parseHash, reorderQueue, runtime, safeEmbed, safeHttps } from "./house-logic.mjs";
+import { collectStation, fmt, parseHash, reorderQueue, runtime, safeEmbed, safeHttps, sharedTrackIndex } from "./house-logic.mjs";
 
 test("catalog baseline stays 19 albums and 344 tracks", () => {
   const data = JSON.parse(readFileSync("public/catalog/albums.json", "utf8"));
@@ -72,4 +72,19 @@ test("queue reordering rejects invalid indices without modifying playback", () =
   assert.deepEqual(reorderQueue(queue, 0, 0, -1), { queue, cursor: 0 });
   assert.deepEqual(reorderQueue(queue, 1, 1, 1), { queue, cursor: 1 });
   assert.deepEqual(reorderQueue(queue, 0, 0, 0), { queue, cursor: 0 });
+});
+
+
+test("share links resolve the correct zero-based track index", () => {
+  assert.equal(sharedTrackIndex(parseHash("#/album/trunk-funk/0").track, 54), 0);
+  assert.equal(sharedTrackIndex(parseHash("#/album/trunk-funk/3").track, 54), 3);
+  assert.equal(sharedTrackIndex(parseHash("#/album/trunk-funk/53").track, 54), 53);
+});
+
+test("shared song links reject malformed and out-of-bounds indexes", () => {
+  for (const position of ["", "-1", "1.5", "abc", "03", "54", "999999999999999999999", "NaN", " 2"]) {
+    assert.equal(sharedTrackIndex(position, 54), null, `rejected ${position}`);
+  }
+  assert.equal(sharedTrackIndex("0", 0), null);
+  assert.equal(sharedTrackIndex("0", -1), null);
 });
