@@ -131,6 +131,7 @@ export function UpdateAlbums({ albums }: { albums: Album[] }) {
               Nothing goes live before you approve the catalog PR.
             </p>
           </form>
+          {problem && <p role="alert" className="mt-3 text-sm text-heat">{problem}</p>}
           <button type="button" onClick={() => setManual((v) => !v)} aria-expanded={manual}
             className="mt-4 min-h-11 rounded-xl border border-line px-4 text-sm text-amber">
             {manual ? "Hide manual details" : "Manual details (for Suno songs or precise track counts)"}
@@ -188,7 +189,7 @@ export function UpdateAlbums({ albums }: { albums: Album[] }) {
               <input value={description} maxLength={480} onChange={(event) => setDescription(event.target.value)}
                 placeholder="A few words about this release" className="mt-1 block min-h-11 w-full rounded-xl border border-line bg-bg px-3 text-cream" />
             </label>
-            {problem && <p role="alert" className="text-sm text-heat">{problem}</p>}
+
             <button type="submit" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-heat px-5 font-semibold text-white sm:justify-self-start">
               Prepare update on GitHub <ArrowUpRight size={17} aria-hidden />
             </button>
