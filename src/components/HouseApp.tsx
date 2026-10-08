@@ -16,6 +16,7 @@ import {
 import { collectStation, fmt, parseHash, runtime, safeEmbed, safeHttps, sharedTrackIndex, STATIONS } from "../../scripts/house-logic.mjs";
 import { currentTrack, getAudio, useHouse, type Album } from "@/lib/engine";
 import { VIZ_MODES, VizCanvas } from "@/components/VizCanvas";
+import { InfinityLensStage } from "@/components/InfinityLensStage";
 
 const ROOMS = [
   ["lobby", "Lobby"],
@@ -244,6 +245,7 @@ export function HouseApp() {
             <div className="mt-4">
               <VizCanvas mode={house.vizMode} reduced={reduced} onLive={setVizLive} />
             </div>
+            <InfinityLensStage reduced={reduced} />
           </section>
         )}
         {house.room === "radio" && <RadioRoom albums={albums} onPlay={house.playStation} />}

@@ -110,3 +110,11 @@ npm run dj:lab:unit
 This is a proof of browser automation, **not evidence that the official Suno iframe supports automated operation or that GitHub Pages can do this**. Playwright is a local desktop process, not a feature installed in listeners' browsers. The code has no configurable target URL and no Suno access, credentials, downloads, or control bypass.
 
 Timer-based inference is deliberately conservative: a countdown reaching the duration is **not** enough to advance if the player is paused or buffering. The controlled iframe also exposes a separate *ended* state, and the bot requires having observed *playing* before accepting it. For a real external embed, missing observability and gesture/autoplay restrictions remain unresolved. A production continuous radio system should use music files hosted under the artist's control, with normal HTML audio `ended` events.
+
+## InfinityLens369 guest stage (rung 7)
+
+Visual Lab now offers a dedicated opt-in **InfinityLens369 guest stage**, showing the maintained MIT-licensed fractal visualizer from [the original project](https://github.com/MichaelWave369/infinitylens369). The stage opens the published `https://michaelwave369.github.io/infinitylens369/` experience in an isolated browser iframe. Nothing loads until the listener selects **Launch InfinityLens stage**. **Stop visual stage** unmounts it, releasing WebGL resources; the built-in visual modes remain available separately.
+
+The guest stage retains the original application's shaders, visual controls, presets, comfort options and update cadence without shipping a second copy of its 27 KB+ shader module in MoreBounceLabs. It can open separately or fullscreen if the browser permits. On browsers with reduced-motion preference, launch is unavailable to prevent surprises. An explicit original-site link is always provided if a browser blocks embedding.
+
+**Audio boundary:** a Suno iframe and an InfinityLens iframe cannot directly share waveform/audio analyser state. This integration makes ambient visual effects available alongside MBL playback, **not Suno-reactive visuals**. To use InfinityLens's own audio analysis, listeners must explicitly provide audio to its player. No autoplay or cross-origin control claims.
