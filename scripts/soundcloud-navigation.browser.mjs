@@ -99,6 +99,38 @@ async function main() {
       await route.fulfill({ status: 200, contentType: "text/html", body: "<!doctype html><html><body><button>Play</button><p>Mock SoundCloud player</p></body></html>" });
     });
 
+    // Offline, deterministic InfinityLens stand-in for testing the MBL
+    // visual bridge and verifying Lab has no second legacy renderer.
+    // This does not claim to test the live WebGL engine.
+    await page.route("https://michaelwave369.github.io/infinitylens369/**", async (route) => {
+      await route.fulfill({ status: 200, contentType: "text/html; charset=utf-8", body: `
+        <!doctype html><html lang="en"><body>
+          <p id="scene" role="status">MOCK INFINITYLENS LOADED</p>
+          <script>
+            const scene = document.getElementById("scene");
+            const modes = ["cosmic-drift","kaleido-trip","tunnel-bloom","acid-melt","pixel-melt","black-hole-lens","mandelbrot","julia"];
+            const palettes = ["aurora-phi","abyss-cyan","solar-ember","violet-gold-duality"];
+            let mode = "cosmic-drift", palette = "aurora-phi";
+            const ready = () => parent.postMessage({
+              channel:"mbl-infinitylens-v1",kind:"ready",version:1,
+              mode,palette,modes,palettes
+            }, "*");
+            window.addEventListener("message", (event) => {
+              if (event.data?.channel !== "mbl-infinitylens-v1") return;
+              if (event.data.kind === "hello") return ready();
+              if (event.data.kind !== "command") return;
+              if (event.data.action === "mode") mode = event.data.value;
+              if (event.data.action === "palette") palette = event.data.value;
+              scene.textContent = "MODE: " + mode + " PALETTE: " + palette;
+              parent.postMessage({channel:"mbl-infinitylens-v1",kind:"ack",version:1,
+                action:event.data.action,requestId:event.data.requestId}, "*");
+              ready();
+            });
+            ready();
+          </script>
+        </body></html>` });
+    });
+
     await page.goto(base + "#/vault", { waitUntil: "domcontentloaded" });
     await checkPage(page);
     const nav = page.getByRole("navigation", { name: "Rooms" });
@@ -196,6 +228,25 @@ async function main() {
       .locator("#startAudio").waitFor({ state: "visible" });
     await page.getByRole("button", { name: "Hide advanced rig" }).click();
     await nav.getByRole("button", { name: "Vault" }).click();
+    await checkPage(page);
+
+    // Lab is exclusively the InfinityLens engine. The same hosted iframe
+    // handles scene controls, and the old MBL VizCanvas must not be mounted.
+    await nav.getByRole("button", { name: "Lab", exact: true }).click();
+    await page.getByRole("heading", { name: "Infinity Lab", exact: true }).waitFor({ state: "visible" });
+    const lensIframe = page.locator('iframe[title="InfinityLens369 interactive fractal visualizer"]');
+    await lensIframe.waitFor({ state: "visible", timeout: 15000 });
+    assert.equal(await page.locator("main canvas").count(), 0, "No legacy VizCanvas is allowed in Lab");
+    assert.equal(await page.getByRole("button", { name: "signature", exact: true }).count(), 0,
+      "Legacy MBL visual modes must not be in Lab");
+    assert.equal(await lensIframe.count(), 1, "Only one InfinityLens stage may render");
+    await page.getByText("Visual bridge connected", { exact: false }).waitFor({ state: "visible", timeout: 10000 });
+    await page.getByLabel("Fractal scene").selectOption("mandelbrot");
+    await page.frameLocator('iframe[title="InfinityLens369 interactive fractal visualizer"]')
+      .locator("#scene").getByText("MODE: mandelbrot", { exact: false }).waitFor({ state: "visible" });
+    await page.getByRole("button", { name: "Safe mode", exact: true }).click();
+    await nav.getByRole("button", { name: "Vault" }).click();
+    assert.equal(await lensIframe.count(), 0, "Navigating away must unload the Lab WebGL iframe");
     await checkPage(page);
 
     assert.deepEqual(errors, [], "No uncaught JS errors during SoundCloud navigation: " + errors.join(" | "));
