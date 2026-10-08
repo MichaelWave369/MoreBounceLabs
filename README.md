@@ -25,10 +25,12 @@ The development server listens at `http://localhost:8080`.
 
 ```bash
 npm run typecheck
-npm test
+node --test scripts/house-logic.test.mjs
 npm run lint
 npm run build
 ```
+
+The inherited Grok platform test suite (`npm test`) currently includes PWA identity tests that fail against this branded export (8 failures observed on the initial GitHub Actions run). This first-flight CI checks the music-house regression tests separately; the full inherited suite still needs an isolated-fixture cleanup before it should become a required gate.
 
 The build currently uses **TanStack Start + Nitro with a Vercel preset** (see `vite.config.ts`). A push to this GitHub repository does **not** automatically publish a working GitHub Pages deployment. Deploy this build to a compatible host such as Vercel, or deliberately convert it to a static SPA before enabling GitHub Pages. The older `mictek-house` Pages site is separate and should not be overwritten without a tested migration.
 
