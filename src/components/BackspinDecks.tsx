@@ -102,7 +102,7 @@ export function BackspinDecks() {
       setNotice(`${label} is not available yet. Start Dual Audio and load your own track first.`);
       return false;
     }
-    control.click();
+    element.click();
     setNotice(`${label} sent to the original Backspin '96 engine.`);
     return true;
   }
