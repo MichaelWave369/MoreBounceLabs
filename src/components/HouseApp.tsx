@@ -5,7 +5,6 @@ import {
   ListMusic,
   Pause,
   Play,
-  Radio,
   Repeat,
   Shuffle,
   SkipBack,
@@ -20,6 +19,7 @@ import { InfinityLensStage } from "@/components/InfinityLensStage";
 import { BackspinDecks } from "@/components/BackspinDecks";
 import { SoundCloudShelf } from "@/components/SoundCloudShelf";
 import { MusicTimeline } from "@/components/MusicTimeline";
+import { RadioConsole } from "@/components/RadioConsole";
 
 const ROOMS = [
   ["lobby", "Lobby"],
@@ -182,7 +182,7 @@ export function HouseApp() {
         </div>
       </header>
 
-      <main className={`mx-auto px-4 py-6 ${house.room === "decks" ? "max-w-[1760px]" : "max-w-6xl"}`}>
+      <main className={`mx-auto px-4 py-6 ${house.room === "decks" || house.room === "radio" ? "max-w-[1760px]" : "max-w-6xl"}`}>
         {house.loadError && <p className="mb-4 text-heat">{house.loadError}</p>}
         {!house.ready && <p className="text-mist">Opening the house…</p>}
         {house.room === "lobby" && featured && (
@@ -284,7 +284,7 @@ export function HouseApp() {
             <InfinityLensStage reduced={reduced} />
           </section>
         )}
-        {house.room === "radio" && <RadioRoom albums={albums} onPlay={house.playStation} />}
+        {house.room === "radio" && <RadioConsole albums={albums} onPlay={house.playStation} reduced={reduced} />}
         {house.room === "decks" && <BackspinDecks />}
         {house.room === "desk" && (
           <Desk
@@ -648,28 +648,6 @@ function Lounge({
           );
         })}
       </ol>
-    </section>
-  );
-}
-
-function RadioRoom({ albums, onPlay }: { albums: Album[]; onPlay: (items: { albumId: string; index: number }[]) => void }) {
-  return (
-    <section>
-      <h1 className="font-display text-4xl">Radio tower</h1>
-      <p className="mt-2 max-w-xl text-mist">Stations are curated from album titles already in the catalog. They are not genre classifications.</p>
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
-        {STATIONS.map((station) => {
-          const items = collectStation(albums, station.id);
-          return (
-            <button key={station.id} className="rounded-3xl bg-surface p-4 text-left" onClick={() => onPlay(items)}>
-              <Radio className="text-amber" />
-              <span className="mt-2 block font-display text-2xl">{station.name}</span>
-              <span className="mt-1 block text-sm text-mist">{station.blurb}</span>
-              <span className="mt-2 block text-sm">{items.length} tracks</span>
-            </button>
-          );
-        })}
-      </div>
     </section>
   );
 }
