@@ -31,7 +31,10 @@ const server = createServer(async (req, res) => {
     if (!pathname.startsWith(prefix)) {
       res.writeHead(404); res.end("Not Found"); return;
     }
-    const rel = decodeURIComponent(pathname.slice(prefix.length)) || "index.html";
+    const decoded = decodeURIComponent(pathname.slice(prefix.length));
+    // GitHub Pages serves directory/index.html for URLs ending in slash.
+    // Our local regression server must match that behavior for Backspin.
+    const rel = !decoded || decoded.endsWith("/") ? decoded + "index.html" : decoded;
     const absolute = resolve(root, rel);
     if (absolute !== root && !absolute.startsWith(root + sep)) {
       res.writeHead(403); res.end("Forbidden"); return;
