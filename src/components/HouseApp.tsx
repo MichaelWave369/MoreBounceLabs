@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { fmt, parseHash, runtime, safeEmbed, sharedTrackIndex } from "../../scripts/house-logic.mjs";
 import { currentTrack, getAudio, useHouse, type Album } from "@/lib/engine";
-import { VizCanvas } from "@/components/VizCanvas";
+import { FieldDesk } from "@/components/FieldDesk";
 import { InfinityLensStage } from "@/components/InfinityLensStage";
 import { BackspinDecks } from "@/components/BackspinDecks";
 import { SoundCloudShelf } from "@/components/SoundCloudShelf";
@@ -26,7 +26,6 @@ const ROOMS = [
   ["lobby", "Lobby"],
   ["vault", "Vault"],
   ["timeline", "Timeline"],
-  ["lounge", "Lounge"],
   ["lab", "Lab"],
   ["radio", "Radio"],
   ["decks", "Decks"],
@@ -42,7 +41,6 @@ export function HouseApp() {
   const [reduced, setReduced] = useState(false);
   const [copied, setCopied] = useState("");
   const [egg, setEgg] = useState(0);
-  const [vizLive, setVizLive] = useState(false);
   const [sharedTrack, setSharedTrack] = useState("");
   const [selectedSoundCloud, setSelectedSoundCloud] = useState<string | null>(null);
 
@@ -99,7 +97,6 @@ export function HouseApp() {
   }
 
   const albums = house.albums;
-  const now = currentTrack(house);
   const featured = albums[2] || albums[0];
   const spotAlbum = albums.length ? albums[spot % Math.min(albums.length, 8)] : undefined;
 
@@ -118,13 +115,6 @@ export function HouseApp() {
   const openAlbum = house.albums.find((a) => a.id === house.albumId);
   const selectedTrackIndex = openAlbum ? sharedTrackIndex(sharedTrack, openAlbum.tracks.length) : null;
   const invalidSharedTrack = sharedTrack !== "" && selectedTrackIndex === null;
-  const hearing = house.status === "playing" && vizLive && !house.embed;
-  const vizNote = hearing
-    ? "These modes are reading the live audio."
-    : house.embed
-      ? "Ambient motion. The official Suno player cannot be analyzed in the browser."
-      : "Ambient motion until a direct stream is playing through the house player.";
-
   function share(album: Album, trackIndex?: number) {
     const url = `${location.origin}${location.pathname}#/album/${album.id}${trackIndex != null ? `/${trackIndex}` : ""}`;
     const text = trackIndex != null ? `${album.tracks[trackIndex]?.title} — ${album.title}` : album.title;
@@ -183,7 +173,7 @@ export function HouseApp() {
         </div>
       </header>
 
-      <main className={`mx-auto px-4 py-6 ${house.room === "decks" || house.room === "radio" || house.room === "lab" ? "max-w-[1760px]" : "max-w-6xl"}`}>
+      <main className={`mx-auto px-4 py-6 ${house.room === "decks" || house.room === "radio" || house.room === "lab" || house.room === "desk" ? "max-w-[1760px]" : "max-w-6xl"}`}>
         {house.loadError && <p className="mb-4 text-heat">{house.loadError}</p>}
         {!house.ready && <p className="text-mist">Opening the house…</p>}
         {house.room === "lobby" && featured && (
@@ -245,31 +235,11 @@ export function HouseApp() {
             copied={copied}
           />
         )}
-        {house.room === "lounge" && (
-          <Lounge
-            album={now.album}
-            track={now.track}
-            queue={house.queue}
-            cursor={house.cursor}
-            albums={albums}
-            mode={house.vizMode}
-            reduced={reduced}
-            note={vizNote}
-            onLive={setVizLive}
-            onMode={house.setViz}
-            onJump={(i) => house.jump(i)}
-            onMove={house.moveQueue}
-            onSleep={house.armSleep}
-            sleepAt={house.sleepAt}
-            embedded={Boolean(house.embed)}
-            spinning={house.status === "playing" && !house.embed}
-          />
-        )}
         {house.room === "lab" && <InfinityLensStage reduced={reduced} />}
         {house.room === "radio" && <RadioConsole albums={albums} onPlay={house.playStation} reduced={reduced} />}
         {house.room === "decks" && <BackspinDecks />}
         {house.room === "desk" && (
-          <Desk
+          <FieldDesk
             albums={albums}
             playlists={house.playlists}
             history={house.history}
@@ -280,7 +250,7 @@ export function HouseApp() {
         {house.ready && house.room === "album" && !openAlbum && <p>That album is not in the catalog.</p>}
       </main>
 
-      {house.room !== "decks" && !(house.room === "vault" && selectedSoundCloud) && <Player onLounge={() => house.go("lounge")} />}
+      {house.room !== "decks" && !(house.room === "vault" && selectedSoundCloud) && <Player onQueue={() => navigateRoom("desk")} />}
     </div>
   );
 }
@@ -544,176 +514,7 @@ function AlbumView({
   );
 }
 
-function Lounge({
-  album,
-  track,
-  queue,
-  cursor,
-  albums,
-  mode,
-  reduced,
-  note,
-  onLive,
-  onMode,
-  onJump,
-  onMove,
-  onSleep,
-  sleepAt,
-  embedded,
-  spinning,
-}: {
-  album?: Album;
-  track?: { title: string };
-  queue: { albumId: string; index: number }[];
-  cursor: number;
-  albums: Album[];
-  mode: string;
-  reduced: boolean;
-  note: string;
-  onLive: (live: boolean) => void;
-  onMode: (m: string) => void;
-  onJump: (i: number) => void;
-  onMove: (from: number, dir: number) => void;
-  onSleep: (m: number) => void;
-  sleepAt: number;
-  embedded: boolean;
-  spinning: boolean;
-}) {
-  return (
-    <section>
-      <h1 className="font-display text-4xl">Listening lounge</h1>
-      <div className="mt-4 grid gap-4 md:grid-cols-[280px_1fr]">
-        {album?.cover && <img src={album.cover} alt="" className={`aspect-square w-full rounded-3xl object-cover ${reduced || !spinning ? "" : "spin"}`} style={reduced || !spinning ? undefined : { animation: "spin 18s linear infinite" }} />}
-        <div>
-          <p className="text-mist">{album?.title || "Nothing spinning"}</p>
-          <p className="font-display text-4xl">{track?.title || "Pick a record"}</p>
-          <p className="mt-2 text-sm text-mist">{album?.description}</p>
-          <p className="mt-3 text-sm text-amber">{note}</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {["signature", "spectrum", "kaleido", "tunnel"].map((m) => (
-              <button key={m} className={`min-h-11 rounded-full px-3 capitalize ${mode === m ? "bg-amber text-ink" : "bg-surface"}`} onClick={() => onMode(m)}>
-                {m}
-              </button>
-            ))}
-            <button className="min-h-11 rounded-full bg-surface px-3" onClick={() => document.documentElement.requestFullscreen?.()}>
-              Fullscreen
-            </button>
-            {!embedded && [15, 30, 45].map((m) => (
-              <button key={m} className="min-h-11 rounded-full bg-surface px-3" onClick={() => onSleep(m)}>
-                Sleep {m}m
-              </button>
-            ))}
-            {!embedded && sleepAt > 0 && (
-              <button className="min-h-11 text-sm text-mist" onClick={() => onSleep(0)}>
-                Cancel sleep
-              </button>
-            )}
-            {embedded && <p className="text-sm text-mist">Suno handles its own playback. The house sleep timer cannot pause an embedded track.</p>}
-          </div>
-        </div>
-      </div>
-      <div className="mt-4">
-        <VizCanvas mode={mode} reduced={reduced} onLive={onLive} />
-      </div>
-      <ol className="mt-4 max-h-64 overflow-auto">
-        {queue.map((item, i) => {
-          const a = albums.find((x) => x.id === item.albumId);
-          const t = a?.tracks[item.index];
-          return (
-            <li key={`${item.albumId}-${item.index}-${i}`} className="flex items-center gap-1">
-              <button className={`min-h-11 flex-1 text-left ${i === cursor ? "text-amber" : "text-mist"}`} onClick={() => onJump(i)}>
-                {i === cursor ? (embedded ? "Selected · " : "Now · ") : `${i + 1}. `}
-                {t?.title} — {a?.title}
-              </button>
-              <button className="min-h-11 min-w-11 text-mist" aria-label="Move earlier" onClick={() => onMove(i, -1)}>
-                ↑
-              </button>
-              <button className="min-h-11 min-w-11 text-mist" aria-label="Move later" onClick={() => onMove(i, 1)}>
-                ↓
-              </button>
-            </li>
-          );
-        })}
-      </ol>
-    </section>
-  );
-}
-
-function Desk({
-  albums,
-  playlists,
-  history,
-  onSave,
-  onPlay,
-}: {
-  albums: Album[];
-  playlists: { id: string; name: string; items: { albumId: string; index: number }[] }[];
-  history: { albumId: string; index: number }[];
-  onSave: (name: string) => void;
-  onPlay: (items: { albumId: string; index: number }[]) => void;
-}) {
-  const [name, setName] = useState("My bounce");
-  return (
-    <section>
-      <h1 className="font-display text-4xl">Desk</h1>
-      <p className="mt-2 max-w-xl text-mist">
-        Favorites and playlists stay in this browser. They do not sync to another phone. This page cannot write to GitHub. Export a file, then commit it to the MoreBounceLabs repo if you want it public.
-      </p>
-      <div className="mt-4 flex flex-wrap gap-2">
-        <input className="min-h-11 rounded-full bg-surface px-4" value={name} onChange={(e) => setName(e.target.value)} aria-label="Playlist name" />
-        <button className="min-h-11 rounded-full bg-amber px-4 text-ink" onClick={() => onSave(name)}>
-          Save queue as playlist
-        </button>
-        <button
-          className="min-h-11 rounded-full bg-surface px-4"
-          onClick={() => {
-            const blob = new Blob([JSON.stringify({ albums }, null, 2)], { type: "application/json" });
-            const a = document.createElement("a");
-            a.href = URL.createObjectURL(blob);
-            a.download = "albums.json";
-            a.click();
-          }}
-        >
-          Export catalog
-        </button>
-      </div>
-      <h2 className="mt-6 font-display text-2xl">Playlists on this browser</h2>
-      <ul className="mt-2 space-y-1 text-mist">
-        {playlists.length === 0 && <li>None yet. Play something, then save the queue.</li>}
-        {playlists.map((list) => (
-          <li key={list.id} className="flex items-center justify-between gap-3">
-            <span>
-              {list.name} · {list.items.length} tracks
-            </span>
-            <button className="min-h-11 rounded-full bg-surface px-3 text-cream" onClick={() => onPlay(list.items)}>
-              Play
-            </button>
-          </li>
-        ))}
-      </ul>
-      <h2 className="mt-6 font-display text-2xl">Recently played here</h2>
-      <ul className="mt-2 space-y-1 text-mist">
-        {history.length === 0 && <li>Nothing yet. It stays on this browser only.</li>}
-        {history.slice(0, 8).map((item, i) => {
-          const album = albums.find((a) => a.id === item.albumId);
-          const track = album?.tracks[item.index];
-          return (
-            <li key={`${item.albumId}-${item.index}-${i}`}>
-              <button className="min-h-11 text-left" onClick={() => onPlay([item])}>
-                {track?.title || "Track"} — {album?.title}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-      <p className="mt-6 text-sm text-mist">
-        To add a Suno album, open it on Suno, copy each song link, and send them over. Automatic album import is not available from a static page. {albums.length} albums are already loaded from the published catalog.
-      </p>
-    </section>
-  );
-}
-
-function Player({ onLounge }: { onLounge: () => void }) {
+function Player({ onQueue }: { onQueue: () => void }) {
   const house = useHouse();
   const { album, track } = currentTrack(house);
   const [time, setTime] = useState(0);
@@ -755,7 +556,7 @@ function Player({ onLounge }: { onLounge: () => void }) {
               >
                 Next song
               </button>
-              <button className="min-h-11 rounded-full bg-amber px-3 text-xs font-semibold text-ink" onClick={onLounge}>
+              <button className="min-h-11 rounded-full bg-amber px-3 text-xs font-semibold text-ink" onClick={onQueue}>
                 View queue
               </button>
             </div>
@@ -779,7 +580,7 @@ function Player({ onLounge }: { onLounge: () => void }) {
   return (
     <footer className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur">
       <div className="mx-auto grid max-w-6xl items-center gap-2 md:grid-cols-[1.2fr_1.4fr_auto]">
-        <button className="flex min-w-0 items-center gap-3 text-left" onClick={onLounge}>
+        <button className="flex min-w-0 items-center gap-3 text-left" onClick={onQueue} aria-label="Open queue in Desk">
           {album?.cover ? <img src={album.cover} alt="" className="h-12 w-12 rounded-lg object-cover" /> : <Disc3 />}
           <span className="min-w-0">
             <span className="block truncate">{track?.title || "Nothing playing"}</span>
@@ -836,7 +637,7 @@ function Player({ onLounge }: { onLounge: () => void }) {
           >
             {house.rate}×
           </button>
-          <button className="min-h-11" aria-label="Open lounge" onClick={onLounge}>
+          <button className="min-h-11" aria-label="Open queue in Desk" onClick={onQueue}>
             <ListMusic />
           </button>
         </div>

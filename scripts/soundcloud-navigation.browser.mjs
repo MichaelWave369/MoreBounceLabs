@@ -260,6 +260,35 @@ async function main() {
     assert.equal(await lensIframe.count(), 0, "Navigating away must unload the Lab WebGL iframe");
     await checkPage(page);
 
+    // New Desk: user-supplied background + all former Lounge queue actions.
+    // Old Lounge deep links must canonicalize to the Desk rather than blank out.
+    assert.equal(await nav.getByRole("button", { name: "Lounge", exact: true }).count(), 0,
+      "Lounge tab should be removed");
+    await nav.getByRole("button", { name: "Desk", exact: true }).click();
+    await page.getByRole("heading", { name: "The Desk", exact: true }).waitFor({ state: "visible" });
+    await page.getByRole("heading", { name: "Now playing & queue" }).waitFor({ state: "visible" });
+    await page.getByRole("button", { name: "Save queue" }).waitFor({ state: "visible" });
+    await page.getByRole("button", { name: "Export catalog" }).waitFor({ state: "visible" });
+    await checkPage(page);
+
+    // The approved artwork may still be awaiting the one-time owner upload
+    // on a draft PR. Once present, require that the browser decoded it.
+    const deskArtPath = resolve(root, "desk/desk-room-bg.png");
+    const deskArtPresent = await stat(deskArtPath).then((info) => info.isFile(), () => false);
+    if (deskArtPresent) {
+      await page.locator("img.mbl-field-desk-art").waitFor({ state: "visible", timeout: 10000 });
+      await page.waitForFunction(() => {
+        const image = document.querySelector("img.mbl-field-desk-art");
+        return image?.complete && image.naturalWidth === 1536 && image.naturalHeight === 1024;
+      }, undefined, { timeout: 10000 });
+    } else console.warn("Desk original image is pending owner upload; original-art browser assertion deferred.");
+
+    await page.goto(base + "#/lounge", { waitUntil: "domcontentloaded" });
+    await page.getByRole("heading", { name: "The Desk", exact: true }).waitFor({ state: "visible" });
+    await page.waitForFunction(() => location.hash === "#/desk", undefined, { timeout: 10000 });
+    await checkPage(page);
+    assert.equal(await page.getByRole("button", { name: "Lounge", exact: true }).count(), 0);
+
     assert.deepEqual(errors, [], "No uncaught JS errors during SoundCloud navigation: " + errors.join(" | "));
     console.log("PASS SoundCloud navigation: player → Timeline → Vault → player → Lobby → Vault → close → direct Timeline refresh; no blank screen or JS exceptions.");
   } finally {

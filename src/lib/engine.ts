@@ -242,7 +242,8 @@ export const useHouse = create<EngineState>((set, get) => {
       set({ embed: "", status: "idle", message: "", sleepAt: 0, analyzed: false });
     },
 
-    go: (room, albumId) => {
+    go: (requestedRoom, albumId) => {
+      const room = requestedRoom === "lounge" ? "desk" : requestedRoom;
       if (room === "decks") {
         // One authoritative DJ audio surface: stop/unmount the house player
         // before opening the independent Backspin performance booth.

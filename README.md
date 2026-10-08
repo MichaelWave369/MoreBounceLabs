@@ -303,3 +303,15 @@ If the update workflow cannot create pull requests, the repository owner may nee
 **Catalog growth:** The previous fixed-size tests have been changed to preserve at least the original 19 Suno albums/344 songs and 18 SoundCloud albums/200 album-track placements while allowing new approved releases. Baseline albums, protected original catalog IDs, and current playable links are not removed or edited. An imported SoundCloud album uses official SoundCloud iframe playback; an imported Suno album uses official embeds for each listed song. Individual music streams remain subject to provider playback and autoplay restrictions.
 
 This is **reviewed update-by-link**, not automatic monitoring of your entire SoundCloud or Suno account. Automatically discovering every future release would require a separately authorized provider data feed/API, which this free static site does not have.
+
+## PR #19: The Desk HQ replaces Lounge
+
+The **Lounge** room is retired. It no longer appears in the navigation or renders the outdated MBL VizCanvas; the Lab remains the exclusive InfinityLens369 visual room. Historic `#/lounge` deep links and direct app store navigation redirect to **`#/desk`**, including the bottom player's queue button.
+
+The **Desk** is the new immersive creative operator room built around the artist's supplied 1536×1024 research/studio/pets image (the image is used as-is, not redrawn). UI content is layered in readable warm-glass panels over the photograph. The exact source image is expected at **`public/desk/desk-room-bg.png`** (see `public/desk/README.md` for original digest). The source photo remains byte-for-byte unchanged; CSS handles responsive placement and contrast. Until the source is uploaded, the Desk works with a plain warm-gradient fallback. Keep this PR draft until the exact source PNG is committed.
+
+**No loss of listening controls:** all previously useful Lounge features move into Desk: current queue display, jump-to-song, queue earlier/later, sleep timers for native audio, save queue as a browser-local playlist, re-play playlists, listening history and catalog export. The main player is still available everywhere except Backspin Decks and a selected SoundCloud widget, as before. Former Lounge-only demo visuals are not mounted anywhere.
+
+**Regression tests:** static checks enforce no Lounge navigation/component and verify queues/playlists/history remain present. Route tests require `#/lounge → #/desk`. Chromium opens the Desk, checks the preserved controls and the absence of the Lounge tab, then navigates directly to the old Lounge URL to verify the hash correction. If artwork has already been committed, Chromium also requires the original 1536×1024 image to actually decode in the Desk page. The Pages build checks that the referenced image is packaged when present, and the SHA-256 gate verifies no replacement/compression occurred.
+
+**All other rooms remain intact:** Lobby, Vault/Update Albums, Timeline, InfinityLens Lab, Radio and Backspin Decks.
