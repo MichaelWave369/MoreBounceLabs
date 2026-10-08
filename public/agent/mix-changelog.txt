@@ -1,4 +1,15 @@
 MoreBounceLabs | Desk and Agent Mix Studio
+R25 Field QA · 2026-10-08
+Mix Exchange format: mbl-mix-v1 (backward compatible)
+
+- Saving a mix with the same creator type, creator name and title updates its existing browser-local entry. Legacy duplicate chips collapse on reload.
+- Export and saved/sharable records use clean trackTitle without leading catalog numbers; canonical albumId/index and original catalog titles remain untouched.
+- Genuine human-authored title mismatches still produce a catalogWarnings advisory receipt, recomputed against the current catalog and never accepted as permission.
+- window.mblMix.validate/preview return code albumId_whitespace, raw albumId and zero-based trackIndex on whitespace IDs.
+- Quick import textarea and Review button appear first in the Studio; Desk header compacts during Mix Studio mode at narrow desktop viewports.
+- Project-scoped /MoreBounceLabs/agent/ directory and /.well-known/mbl-agent.json pointer publish public, read-only discovery paths.
+- All playback requires a human's explicit approval; agent inspection is side-effect free.
+
 R23 Field QA · 2026-10-08
 Mix Exchange format: mbl-mix-v1 (backward compatible)
 
