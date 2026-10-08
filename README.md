@@ -382,3 +382,24 @@ Remaining issues from the broader field pass: Backspin's Safe Flat fallback beha
 `tests/fixtures/mr-fl-golden-hour-to-funk-peak-and-back.json` is the **unchanged source export** shared by the artist from Mr. FL / Grok Bot's first complete ten-song Agent Mix Studio tour. It references verified MBL catalog songs from *The Azure Inheritance*, *The Ocean Has an Alibi*, *Lucid Altitude*, *Anti-Gravity Protocol*, *Neon Afterglow Society*, *Funktendo 369*, and *Architectural Intuition*.
 
 `scripts/mr-fl-golden-hour.test.mjs` adds an independent real-world test: exact catalog song identity and ordering, transitions, structured validation, share link JSON round-trip, no embedded music, and refusal to play a corrupted mix. The fixture is a **curated set plan**, not a rendered recording, audio stream or automated DJ control sequence. It doesn't auto-publish this mix in the UI or change the artist's existing songs.
+
+## PR #23: Mr. FL's second Agent Mix QA pass
+
+Mr. FL successfully re-imported **"Golden Hour to Funk Peak and Back"**, with verified readable track metadata and a subjective ten-song energy arc peaking at **0.95 on OverFunk**. His seven remaining reports drove this rung:
+
+- **Mix order vs original song names:** show each set placement 1–N and remove old catalog song-number prefixes for *display only*, including Desk queue and now playing. Catalog titles/exports remain canonical and unmodified.
+- **Out-of-range track:** show a per-track **Track error** with exact mix position/albumId as well as the unplayable badge and full summary.
+- **Canonical IDs:** reject, rather than silently trim, leading/trailing whitespace in album IDs.
+- **Metadata-enriched export:** saving, sharing and JSON exporting a valid mix fill missing `albumTitle`, `artist` and `trackTitle` directly from the current public Suno catalog. They never change `albumId` or `index`.
+- **Title mismatch receipt:** a submitted outdated title survives export, with a generated advisory `catalogWarnings` property. The validator ALWAYS recalculates the authoritative errors/warnings from the current catalog. Export receipts cannot grant playback or hide a missing song.
+- **1280x800 Desk:** an **Open Agent Mix Studio** control shows the mix editor/review directly underneath the Desk header, bypassing the giant artwork spacer and queue. **Desk workbench** restores the original image-first view. Shared `?mix=` links open the Studio immediately. The official Suno iframe remains below the Desk workspace, not in a fixed 237px overlay.
+- **Version history:** Desk now states `Desk QA R23 · Mix Exchange v1` with `agent/mix-changelog.txt`.
+
+**Read-only agent integration:**
+- Project-scoped `https://michaelwave369.github.io/MoreBounceLabs/llms.txt`
+- In-browser `window.mblMix.validate(mixOrJson)` and `window.mblMix.preview(mixOrJson)`, installed while the app is open and using the current public catalog. Results contain `ok`, structured `errors`, `warnings`, `queue` (empty for invalid mixes) and safe text labels. A max 18 KB payload is enforced. Both functions are **pure read-only inspections** with no playback, file writes, remote calls or authorization.
+- The agent manifest points to these methods and records the strict whitespace policy; JSON Schema includes the optional `catalogWarnings` export receipt.
+
+The annotated 10-song energy mix is stored as a **normalized semantic fixture** in `tests/fixtures/mr-fl-golden-hour-annotated-recheck.json`, separate from the unchanged original R22 export. Regression tests cover the energy arc, numbering, out-of-range index, strict IDs, enriched exports, warnings and agent discovery. The V1 mix format remains backwards compatible. Optional BPM/key/startAtSec/energy metadata is advisory and never interpreted as measured audio or motor instructions.
+
+**Not attempted in this rung:** cross-origin Suno autoplay/scratch, unattended agent deck control, nor a domain-root `/llms.txt` outside this GitHub Pages project.
