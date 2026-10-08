@@ -269,6 +269,18 @@ async function main() {
     await page.getByRole("heading", { name: "Now playing & queue" }).waitFor({ state: "visible" });
     await page.getByRole("button", { name: "Save queue" }).waitFor({ state: "visible" });
     await page.getByRole("button", { name: "Export catalog" }).waitFor({ state: "visible" });
+    await page.getByRole("heading", { name: "Agent Mix Studio" }).waitFor({ state: "visible" });
+    await page.getByRole("button", { name: "Review imported JSON" }).click();
+    await page.getByRole("status").getByText("Invalid JSON", { exact: false }).waitFor({ state: "visible" });
+    await page.getByRole("textbox", { name: "Import agent-created mix JSON" }).fill(
+      JSON.stringify({ format:"mbl-mix-v1", name:"Mr FL Field Set",
+        creator:{type:"agent",name:"Mr. FL"}, description:"A collaborative test set",
+        tracks:[{albumId:"missing-in-public-catalog",index:0,transition:"cut"}] })
+    );
+    await page.getByRole("button", { name: "Review imported JSON" }).click();
+    await page.getByRole("alert").getByText("missing-in-public-catalog", { exact: false }).waitFor({ state: "visible" });
+    assert.equal(await page.getByRole("button", { name: "Play approved mix" }).isDisabled(), true,
+      "Untrusted mixes with missing tracks must never play without a valid catalog");
     await checkPage(page);
 
     // The approved artwork may still be awaiting the one-time owner upload

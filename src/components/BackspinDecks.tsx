@@ -38,6 +38,7 @@ export function BackspinDecks() {
   const [expanded, setExpanded] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const [notice, setNotice] = useState("");
+  const [performanceNotice, setPerformanceNotice] = useState("");
   const [snapshot, setSnapshot] = useState<Snapshot>(EMPTY);
   const [xfade, setXfade] = useState(0);
   const iframe = useRef<HTMLIFrameElement>(null);
@@ -90,8 +91,17 @@ export function BackspinDecks() {
       }
     };
     refresh();
+    // Retain the original Backspin visual-fallback warning in the MBL wrapper.
+    const checkPerformance = () => {
+      try {
+        const bodyText = documentOfBooth()?.body?.innerText || "";
+        const match = bodyText.match(/Visual pressure[^\n]{0,100}(?:FPS|Safe Flat|Clean CRT)[^\n]{0,100}/i);
+        if (match) setPerformanceNotice((old) => old || match[0].trim().slice(0, 200));
+      } catch { /* the same-origin iframe may be unloading */ }
+    };
+    const perfInterval = window.setInterval(checkPerformance, 3500);
     const interval = window.setInterval(refresh, 650);
-    return () => window.clearInterval(interval);
+    return () => { window.clearInterval(interval); window.clearInterval(perfInterval); };
   }, [status, resetKey]);
 
   function command(id: string, label: string): boolean {
@@ -169,7 +179,7 @@ export function BackspinDecks() {
     command(deck.toLowerCase() + "-play", "Deck " + deck + " Play/Pause");
   }
   function reloadBooth() {
-    setSnapshot(EMPTY); setBridgeReady(false);
+    setSnapshot(EMPTY); setBridgeReady(false); setPerformanceNotice("");
     setResetKey((n) => n + 1);
     setNotice("Original booth reloaded. Save/export recordings first, as unsaved mixer state was reset.");
   }
@@ -325,6 +335,15 @@ export function BackspinDecks() {
             </div>
           </div>
         </div>
+        <div className="mt-3 rounded-xl border border-cyan-500/35 bg-cyan-950/20 px-3 py-3 text-xs text-cyan-100">
+          <strong className="block text-sm">Performance protection</strong>
+          {performanceNotice
+            ? <p className="mt-1" role="status">Backspin reported: {performanceNotice}. Its automatic visual fallback prioritizes DJ audio stability.</p>
+            : <p className="mt-1">On slower graphics hardware, Backspin may switch to Safe Flat or Clean CRT to protect audio. Your mix can keep playing.</p>}
+          <p className="mt-1 text-cyan-100/75">Open Advanced rig to inspect the active mode. Automatic protection is handled by the original Backspin runtime.</p>
+          <button type="button" className="mt-2 min-h-9 rounded-lg border border-cyan-400/40 px-3" onClick={() => setExpanded(true)}>Show original rig controls</button>
+        </div>
+        <p className="mt-2 text-xs text-mist">Backspin mixes local files you load or its included demo material. Vault tracks from Suno/SoundCloud cannot be imported directly from cross-origin players.</p>
         <p role="status" aria-live="polite" className="mt-3 text-xs text-mist">
           <ShieldAlert size={14} className="mr-1 inline" /> {notice || "The poster controls operate your real Backspin AudioWorklet. Drag a vinyl platter to scratch after loading a track. No streamed Suno/SoundCloud audio is captured."}
         </p>

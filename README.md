@@ -315,3 +315,38 @@ The **Desk** is the new immersive creative operator room built around the artist
 **Regression tests:** static checks enforce no Lounge navigation/component and verify queues/playlists/history remain present. Route tests require `#/lounge → #/desk`. Chromium opens the Desk, checks the preserved controls and the absence of the Lounge tab, then navigates directly to the old Lounge URL to verify the hash correction. If artwork has already been committed, Chromium also requires the original 1536×1024 image to actually decode in the Desk page. The Pages build checks that the referenced image is packaged when present, and the SHA-256 gate verifies no replacement/compression occurred.
 
 **All other rooms remain intact:** Lobby, Vault/Update Albums, Timeline, InfinityLens Lab, Radio and Backspin Decks.
+
+## PR #20: Mr. FL's field feedback and Agent Mix Exchange v1
+
+The first independent test of MoreBounceLabs found real UI issues and an exciting opportunity to let humans and agents collaborate on sets. This rung preserves all existing artwork, albums, Lab modes, Backspin audio engine and existing playlist architecture while addressing:
+
+- **Backspin FPS safety:** The main Decks page now explains automatic visual fallback on slower GPUs and keeps a warning from the original iframe visible when it detects a `Visual pressure ... FPS` message. The actual safeguard remains governed by the original Backspin runtime, not bypassed by the wrapper. A one-click Advanced rig link makes the live rendering controls findable.
+- **Local music clarity:** The Decks UI explicitly says it mixes authorized local files and bundled demo sounds. A Suno/SoundCloud website album is **not** a directly importable Backspin music file. No unauthorized streams or file downloads.
+- **Lab canvas space:** When Suno embeds are selected, the official Suno player is kept **in document flow below the Lab**, rather than in a tall fixed dock covering the WebGL scene at 1280×800. The embedded iframe stays mounted and accessible. Other rooms retain their established dock.
+- **Suno playback clarity:** The Suno panel now explains that MBL cannot detect third-party play/pause or reliable automatic song endings. Clicking Next selects another official player; visitors press Play inside Suno. This is an honest provider limitation rather than fake autoplay.
+
+### Agent Mix Studio: save, share, collaborate, approve
+
+In **Desk → Agent Mix Studio**, a human or agent can prepare an **MBL Mix Exchange v1 JSON** document referencing only public MBL Suno catalog album IDs and zero-based track indexes. An agent can use **Copy agent DJ instructions**, fetch the public `catalog/albums.json` metadata, and return a playlist with optional fade/blend/cut *suggestions*. A human then pastes/imports the JSON, **reviews the track list and missing catalog entries**, and explicitly clicks **Play approved mix** to load the existing MBL queue. No agent can force playback or control Backspin, download tracks or execute scripts.
+
+The UI also supports **Build mix from current queue**, browser-local saved mixes (max 20), **Export JSON**, and **Share link**. Links include a bounded base64url-encoded JSON payload in the page query string and open at `#/desk`. Opening a shared link never starts audio. Shared sets can be reopened on another browser with the same published catalog. A long mix falls back to downloading JSON rather than producing unreliable giant URLs.
+
+Example agent-created mix (use real album IDs from the publicly exported catalog):
+
+```json
+{
+  "format": "mbl-mix-v1",
+  "name": "Dimensional Night Drive",
+  "creator": { "type": "agent", "name": "Mr. FL" },
+  "description": "A journey from late-night warmth into high-energy bounce.",
+  "tracks": [
+    { "albumId": "INSERT_ACTUAL_CATALOG_ID", "index": 0, "transition": "cut", "note": "Set the atmosphere." }
+  ]
+}
+```
+
+**What sharing means:** This shares catalog references and transition ideas, **not rendered DJ audio or recordings**. Suno controls its iframe and will not automatically beat-match or crossfade. Actual recorded / scratched mixes still require authorized local tracks in Backspin. A future, separate operator-approved bridge can let agents propose timed cue/crossfade commands for local Backspin decks, but that capability is not silently enabled here.
+
+**Remaining field-test items:** The original Backspin `404` lacks an exact URL; CI cannot justify inventing a fix. Original `Full Booth` versus `Booth/Lab/Safe Flat` names depend on the pinned Backspin build, so this rung does not claim that an absent mode is available. Timeline initial-load profiling requires actual network/browser timing and is not asserted fixed.
+
+Regression tests cover mix manifest safety, unicode sharing, missing catalog references, import rejection, and wrapper fixes. A browser test confirms the actual Desk Mix Studio refuses to play invalid proposed tracks.

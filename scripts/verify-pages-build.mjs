@@ -67,6 +67,8 @@ if (backspinStaged) {
   assert.ok(!existsSync(join(root, "backspin96/mbl-stage.json")), "Cannot advertise an unverified Backspin booth");
 }
 assert.ok(js.includes("The Desk"), "Desk must contain the new image-first HQ");
+assert.ok(js.includes("Agent Mix Studio"), "A public agent/human mix exchange must be present in Desk");
+assert.ok(js.includes("Play approved mix"), "Imported mixes must require explicit user approval before playback");
 assert.ok(js.includes("desk-room-bg.png"), "Desk must request its approved original background");
 if (existsSync("public/desk/desk-room-bg.png")) {
   assert.ok(existsSync(join(root, "desk/desk-room-bg.png")), "The original Desk image must reach Pages output");

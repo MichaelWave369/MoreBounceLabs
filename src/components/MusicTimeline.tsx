@@ -73,7 +73,7 @@ export function MusicTimeline({
           </div>
           <div className="relative mx-auto hidden h-60 w-72 items-center justify-center sm:flex" aria-hidden="true">
             {heroCovers.length ? heroCovers.map((album, index) => (
-              <img key={album.id} src={album.cover} alt="" loading="lazy"
+              <img key={album.id} src={album.cover} alt="" loading="lazy" decoding="async"
                 className="timeline-floating-sleeve absolute aspect-square w-40 rounded-2xl border border-white/20 object-cover shadow-2xl"
                 style={{ transform: `translate(${(index - 1) * 65}px, ${Math.abs(index - 1) * 15}px) rotate(${(index - 1) * 14}deg)`, zIndex: 3 - Math.abs(index - 1) }}
               />
@@ -121,7 +121,7 @@ export function MusicTimeline({
               title: "The archive", subtitle: "Original releases from another chapter.", glow: "#e4a04a",
             };
             return (
-              <section key={groupYear} className="relative sm:pl-12"
+              <section key={groupYear} className="timeline-era relative sm:pl-12"
                 style={{ "--timeline-halo": era.glow } as CSSProperties}
                 aria-labelledby={`timeline-year-${groupYear}`}>
                 <span className="timeline-dot absolute left-[10px] top-4 hidden h-3 w-3 rounded-full sm:block" aria-hidden="true" />
@@ -144,7 +144,7 @@ export function MusicTimeline({
                       onClick={() => open(album)}
                       aria-label={`Open ${album.title} from ${album.year} on ${album.provider === "suno" ? "Suno" : "SoundCloud"}`}>
                       {album.cover ? (
-                        <img src={album.cover} alt="" loading="lazy" referrerPolicy="no-referrer"
+                        <img src={album.cover} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer"
                           className="aspect-square w-full rounded-xl bg-raised object-cover" />
                       ) : (
                         <div className="flex aspect-square items-center justify-center rounded-xl bg-raised">
