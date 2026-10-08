@@ -167,7 +167,7 @@ async function main() {
     await page.getByRole("button", { name: /Solar Bounce FM · 104\.3/ }).waitFor({ state: "visible" });
     await page.getByRole("button", { name: /Night Trucker · 92\.6/ }).click();
     await page.getByRole("heading", { name: "Night Trucker", exact: true }).waitFor({ state: "visible" });
-    await page.getByRole("button", { name: "Select AM station band" }).click();
+    await page.getByRole("button", { name: "AM band", exact: true }).click();
     await page.getByRole("heading", { name: "Deep Desert AM", exact: true }).waitFor({ state: "visible" });
     await page.getByText("On this frequency", { exact: false }).waitFor({ state: "visible" });
     await checkPage(page);
