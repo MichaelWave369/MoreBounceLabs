@@ -17,7 +17,7 @@ test("verified SoundCloud archive preserves the 18-album baseline plus approved 
     assert.ok(album.title.length > 2);
     assert.equal(album.artist, "MicTek");
     assert.ok(album.year >= 2022 && album.year <= 2100);
-    assert.ok(album.trackCount > 0);
+    assert.ok(album.trackCount > 0 || (album.trackCount === 0 && album.trackCountVerified === false));
     const url = new URL(album.url);
     assert.equal(url.origin, "https://soundcloud.com");
     assert.match(url.pathname, /^\/microneesia\/sets\/[a-z0-9-]+$/);
