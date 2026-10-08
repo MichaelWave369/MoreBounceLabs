@@ -97,7 +97,6 @@ export function HouseApp() {
   }
 
   const albums = house.albums;
-  const now = currentTrack(house);
   const featured = albums[2] || albums[0];
   const spotAlbum = albums.length ? albums[spot % Math.min(albums.length, 8)] : undefined;
 
