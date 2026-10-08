@@ -375,3 +375,10 @@ The **v1 JSON format remains backward-compatible**. Optional `albumTitle`, `arti
 The JSON Schema and manifest are an opt-in public contract for AI agents, not a permission grant or a remote execution endpoint. Agents can prepare mix plans; a person must still approve actual playback. We deliberately did **not** add an unauthenticated live deck-control API or invent unavailable BPM/duration metadata. Machine-readable validation structure is available in `validateMix(...).errors` and `.warnings` locally, with tests for known and unknown references.
 
 Remaining issues from the broader field pass: Backspin's Safe Flat fallback behavior and missing top-bar modes require auditing the pinned rig build separately; Suno's cross-origin iframe still does not expose reliable programmatic autoplay to MBL.
+
+
+## PR #22: Independent agent-authored DJ mix fixture
+
+`tests/fixtures/mr-fl-golden-hour-to-funk-peak-and-back.json` is the **unchanged source export** shared by the artist from Mr. FL / Grok Bot's first complete ten-song Agent Mix Studio tour. It references verified MBL catalog songs from *The Azure Inheritance*, *The Ocean Has an Alibi*, *Lucid Altitude*, *Anti-Gravity Protocol*, *Neon Afterglow Society*, *Funktendo 369*, and *Architectural Intuition*.
+
+`scripts/mr-fl-golden-hour.test.mjs` adds an independent real-world test: exact catalog song identity and ordering, transitions, structured validation, share link JSON round-trip, no embedded music, and refusal to play a corrupted mix. The fixture is a **curated set plan**, not a rendered recording, audio stream or automated DJ control sequence. It doesn't auto-publish this mix in the UI or change the artist's existing songs.
