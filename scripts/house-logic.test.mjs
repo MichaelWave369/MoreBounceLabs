@@ -43,6 +43,8 @@ test("hash routes stay on known rooms", () => {
   assert.deepEqual(parseHash("#/album/trunk-funk/3"), { room: "album", albumId: "trunk-funk", track: "3" });
   assert.equal(parseHash("#/nope").room, "lobby");
   assert.equal(parseHash("").room, "lobby");
+  assert.deepEqual(parseHash("#/lounge"), { room: "desk", albumId: "", track: "" });
+  assert.deepEqual(parseHash("#/desk"), { room: "desk", albumId: "", track: "" });
 });
 
 
