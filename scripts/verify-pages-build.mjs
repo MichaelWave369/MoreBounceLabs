@@ -43,6 +43,15 @@ assert.ok(js.includes("Every record is a little universe."), "The Music Timeline
 assert.ok(js.includes("Timeline"), "Timeline room/navigation should appear in the static application");
 assert.ok(js.includes("Foundations & Boga Beatz"), "The historical 2023 era must be present");
 assert.ok(js.includes("Backspin"), "The Decks room must contain Backspin integration");
+assert.ok(js.includes("backspin96-poster.png"), "The poster-first Decks room must reference the supplied original art");
+assert.ok(js.includes("Backspin '96 · The Vinyl World"), "The retro Backspin performance mode must be present");
+const backspinManifest = join(root, "backspin96/mbl-stage.json");
+if (existsSync(backspinManifest)) {
+  const manifest = JSON.parse(readFileSync(backspinManifest, "utf8"));
+  assert.equal(manifest.overlayBridgeVersion, 1, "Staged source must include the Backspin overlay control adapter");
+  assert.ok(readFileSync(join(root, "backspin96/app.js"), "utf8").includes("window.__MBL_BACKSPIN"),
+    "Staged Backspin must expose its real scratch controller");
+}
 const backspinStaged = existsSync("vendor/backspin96-source.zip");
 if (backspinStaged) {
   const staged = join(root, "backspin96");
