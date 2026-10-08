@@ -86,7 +86,7 @@ test("responsive UI provides Desk switch, per-position errors and version histor
   assert.match(ui, /prepareMixForExport\(selected, albums\)/);
   assert.match(ui, /Copy validation JSON/);
   assert.match(desk, /Open Agent Mix Studio/);
-  assert.match(desk, /Desk QA R23/);
+  assert.match(desk, /Desk QA R25/);
   assert.match(desk, /mix-changelog\.txt/);
   assert.match(desk, /cleanCatalogTrackNumber\(song.title\)/);
   assert.match(player,/house.room === "lab" \|\| house.room === "desk"/);
