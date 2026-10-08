@@ -52,7 +52,11 @@ jobs:
           url=$(gh pr create --head "$branch" --base main \
             --title "catalog: import artist release from issue #${ISSUE_NUMBER}" \
             --body "Artist-submitted MBL album catalog addition from #${ISSUE_NUMBER}. Review the provider link, artwork, track metadata and CI before merging. No direct audio URLs or credentials are imported. GitHub Pages deploys after merge. Closes #${ISSUE_NUMBER}.")
-          gh issue comment "$ISSUE_NUMBER" --body "Your new release is ready for review: $url. Merge only after the checks pass."
+          # PRs opened with GITHUB_TOKEN do not automatically trigger normal
+          # pull_request workflows. Explicitly dispatch the existing CI on
+          # the just-created branch so the candidate gets actual green checks.
+          gh workflow run ci.yml --ref "$branch"
+          gh issue comment "$ISSUE_NUMBER" --body "Your new release is ready for review: $url. A CI run was requested on its branch. Merge only after checks pass."
 
       - name: Troubleshooting on validation failure
         if: failure()
