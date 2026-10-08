@@ -3,6 +3,9 @@
  * console artwork. Every preset contains verified MBL songs (official Suno
  * widgets), not invented RF broadcasts or downloadable music.
  */
+/** @typedef {{id:string,title:string,band:"AM"|"FM"|"SAT",hz:number,caption:string,albumIds:string[]}} RadioProgram */
+/** @typedef {{id:string,title:string,tracks?: {title?:string}[]}} RadioAlbum */
+/** @type {RadioProgram[]} */
 export const RADIO_PROGRAMS = [
   { id: "solar", title: "Solar Bounce FM", band: "FM", hz: 104.3,
     caption: "Golden funk, big bass and sunlight on the dancefloor.",
@@ -20,7 +23,12 @@ export const RADIO_PROGRAMS = [
     caption: "Ocean tides, dreamy altitude and warm last-light landings.",
     albumIds: ["the-ocean-has-an-alibi", "the-dreaming-tide", "the-azure-inheritance", "cruise-departure-cycle"] },
 ];
-/** @returns {{albumId:string,index:number,title:string,albumTitle:string}[]} */
+/**
+ * @param {RadioAlbum[]} albums
+ * @param {string} stationId
+ * @param {number} [maximum]
+ * @returns {{albumId:string,index:number,title:string,albumTitle:string}[]}
+ */
 export function buildRadioProgram(albums, stationId, maximum = 48) {
   const preset = RADIO_PROGRAMS.find((p) => p.id === stationId);
   if (!preset) return [];
@@ -41,6 +49,12 @@ export function buildRadioProgram(albums, stationId, maximum = 48) {
   }
   return items;
 }
+/**
+ * @param {RadioProgram[]} programs
+ * @param {"AM"|"FM"|"SAT"|"ALL"} band
+ * @param {number[]} counts
+ * @returns {number[]}
+ */
 export function stationBandIndices(programs, band, counts) {
   return programs.map((_, index) => index)
     .filter((index) => (band === "ALL" || programs[index].band === band) && (counts[index] || 0) > 0);
