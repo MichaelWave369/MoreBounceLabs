@@ -200,3 +200,31 @@ An application error boundary guards both the GitHub Pages and the server-render
 CI builds the real static React bundle and uses Chromium to exercise `Vault → SoundCloud album → Timeline → Vault → SoundCloud album → Lobby → Vault → close SoundCloud → reload Timeline`. It deliberately supplies a local mock of the SoundCloud Widget API whose `unbind()` throws, proving navigation survives provider teardown errors. The browser test does not make requests for streamed SoundCloud audio or rely on the live SoundCloud player network.
 
 The original **19 Suno + 18 SoundCloud albums** are untouched; this is solely a player-lifecycle, navigation and recovery fix.
+
+## Radio Control Room (PR #14)
+
+The **Radio** navigation tab now mounts a Vessie-inspired, full-width retro CB/satellite console with **real clickable and keyboard-accessible controls over the user's exact approved radio artwork**.
+
+The image is the single source of truth for its look. Do not redraw, recolor, recreate or rewrite the art. The unchanged PNG is deliberately mounted as an image, cropped only to omit the **duplicated header and dock already provided by MBL**. The source image stays byte-for-byte intact.
+
+### One original-asset upload required before the PR is ready
+
+Upload the generated file **`morebouncelabs_radio_console.png`** unchanged to this branch as **`public/radio/mbl-radio-console.png`**. Download the original generated image from the ChatGPT conversation and name it `mbl-radio-console.png`. GitHub UI: choose this branch, navigate to `public/radio/`, select **Add file → Upload files**, and commit it on the PR branch. The approved 1448×1086 source SHA-256 is:
+
+```
+89af9a5564f5bb46a5e18048f4a8cef6aff41114cd297ae8199e397934867fb7
+```
+
+CI validates the exact image hash, dimensions and built Pages copy whenever the source file exists. **Until it's committed, this PR must remain a draft**. Radio presents a functional fallback surface instead of a blank page when the image is absent.
+
+### Clickable Radio controls
+
+- Five station presets: **Solar Bounce FM, Night Trucker, Porch Static, Deep Desert AM, Orbit Lounge**. These are transparent, responsive overlay hotspots aligned to the artwork.
+- **Tune & Play**, Power, next/previous, Shuffle, Repeat, Scan and AM/FM/SAT/ALL *themed* bands. Station queues reuse the existing MBL genre-agnostic album-title matching rules and existing house playback.
+- Top-ribbon clicks toggle motion and Vessie-style ambient, signal pulse, sweep arc, scan trails and dust; controls adjust intensity, speed, visualizer, and optional **visual-only** station drift.
+- CSS signal arcs, faint scanner line, needle motion, ambient light and particle dust are lightweight GPU-friendly decorations; `prefers-reduced-motion` disables them. Touch-sized mobile station controls and effect sliders are **below** the static art instead of sub-24px hotspots.
+
+**Broadcast honesty:** AM/FM/SAT are thematic frequency presets, **not radio-frequency receivers or 24/7 streaming servers**. The underlying source is the existing 19-album MBL Suno catalog. Suno's official embedded player continues to require user interaction and may not auto-advance reliably. Animated signal meters are ambient unless native authorized audio is playing. Real internet radio streaming and always-on station scheduling need a separately licensed/hosted audio backend.
+
+**Engineering:** The Radio stage is a real DOM control map over the unmodified artwork, not a new screenshot or a second music player. The existing persistent mini-player remains visible (unless you're in Backspin Decks), and no audio is extracted from a third-party iframe. Browser regression tests enter Radio, scan to a new preset, tune/play, leave for Vault, and verify the page remains usable.
+
