@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowDown, ArrowUp, Clock3, Download, ListMusic, Save } from "lucide-react";
 import { currentTrack, useHouse, type Album } from "@/lib/engine";
+import { AgentMixStudio } from "@/components/AgentMixStudio";
 
 type QueueItem = { albumId: string; index: number };
 type Playlist = { id: string; name: string; items: QueueItem[] };
@@ -133,6 +134,8 @@ export function FieldDesk({ albums, playlists, history, onSave, onPlay }: {
             </div>
           </section>
         </div>
+
+        <AgentMixStudio albums={albums} onPlay={onPlay} />
 
         <section className="mbl-field-desk-panel mt-4 rounded-2xl border border-white/20 p-4 sm:p-5" aria-labelledby="desk-history-heading">
           <h2 id="desk-history-heading" className="font-display text-xl">Recently played here</h2>
