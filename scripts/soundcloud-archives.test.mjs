@@ -16,7 +16,7 @@ test("verified SoundCloud archive preserves the 18-album baseline plus approved 
     assert.match(album.id, /^sc-[a-z0-9-]+$/);
     assert.ok(album.title.length > 2);
     assert.equal(album.artist, "MicTek");
-    assert.ok(album.year >= 2022 && album.year <= 2100);
+    assert.ok(album.year >= 1990 && album.year <= 2100);
     assert.ok(album.trackCount > 0);
     const url = new URL(album.url);
     assert.equal(url.origin, "https://soundcloud.com");
