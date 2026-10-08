@@ -25,7 +25,7 @@ jobs:
       - name: TypeScript
         run: npm run typecheck
       - name: Music house regression tests
-        run: node --experimental-strip-types --test scripts/house-logic.test.mjs scripts/dj-bot-core.test.mjs scripts/infinity-bridge.test.mjs scripts/soundcloud-archives.test.mjs scripts/timeline.test.mjs scripts/infinity-only-lab.test.mjs scripts/release-update.test.mjs
+        run: node --experimental-strip-types --test scripts/house-logic.test.mjs scripts/dj-bot-core.test.mjs scripts/infinity-bridge.test.mjs scripts/soundcloud-archives.test.mjs scripts/timeline.test.mjs scripts/infinity-only-lab.test.mjs scripts/release-update.test.mjs scripts/desk-room.test.mjs
       - name: Verify Backspin source staging safeguards
         run: python3 -m unittest discover -s scripts -p 'test_backspin_stage.py'
       - name: Stage reviewed Backspin source pack (if present)
@@ -40,6 +40,8 @@ jobs:
         run: node scripts/check-radio-art.mjs
       - name: Verify exact original Backspin poster when available
         run: node scripts/check-backspin-poster.mjs
+      - name: Verify original Desk image when available
+        run: node scripts/check-desk-art.mjs
 
   dj-bot-lab:
     name: Opt-in DJ Bot fixture smoke
