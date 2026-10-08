@@ -29,6 +29,8 @@ for (const utility of [".max-w-6xl", ".grid", ".flex", ".rounded-3xl", ".bg-heat
 const js = assets.filter((name) => name.endsWith(".js")).map((name) => readFileSync(join(root, "assets", name), "utf8")).join("\n");
 assert.ok(js.includes("catalog/albums.json"), "Built app must request its catalog");
 assert.ok(js.includes("MoreBounceLabs"), "Bundled UI should use the new site identity");
+assert.ok(js.includes("InfinityLens369"), "Visual Lab should contain InfinityLens guest stage");
+assert.ok(js.includes("https://michaelwave369.github.io/infinitylens369/"), "Guest stage should point to the maintained original");
 assert.ok(!js.includes("MicTek House"), "Legacy site name must not remain in the player UI");
 assert.ok(js.includes("/MoreBounceLabs/"), "Built app must know project base");
 console.log("PASS GitHub Pages static build: index, hashed assets, Tailwind layout utilities, scoped URLs, 19 albums, 344 tracks.");
