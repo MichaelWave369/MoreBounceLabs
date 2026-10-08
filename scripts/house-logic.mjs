@@ -116,6 +116,29 @@ export function parseHash(hash) {
 }
 
 /**
+ * Move one queued item by a relative number of positions while preserving
+ * the identity of the active item, even when a neighbor crosses the cursor.
+ * Out-of-range requests are no-ops.
+ * @template T
+ * @param {T[]} queue
+ * @param {number} cursor
+ * @param {number} from
+ * @param {number} dir
+ * @returns {{ queue: T[], cursor: number }}
+ */
+export function reorderQueue(queue, cursor, from, dir) {
+  const to = from + dir;
+  if (!Number.isInteger(from) || !Number.isInteger(dir) || from < 0 || to < 0 || from >= queue.length || to >= queue.length || to === from) {
+    return { queue, cursor };
+  }
+  const next = queue.slice();
+  const [item] = next.splice(from, 1);
+  next.splice(to, 0, item);
+  const active = cursor === from ? to : from < cursor && to >= cursor ? cursor - 1 : from > cursor && to <= cursor ? cursor + 1 : cursor;
+  return { queue: next, cursor: active };
+}
+
+/**
  * @template T
  * @param {T[]} list
  * @returns {T[]}
