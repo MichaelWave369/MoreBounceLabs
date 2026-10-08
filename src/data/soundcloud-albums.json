@@ -102,6 +102,86 @@
       "description": "A crate of Boga Beatz favorites.",
       "url": "https://soundcloud.com/microneesia/sets/boga-beatz-v-8",
       "cover": "https://i1.sndcdn.com/artworks-gVPjuQ1cxrAmu8z2-zbvKmw-t500x500.jpg"
+    },
+    {
+      "id": "sc-boga-beatz-v-7",
+      "title": "Boga Beatz V.7",
+      "artist": "MicTek",
+      "year": 2023,
+      "trackCount": 12,
+      "description": "Kitboga-inspired rhythms and comedy sampling.",
+      "url": "https://soundcloud.com/microneesia/sets/boga-beatz-v-7",
+      "cover": "https://i1.sndcdn.com/artworks-wmg1NiyX7aWTWtRQ-o0lI9A-t500x500.jpg"
+    },
+    {
+      "id": "sc-boga-beatz-v-6",
+      "title": "Boga Beatz V.6",
+      "artist": "MicTek",
+      "year": 2023,
+      "trackCount": 12,
+      "description": "The next chapter of Kitboga-inspired beats.",
+      "url": "https://soundcloud.com/microneesia/sets/boga-beatz-v-6",
+      "cover": "https://i1.sndcdn.com/artworks-AIFHyVY2zHliXeAx-yTVzKg-t500x500.jpg"
+    },
+    {
+      "id": "sc-boga-beatz-v-5",
+      "title": "Boga Beatz V.5",
+      "artist": "MicTek",
+      "year": 2023,
+      "trackCount": 12,
+      "description": "Boga Beatz and more original grooves.",
+      "url": "https://soundcloud.com/microneesia/sets/boga-beatz-v-5",
+      "cover": "https://i1.sndcdn.com/artworks-14jKjLrytzJHKDN4-SOMvjA-t500x500.jpg"
+    },
+    {
+      "id": "sc-boga-beatz-v-4",
+      "title": "Boga Beatz V.4",
+      "artist": "MicTek",
+      "year": 2023,
+      "trackCount": 12,
+      "description": "A dozen early Boga Beatz tracks.",
+      "url": "https://soundcloud.com/microneesia/sets/boga-beatz-v-4",
+      "cover": "https://i1.sndcdn.com/artworks-ZitjEtninD5Ru0y5-oNMV6A-t500x500.jpg"
+    },
+    {
+      "id": "sc-boga-beatz-v-3",
+      "title": "Boga Beatz V.3",
+      "artist": "MicTek",
+      "year": 2023,
+      "trackCount": 12,
+      "description": "The third volume of the original Boga Beatz series.",
+      "url": "https://soundcloud.com/microneesia/sets/boga-beatz-v-3",
+      "cover": "https://i1.sndcdn.com/artworks-5jzK5LYcGLOj7JqQ-qHAHnw-t500x500.jpg"
+    },
+    {
+      "id": "sc-boga-beatz-v-2",
+      "title": "Boga Beatz V.2",
+      "artist": "MicTek",
+      "year": 2023,
+      "trackCount": 12,
+      "description": "The second volume of the original Boga Beatz series.",
+      "url": "https://soundcloud.com/microneesia/sets/boga-beatz-v-2",
+      "cover": "https://i1.sndcdn.com/artworks-SnrbFd02ui8f1Vzm-kbmnZw-t500x500.jpg"
+    },
+    {
+      "id": "sc-boga-beatz-v-1",
+      "title": "Boga Beatz V.1",
+      "artist": "MicTek",
+      "year": 2023,
+      "trackCount": 12,
+      "description": "The first album in the original Boga Beatz series.",
+      "url": "https://soundcloud.com/microneesia/sets/boga-beatz-v-1",
+      "cover": "https://i1.sndcdn.com/artworks-rYXj9fJIrMhVxKqL-LWF7eA-t500x500.jpg"
+    },
+    {
+      "id": "sc-reflections",
+      "title": "Reflections",
+      "artist": "MicTek",
+      "year": 2022,
+      "trackCount": 9,
+      "description": "Nine original instrumental tracks, collected in 2022.",
+      "url": "https://soundcloud.com/microneesia/sets/reflections",
+      "cover": "https://i1.sndcdn.com/artworks-ywCErzOykQzo9vJ3-u50nWg-t500x500.jpg"
     }
   ]
 }
