@@ -1,0 +1,107 @@
+{
+  "provider": "soundcloud",
+  "profile": "https://soundcloud.com/microneesia/albums",
+  "snapshotDate": "2026-10-07",
+  "albums": [
+    {
+      "id": "sc-dimensional-shift",
+      "title": "Dimensional Shift",
+      "artist": "MicTek",
+      "year": 2026,
+      "trackCount": 15,
+      "description": "A 2026 journey through the dimensional field.",
+      "url": "https://soundcloud.com/microneesia/sets/dimensional-shift",
+      "cover": "https://i1.sndcdn.com/artworks-b6z8nIeKjtBKZwGR-uJZzWw-t500x500.jpg"
+    },
+    {
+      "id": "sc-mikey-more-bounce",
+      "title": "Technical Reconsideration",
+      "artist": "MicTek",
+      "year": 2026,
+      "trackCount": 12,
+      "description": "Drum & bass · A Mikey More Bounce production.",
+      "url": "https://soundcloud.com/microneesia/sets/mikey-more-bounce",
+      "cover": "https://i1.sndcdn.com/artworks-xcNxdQu8UdImec0M-AbU1MA-t500x500.jpg"
+    },
+    {
+      "id": "sc-digital-world",
+      "title": "Digital World",
+      "artist": "MicTek",
+      "year": 2025,
+      "trackCount": 9,
+      "description": "Between the digital world and the world we know.",
+      "url": "https://soundcloud.com/microneesia/sets/digital-world",
+      "cover": "https://i1.sndcdn.com/artworks-cSzpCWqzXFozAbsc-KCiK0A-t500x500.jpg"
+    },
+    {
+      "id": "sc-retro-remix-console-2k",
+      "title": "Insert Coins",
+      "artist": "MicTek",
+      "year": 2024,
+      "trackCount": 5,
+      "description": "Electronic remixes of classic video game soundtracks.",
+      "url": "https://soundcloud.com/microneesia/sets/retro-remix-console-2k",
+      "cover": "https://i1.sndcdn.com/artworks-dARZUfircp5QiYq2-YY1knw-t500x500.jpg"
+    },
+    {
+      "id": "sc-sounds-from-the-mothership",
+      "title": "Sounds From the Mothership",
+      "artist": "MicTek",
+      "year": 2024,
+      "trackCount": 15,
+      "description": "Beats and sampled comedy from the mothership.",
+      "url": "https://soundcloud.com/microneesia/sets/sounds-from-the-mothership",
+      "cover": "https://i1.sndcdn.com/artworks-hHnybOdy7RzVP6iN-UOVlRA-t500x500.jpg"
+    },
+    {
+      "id": "sc-comical-stuffs-vol-2",
+      "title": "Comical Stuffs Vol. 2",
+      "artist": "MicTek",
+      "year": 2024,
+      "trackCount": 9,
+      "description": "Comedy-tinged beats and musical experiments.",
+      "url": "https://soundcloud.com/microneesia/sets/comical-stuffs-vol-2",
+      "cover": "https://i1.sndcdn.com/artworks-cLkdwdu37PPHHrkP-BP7LRA-t500x500.jpg"
+    },
+    {
+      "id": "sc-living-intentionally-for",
+      "title": "Living Intentionally for Excellence",
+      "artist": "MicTek",
+      "year": 2023,
+      "trackCount": 9,
+      "description": "L I f E · Dance, electronic music and good energy.",
+      "url": "https://soundcloud.com/microneesia/sets/living-intentionally-for",
+      "cover": "https://i1.sndcdn.com/artworks-ZoZM4wzmUNkZe3JW-H8cPcQ-t500x500.jpg"
+    },
+    {
+      "id": "sc-foundations",
+      "title": "Foundations",
+      "artist": "MicTek",
+      "year": 2023,
+      "trackCount": 9,
+      "description": "Being a part of the flow.",
+      "url": "https://soundcloud.com/microneesia/sets/foundations",
+      "cover": "https://i1.sndcdn.com/artworks-KDB8cn7bN7p6CTs7-unH6zg-t500x500.jpg"
+    },
+    {
+      "id": "sc-boga-beatz-v-9",
+      "title": "Boga Beatz V.9",
+      "artist": "MicTek",
+      "year": 2023,
+      "trackCount": 12,
+      "description": "The Boga Beatz saga continues.",
+      "url": "https://soundcloud.com/microneesia/sets/boga-beatz-v-9",
+      "cover": "https://i1.sndcdn.com/artworks-jKAV2obikmDeCDto-XUydIQ-t500x500.jpg"
+    },
+    {
+      "id": "sc-boga-beatz-v-8",
+      "title": "Boga Beatz V.8",
+      "artist": "MicTek",
+      "year": 2023,
+      "trackCount": 12,
+      "description": "A crate of Boga Beatz favorites.",
+      "url": "https://soundcloud.com/microneesia/sets/boga-beatz-v-8",
+      "cover": "https://i1.sndcdn.com/artworks-gVPjuQ1cxrAmu8z2-zbvKmw-t500x500.jpg"
+    }
+  ]
+}
