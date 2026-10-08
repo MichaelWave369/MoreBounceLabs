@@ -13,7 +13,7 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
-import { collectStation, fmt, parseHash, runtime, safeEmbed, STATIONS } from "../../scripts/house-logic.mjs";
+import { collectStation, fmt, parseHash, runtime, safeEmbed, safeHttps, STATIONS } from "../../scripts/house-logic.mjs";
 import { currentTrack, getAudio, useHouse, type Album } from "@/lib/engine";
 import { VIZ_MODES, VizCanvas } from "@/components/VizCanvas";
 
@@ -603,18 +603,12 @@ function Decks({ albums }: { albums: Album[] }) {
     const right = document.getElementById("deck-b") as HTMLAudioElement | null;
     if (left) left.volume = Math.min(1, (1 - cross) * 2);
     if (right) right.volume = Math.min(1, cross * 2);
-  }, [cross]);
+  }, [cross, a, b]);
   function load(which: "a" | "b", id: string) {
     const album = albums.find((x) => x.id === id);
-    const el = document.getElementById(which === "a" ? "deck-a" : "deck-b") as HTMLAudioElement | null;
-    const src = album?.tracks[0]?.src;
-    if (el && src) {
-      el.crossOrigin = "anonymous";
-      el.src = src;
-      setNote(`Loaded ${album?.title}. Press play on that deck. If the file is blocked, use the main player’s Suno fallback.`);
-    }
     if (which === "a") setA(id);
     else setB(id);
+    setNote(album ? `Selected ${album.title}. Press play on that deck. Direct file access is source-dependent.` : "No album selected.");
   }
   return (
     <section>
@@ -631,7 +625,15 @@ function Decks({ albums }: { albums: Album[] }) {
                 </option>
               ))}
             </select>
-            <audio id={side === "a" ? "deck-a" : "deck-b"} controls className="mt-3 w-full" />
+            <audio
+              id={side === "a" ? "deck-a" : "deck-b"}
+              controls
+              preload="metadata"
+              crossOrigin="anonymous"
+              src={safeHttps(albums.find((album) => album.id === (side === "a" ? a : b))?.tracks[0]?.src)}
+              onError={() => setNote(`Deck ${side.toUpperCase()} could not load this source. Try the main player's Suno fallback.`)}
+              className="mt-3 w-full"
+            />
           </div>
         ))}
       </div>
@@ -661,7 +663,7 @@ function Desk({
     <section>
       <h1 className="font-display text-4xl">Desk</h1>
       <p className="mt-2 max-w-xl text-mist">
-        Favorites and playlists stay in this browser. They do not sync to another phone. This page cannot write to GitHub. Export a file, then commit it to the mictek-house repo if you want it public.
+        Favorites and playlists stay in this browser. They do not sync to another phone. This page cannot write to GitHub. Export a file, then commit it to the MoreBounceLabs repo if you want it public.
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
         <input className="min-h-11 rounded-full bg-surface px-4" value={name} onChange={(e) => setName(e.target.value)} aria-label="Playlist name" />
