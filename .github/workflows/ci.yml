@@ -35,6 +35,8 @@ jobs:
         run: npm run build:pages
       - name: GitHub Pages output verification
         run: npm run verify:pages
+      - name: Verify approved radio art when available
+        run: node scripts/check-radio-art.mjs
 
   dj-bot-lab:
     name: Opt-in DJ Bot fixture smoke
