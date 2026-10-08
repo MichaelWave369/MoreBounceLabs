@@ -13,9 +13,9 @@ test("the Lab renders exactly one visual system: InfinityLens", () => {
   assert.match(lab, /<InfinityLensStage reduced=\{reduced\}/);
   assert.doesNotMatch(lab, /VizCanvas|VIZ_MODES|setViz|vizNote/);
   assert.equal((shell.match(/<InfinityLensStage /g) || []).length, 1);
-  // The older house visualization is still available ONLY in Listening Lounge.
-  assert.match(shell, /function Lounge\(/);
-  assert.match(shell, /<VizCanvas mode=\{mode\} reduced=\{reduced\}/);
+  // The retired Lounge and legacy inline visualizer must never be mounted.
+  assert.doesNotMatch(shell, /function Lounge\(/);
+  assert.doesNotMatch(shell, /<VizCanvas /);
 });
 
 test("InfinityLens mounts on Lab entry and retains guarded controls", () => {
