@@ -16,7 +16,15 @@
   "validation": {
     "onMissingReference": "error",
     "onCatalogTitleMismatch": "warning",
-    "requiresHumanApproval": true
+    "requiresHumanApproval": true,
+    "readOnlyBrowserAPI": {
+      "validate": "window.mblMix.validate(mixObjectOrJsonString)",
+      "preview": "window.mblMix.preview(mixObjectOrJsonString)",
+      "sideEffects": false,
+      "canPlayAudio": false
+    },
+    "onAlbumIdWhitespace": "reject",
+    "catalogWarnings": "Optional advisory receipt attached on export; always revalidate against current catalog."
   },
   "limits": {
     "maxTracks": 40,
@@ -41,5 +49,7 @@
         "energy": 0.35
       }
     ]
-  }
+  },
+  "llms": "https://michaelwave369.github.io/MoreBounceLabs/llms.txt",
+  "changelog": "https://michaelwave369.github.io/MoreBounceLabs/agent/mix-changelog.txt"
 }
