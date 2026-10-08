@@ -240,7 +240,7 @@ export const useHouse = create<EngineState>((set, get) => {
       const keepTrack = room === "album" && id && location.hash.startsWith(`#/album/${id}/`);
       if (location.hash !== next && !keepTrack) location.hash = next;
       const album = get().albums.find((a) => a.id === id);
-      document.title = room === "album" && album ? `${album.title} · MicTek House` : room === "lobby" ? "MicTek House" : `MicTek House · ${room}`;
+      document.title = room === "album" && album ? `${album.title} · MoreBounceLabs` : room === "lobby" ? "MoreBounceLabs" : `MoreBounceLabs · ${room}`;
     },
 
     playAlbum: (albumId, start = 0, shuffled = false) => {
