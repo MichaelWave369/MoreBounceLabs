@@ -1,13 +1,16 @@
 import { useState, type FormEvent } from "react";
-import { ArrowUpRight, RefreshCw, X } from "lucide-react";
+import { ArrowUpRight, RefreshCw, X, WandSparkles } from "lucide-react";
 import {
-  buildReleaseDraft, normalizeReleaseUrl, releaseIssueUrl, type ReleaseProvider,
+  autoReleaseDraft, buildReleaseDraft, normalizeReleaseUrl, releaseIssueUrl, type ReleaseProvider,
 } from "@/lib/releaseSubmission";
 import { SOUNDCLOUD_ALBUMS } from "@/lib/soundcloud";
 import type { Album } from "@/lib/engine";
 
 export function UpdateAlbums({ albums }: { albums: Album[] }) {
   const [open, setOpen] = useState(false);
+  const [manual, setManual] = useState(false);
+  const [quickUrl, setQuickUrl] = useState("");
+  const [quickYear, setQuickYear] = useState(String(new Date().getFullYear()));
   const [provider, setProvider] = useState<ReleaseProvider>("soundcloud");
   const [url, setUrl] = useState("");
   const [year, setYear] = useState(String(new Date().getFullYear()));
@@ -37,6 +40,22 @@ export function UpdateAlbums({ albums }: { albums: Album[] }) {
     } catch {
       setCheckResult("Couldn't check the published catalog right now. The existing music is unchanged.");
     } finally { setChecking(false); }
+  }
+
+  function submitQuick(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setProblem("");
+    try {
+      const draft = autoReleaseDraft(quickUrl, Number(quickYear));
+      const isKnown = draft.provider === "soundcloud"
+        ? SOUNDCLOUD_ALBUMS.some((album) => album.url === draft.url)
+        : albums.some((album) => album.suno === draft.url);
+      if (isKnown) throw new Error("Already in the MBL catalog. No duplicate import needed.");
+      window.open(releaseIssueUrl(draft), "_blank", "noopener,noreferrer");
+      setCheckResult(draft.provider === "soundcloud"
+        ? "GitHub opened your one-link SoundCloud import request. Submit it as the repository owner. The Action verifies public title and artwork and prepares a review PR; song count is marked unverified until confirmed."
+        : "GitHub opened your Suno album link request. Submit it as owner. Without an official verifiable album song listing, the workflow asks for song IDs rather than inventing an unplayable album.");
+    } catch (error) { setProblem(error instanceof Error ? error.message : "Unsupported album link."); }
   }
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -89,6 +108,34 @@ export function UpdateAlbums({ albums }: { albums: Album[] }) {
             <RefreshCw size={15} aria-hidden /> {checking ? "Checking catalog…" : "Check published catalog"}
           </button>
 
+          <form onSubmit={submitQuick} className="mt-5 rounded-xl border border-amber/30 bg-bg/50 p-4">
+            <h3 className="flex items-center gap-2 font-display text-xl"><WandSparkles size={19} className="text-amber" /> Auto new album · One link</h3>
+            <p className="mt-2 text-sm text-mist">Paste your public SoundCloud or Suno album link. We'll recognize the platform and send it to your owner-only GitHub review workflow.</p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-[minmax(0,1fr)_108px_auto] sm:items-end">
+              <label className="min-w-0 text-sm text-mist">New album URL
+                <input required type="url" value={quickUrl} onChange={(e) => setQuickUrl(e.target.value)}
+                  placeholder="https://soundcloud.com/microneesia/sets/… or https://suno.com/album/…"
+                  className="mt-1 block min-h-11 w-full rounded-xl border border-line bg-bg px-3 text-cream" />
+              </label>
+              <label className="text-sm text-mist">Year
+                <input required type="number" min={1990} max={2100} value={quickYear} onChange={(e) => setQuickYear(e.target.value)}
+                  className="mt-1 block min-h-11 w-full rounded-xl border border-line bg-bg px-3 text-cream" />
+              </label>
+              <button type="submit" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-heat px-4 font-semibold text-white">
+                <WandSparkles size={17} /> Auto new album ↗
+              </button>
+            </div>
+            <p className="mt-2 text-xs text-mist">
+              SoundCloud: official title/artwork fetched automatically; track count remains unknown until verified.
+              Suno: may require official song IDs to finish; no invented tracks or unauthorized scraping.
+              Nothing goes live before you approve the catalog PR.
+            </p>
+          </form>
+          <button type="button" onClick={() => setManual((v) => !v)} aria-expanded={manual}
+            className="mt-4 min-h-11 rounded-xl border border-line px-4 text-sm text-amber">
+            {manual ? "Hide manual details" : "Manual details (for Suno songs or precise track counts)"}
+          </button>
+          {manual && (
           <form onSubmit={submit} className="mt-5 grid gap-4">
             <fieldset>
               <legend className="mb-2 text-xs font-semibold uppercase tracking-widest text-amber">Music platform</legend>
@@ -146,6 +193,7 @@ export function UpdateAlbums({ albums }: { albums: Album[] }) {
               Prepare update on GitHub <ArrowUpRight size={17} aria-hidden />
             </button>
           </form>
+          )}
           {checkResult && <p role="status" className="mt-4 text-sm text-amber">{checkResult}</p>}
           <p className="mt-4 text-xs text-mist">
             Only submissions from the repository owner can create catalog PRs. Nothing publishes without a merge.
