@@ -43,7 +43,8 @@ assert.ok(js.includes("Every record is a little universe."), "The Music Timeline
 assert.ok(js.includes("Timeline"), "Timeline room/navigation should appear in the static application");
 assert.ok(js.includes("Foundations & Boga Beatz"), "The historical 2023 era must be present");
 assert.ok(js.includes("Backspin"), "The Decks room must contain Backspin integration");
-assert.ok(js.includes("backspin96-poster.png"), "The poster-first Decks room must reference the supplied original art");
+assert.ok(js.includes("backspin96-decks-art.png"), "The Decks UI must request the checked-in original poster filename");
+assert.ok(existsSync(join(root, "backspin96-decks-art.png")), "The actual Backspin poster must be copied to the Pages output");
 assert.ok(js.includes("Backspin '96 · The Vinyl World"), "The retro Backspin performance mode must be present");
 const backspinManifest = join(root, "backspin96/mbl-stage.json");
 if (existsSync(backspinManifest)) {
