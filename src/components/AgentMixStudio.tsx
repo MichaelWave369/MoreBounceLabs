@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { ClipboardCopy, Download, Link2, ListMusic, Save, ShieldCheck } from "lucide-react";
 import {
-  decodeMix, mixShareUrl, newMixFromQueue, queueMix, validateMix,
+  decodeMix, mixShareUrl, newMixFromQueue, prepareMixForExport, queueMix, validateMix,
   type ExchangeMix, type MixReview,
 } from "@/lib/mixExchange";
 import { useHouse, type Album, type QueueItem } from "@/lib/engine";
+import { cleanCatalogTrackNumber } from "@/lib/displayTrackTitle";
 
 const STORAGE = "mbl-approved-mixes-v1";
 const MAX_SAVED = 20;
@@ -58,8 +59,8 @@ export function AgentMixStudio({ albums, onPlay }: { albums: Album[]; onPlay: (i
       const next = validateMix(raw, albums);
       setReview(next);
       setMessage(next.ok
-        ? "Mix validated. Review its tracks before you choose Play approved mix."
-        : "UNPLAYABLE: " + next.errors.length + " catalog reference error(s). Repair the mix before saving, sharing, or playback.");
+        ? (next.warnings.length ? "Mix validated with " + next.warnings.length + " catalog title warning(s). These will be marked on export." : "Mix validated. Review its tracks before you choose Play approved mix.")
+        : "UNPLAYABLE: " + next.errors.map((issue) => issue.message).join(" · "));
     } catch (e) { setMessage(e instanceof Error ? e.message : "Invalid mix plan."); }
   }
 
@@ -78,7 +79,8 @@ export function AgentMixStudio({ albums, onPlay }: { albums: Album[]; onPlay: (i
 
   function saveMix() {
     if (!review?.ok) { setMessage("This mix is unplayable and cannot be saved until all catalog references are fixed."); return; }
-    const next = [review.mix, ...saved.filter((mix) => JSON.stringify(mix) !== JSON.stringify(review.mix))].slice(0, MAX_SAVED);
+    const exported = prepareMixForExport(review.mix, albums);
+    const next = [exported, ...saved.filter((mix) => JSON.stringify(mix) !== JSON.stringify(exported))].slice(0, MAX_SAVED);
     try {
       localStorage.setItem(STORAGE, JSON.stringify(next));
       setSaved(next);
@@ -89,7 +91,7 @@ export function AgentMixStudio({ albums, onPlay }: { albums: Album[]; onPlay: (i
   async function copyLink() {
     if (!review?.ok) { setMessage("Repair missing catalog tracks before sharing."); return; }
     try {
-      const next = mixShareUrl(review.mix, window.location.href);
+      const next = mixShareUrl(prepareMixForExport(review.mix, albums), window.location.href);
       setLink(next);
       await navigator.clipboard.writeText(next);
       setMessage("Share link copied. Opening it shows the mix for review, never automatic playback.");
@@ -153,14 +155,16 @@ export function AgentMixStudio({ albums, onPlay }: { albums: Album[]; onPlay: (i
             {selected?.tracks.map((item, index) => {
               const album = albums.find((a) => a.id === item.albumId);
               const song = album?.tracks[item.index];
-              const label = song?.title
-                ? (/^\d+[.)]\s/.test(song.title) ? song.title : (index + 1) + ". " + song.title)
-                : (index + 1) + ". Missing song";
+              const label = (index + 1) + ". " + (song ? cleanCatalogTrackNumber(song.title) : "Missing song");
+              const error = review.errors.find((issue) => issue.trackIndex === index);
+              const warning = review.warnings.find((issue) => issue.trackIndex === index);
               const unplayable = !album || !song;
               return (
                 <li key={index} className="rounded-lg border border-white/10 px-3 py-2 text-sm">
                   <strong>{label} · {album?.title || item.albumId}</strong>
                   {unplayable && <span className="ml-2 rounded-full border border-rose-400/50 px-2 text-xs text-rose-200">Can't play</span>}
+                  {error && <p className="mt-1 text-xs text-rose-200">Track error: {error.message}</p>}
+                  {warning && <p className="mt-1 text-xs text-amber">Catalog warning: {warning.message}</p>}
                   <span className="ml-2 text-xs text-fuchsia-200">Transition idea: {item.transition}</span>
                   {item.note && <p className="mt-1 text-xs text-[#d5c7b8]">{item.note}</p>}
                 </li>
@@ -184,9 +188,18 @@ export function AgentMixStudio({ albums, onPlay }: { albums: Album[]; onPlay: (i
               <ListMusic size={16} /> Play approved mix
             </button>
             <button type="button" disabled={!valid} onClick={saveMix} className="min-h-11 rounded-xl border border-white/30 px-3 disabled:opacity-40"><Save size={16} className="mr-2 inline" />Save</button>
-            <button type="button" disabled={!valid} onClick={() => selected && downloadMix(selected)} className="min-h-11 rounded-xl border border-white/30 px-3 disabled:opacity-40"><Download size={16} className="mr-2 inline" />Export JSON</button>
+            <button type="button" disabled={!valid} onClick={() => selected && downloadMix(prepareMixForExport(selected, albums))} className="min-h-11 rounded-xl border border-white/30 px-3 disabled:opacity-40"><Download size={16} className="mr-2 inline" />Export JSON</button>
             <button type="button" disabled={!valid} onClick={() => void copyLink()} className="min-h-11 rounded-xl border border-white/30 px-3 disabled:opacity-40"><Link2 size={16} className="mr-2 inline" />Share link</button>
           </div>
+          <button type="button" onClick={() => {
+            const payload = { ok: review.ok, errors: review.errors, warnings: review.warnings,
+              queue: review.ok ? review.queue : [] };
+            void navigator.clipboard.writeText(JSON.stringify(payload, null, 2))
+              .then(() => setMessage("Structured validation JSON copied for your agent."))
+              .catch(() => setMessage("Clipboard blocked; use the read-only window.mblMix validator instead."));
+          }} className="mt-2 min-h-11 rounded-xl border border-fuchsia-300/40 px-3 text-xs">
+            Copy validation JSON
+          </button>
           {link && <input aria-label="Mix share URL" readOnly value={link}
             className="mt-3 min-h-11 w-full rounded-lg border border-white/20 bg-black/40 px-3 text-xs" />}
         </div>

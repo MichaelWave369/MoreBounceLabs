@@ -69,6 +69,6 @@ test("field fixes retain persistent Backspin performance protection and an unobs
   assert.match(decks, /Visual pressure/);
   assert.match(decks, /Vault tracks from Suno\/SoundCloud cannot be imported directly/);
   assert.match(house, /player-safe-embed-lab/);
-  assert.match(house, /inLab=\{house\.room === "lab"\}/);
+  assert.match(house, /inLab=\{house\.room === "lab" \|\| house\.room === "desk"\}/);
   assert.match(house, /Suno owns playback inside this official widget/);
 });

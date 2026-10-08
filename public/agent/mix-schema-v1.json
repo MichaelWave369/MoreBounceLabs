@@ -123,6 +123,40 @@
           }
         }
       }
+    },
+    "catalogWarnings": {
+      "type": "array",
+      "description": "Advisory export receipt. Recompute against current catalog; never trust as permission to play.",
+      "items": {
+        "type": "object",
+        "required": [
+          "code",
+          "trackIndex",
+          "albumId",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "enum": [
+              "album_missing",
+              "track_missing",
+              "metadata_mismatch"
+            ]
+          },
+          "trackIndex": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "albumId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
     }
   }
 }

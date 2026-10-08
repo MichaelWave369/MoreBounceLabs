@@ -70,6 +70,8 @@ assert.ok(js.includes("The Desk"), "Desk must contain the new image-first HQ");
 assert.ok(js.includes("Agent Mix Studio"), "A public agent/human mix exchange must be present in Desk");
 assert.ok(existsSync(join(root, "agent/mix-schema-v1.json")), "Public agent Mix Exchange schema must ship with Pages");
 assert.ok(existsSync(join(root, "agent/mix-manifest-v1.json")), "Public agent discovery manifest must ship with Pages");
+assert.ok(existsSync(join(root, "llms.txt")), "Agent discovery llms.txt must be in project root");
+assert.ok(existsSync(join(root, "agent/mix-changelog.txt")), "Desk version history must be available publicly");
 const mixManifest = JSON.parse(readFileSync(join(root, "agent/mix-manifest-v1.json"), "utf8"));
 assert.equal(mixManifest.format, "mbl-mix-v1", "Agent manifest must retain the supported mix format");
 assert.equal(mixManifest.validation.requiresHumanApproval, true, "Agent manifest must preserve human playback approval");

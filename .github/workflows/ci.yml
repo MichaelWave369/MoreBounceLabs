@@ -25,7 +25,7 @@ jobs:
       - name: TypeScript
         run: npm run typecheck
       - name: Music house regression tests
-        run: node --experimental-strip-types --test scripts/house-logic.test.mjs scripts/dj-bot-core.test.mjs scripts/infinity-bridge.test.mjs scripts/soundcloud-archives.test.mjs scripts/timeline.test.mjs scripts/infinity-only-lab.test.mjs scripts/release-update.test.mjs scripts/desk-room.test.mjs scripts/mix-exchange.test.mjs scripts/agent-mix-qa.test.mjs scripts/mr-fl-golden-hour.test.mjs
+        run: node --experimental-strip-types --test scripts/house-logic.test.mjs scripts/dj-bot-core.test.mjs scripts/infinity-bridge.test.mjs scripts/soundcloud-archives.test.mjs scripts/timeline.test.mjs scripts/infinity-only-lab.test.mjs scripts/release-update.test.mjs scripts/desk-room.test.mjs scripts/mix-exchange.test.mjs scripts/agent-mix-qa.test.mjs scripts/mr-fl-golden-hour.test.mjs scripts/mr-fl-r23-regression.test.mjs
       - name: Verify Backspin source staging safeguards
         run: python3 -m unittest discover -s scripts -p 'test_backspin_stage.py'
       - name: Stage reviewed Backspin source pack (if present)

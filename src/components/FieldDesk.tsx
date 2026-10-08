@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ArrowDown, ArrowUp, Clock3, Download, ListMusic, Save } from "lucide-react";
 import { currentTrack, useHouse, type Album } from "@/lib/engine";
 import { AgentMixStudio } from "@/components/AgentMixStudio";
+import { cleanCatalogTrackNumber } from "@/lib/displayTrackTitle";
 
 type QueueItem = { albumId: string; index: number };
 type Playlist = { id: string; name: string; items: QueueItem[] };
@@ -17,6 +18,7 @@ export function FieldDesk({ albums, playlists, history, onSave, onPlay }: {
   const house = useHouse();
   const [name, setName] = useState("My bounce");
   const [artFailed, setArtFailed] = useState(false);
+  const [workspace, setWorkspace] = useState<"desk" | "mix">(() => new URLSearchParams(window.location.search).has("mix") ? "mix" : "desk");
   const { album, track } = currentTrack(house);
 
   function exportCatalog() {
@@ -48,8 +50,23 @@ export function FieldDesk({ albums, playlists, history, onSave, onPlay }: {
           <p className="mt-2 text-xs text-[#cbb8a4]">
             This is your own browser's workspace. Personal playlists and listening history are stored locally.
           </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button type="button" onClick={() => setWorkspace("mix")} aria-pressed={workspace === "mix"}
+              className={`min-h-11 rounded-xl border px-4 text-sm ${workspace === "mix" ? "border-fuchsia-300 bg-fuchsia-700/70" : "border-fuchsia-300/50"}`}>Open Agent Mix Studio</button>
+            <button type="button" onClick={() => setWorkspace("desk")} aria-pressed={workspace === "desk"}
+              className={`min-h-11 rounded-xl border px-4 text-sm ${workspace === "desk" ? "border-amber bg-amber/20" : "border-white/20"}`}>Desk workbench</button>
+          </div>
+          <p className="mt-3 text-xs text-[#cbb8a4]">
+            Desk QA R23 · Mix Exchange v1 · <a className="underline" href={import.meta.env.BASE_URL + "agent/mix-changelog.txt"} target="_blank" rel="noopener noreferrer">View changelog</a>
+          </p>
         </header>
 
+        {workspace === "mix" ? (
+          <div className="mt-4" id="agent-mix-workspace">
+            <AgentMixStudio albums={albums} onPlay={onPlay} />
+          </div>
+        ) : (
+          <>
         <div className="flex-1 min-h-[260px] sm:min-h-[360px] xl:min-h-[450px]" aria-hidden="true" />
 
         <div className="grid gap-4 xl:grid-cols-2">
@@ -93,7 +110,7 @@ export function FieldDesk({ albums, playlists, history, onSave, onPlay }: {
               <h2 id="desk-queue-heading" className="font-display text-2xl text-cream">Now playing &amp; queue</h2>
             </div>
             <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-              <p className="text-sm text-[#eaded1]">{track?.title || "Nothing playing"}
+              <p className="text-sm text-[#eaded1]">{track?.title ? cleanCatalogTrackNumber(track.title) : "Nothing playing"}
                 {album?.title ? <span className="block text-xs text-[#cbb8a4]">{album.title}</span> : null}
               </p>
               <span className="text-xs text-[#cbb8a4]">{house.queue.length} tracks · {house.embed ? "Suno controls playback" : house.status}</span>
@@ -110,7 +127,7 @@ export function FieldDesk({ albums, playlists, history, onSave, onPlay }: {
                       aria-current={index === house.cursor ? "true" : undefined}
                       className={"min-h-11 min-w-0 flex-1 truncate px-1 text-left text-sm " +
                         (index === house.cursor ? "text-amber" : "text-[#e8dccf]")}>
-                      {index === house.cursor ? "Now · " : (index + 1) + ". "}{song?.title || "Track"} · {sourceAlbum?.title}
+                      {index === house.cursor ? "Now · " : (index + 1) + ". "}{song?.title ? cleanCatalogTrackNumber(song.title) : "Track"} · {sourceAlbum?.title}
                     </button>
                     <button type="button" onClick={() => house.moveQueue(index, -1)} disabled={index === 0}
                       aria-label={"Move queue song " + (index + 1) + " earlier"} className="min-h-11 min-w-11 disabled:opacity-30"><ArrowUp className="mx-auto" size={17} /></button>
@@ -135,8 +152,6 @@ export function FieldDesk({ albums, playlists, history, onSave, onPlay }: {
           </section>
         </div>
 
-        <AgentMixStudio albums={albums} onPlay={onPlay} />
-
         <section className="mbl-field-desk-panel mt-4 rounded-2xl border border-white/20 p-4 sm:p-5" aria-labelledby="desk-history-heading">
           <h2 id="desk-history-heading" className="font-display text-xl">Recently played here</h2>
           <div className="mt-3 flex flex-wrap gap-2">
@@ -154,6 +169,8 @@ export function FieldDesk({ albums, playlists, history, onSave, onPlay }: {
             })}
           </div>
         </section>
+          </>
+        )}
       </div>
     </section>
   );

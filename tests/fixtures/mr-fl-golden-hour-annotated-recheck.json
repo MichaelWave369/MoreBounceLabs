@@ -1,0 +1,111 @@
+{
+  "format": "mbl-mix-v1",
+  "name": "Golden Hour to Funk Peak and Back",
+  "creator": {
+    "type": "agent",
+    "name": "Grok Bot"
+  },
+  "description": "10-track arc: calm yacht-rock opener, climb through Suno-era grooves to a funk peak at track 7, then cool down to a bittersweet close.",
+  "tracks": [
+    {
+      "albumId": "the-azure-inheritance",
+      "index": 0,
+      "transition": "cut",
+      "note": "Opener: slow golden-hour warm-up",
+      "albumTitle": "The Azure Inheritance",
+      "artist": "Mikey More Bounce",
+      "trackTitle": "Portofino at Seven",
+      "energy": 0.25
+    },
+    {
+      "albumId": "the-ocean-has-an-alibi",
+      "index": 4,
+      "transition": "fade",
+      "note": "Dreamy Drift keeps the calm but loosens the groove",
+      "albumTitle": "The Ocean Has an Alibi",
+      "artist": "Mikey More Bounce",
+      "trackTitle": "Dreamy Drift",
+      "energy": 0.3
+    },
+    {
+      "albumId": "lucid-altitude",
+      "index": 3,
+      "transition": "blend",
+      "note": "Tunnel Bloom nods to the Lab visual of the same name; pace picks up",
+      "albumTitle": "Lucid Altitude",
+      "artist": "Mikey More Bounce",
+      "trackTitle": "4. Tunnel Bloom",
+      "energy": 0.4
+    },
+    {
+      "albumId": "anti-gravity-protocol",
+      "index": 0,
+      "transition": "fade",
+      "note": "Onramp literally merges us onto the highway; energy climbs",
+      "albumTitle": "Anti-Gravity Protocol",
+      "artist": "Mikey More Bounce",
+      "trackTitle": "Onramp",
+      "energy": 0.5
+    },
+    {
+      "albumId": "neon-afterglow-society",
+      "index": 0,
+      "transition": "cut",
+      "note": "Disco Mirage: first big dancefloor lift",
+      "albumTitle": "Neon Afterglow Society",
+      "artist": "Mikey More Bounce",
+      "trackTitle": "Disco Mirage",
+      "energy": 0.7
+    },
+    {
+      "albumId": "funktendo-369",
+      "index": 3,
+      "transition": "blend",
+      "note": "Peak funk",
+      "albumTitle": "Funktendo 369",
+      "artist": "Mikey More Bounce",
+      "trackTitle": "Funk Somethin' Will Ya!",
+      "energy": 0.8
+    },
+    {
+      "albumId": "funktendo-369",
+      "index": 10,
+      "transition": "cut",
+      "note": "OverFunk: the peak of the set",
+      "albumTitle": "Funktendo 369",
+      "artist": "Mikey More Bounce",
+      "trackTitle": "OverFunk",
+      "energy": 0.95
+    },
+    {
+      "albumId": "architectural-intuition",
+      "index": 5,
+      "transition": "fade",
+      "note": "Signal Orchard cools things down, more cerebral",
+      "albumTitle": "Architectural Intuition",
+      "artist": "Mikey More Bounce",
+      "trackTitle": "6. Signal Orchard",
+      "energy": 0.5
+    },
+    {
+      "albumId": "the-ocean-has-an-alibi",
+      "index": 8,
+      "transition": "blend",
+      "note": "Smooth Landing: coming down",
+      "albumTitle": "The Ocean Has an Alibi",
+      "artist": "Mikey More Bounce",
+      "trackTitle": "Smooth Landing",
+      "energy": 0.3
+    },
+    {
+      "albumId": "the-azure-inheritance",
+      "index": 13,
+      "transition": "fade",
+      "note": "Last light closer: bittersweet exit",
+      "albumTitle": "The Azure Inheritance",
+      "artist": "Mikey More Bounce",
+      "trackTitle": "Last Light on the Côte d’Azur",
+      "energy": 0.2
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+MoreBounceLabs | Desk and Agent Mix Studio
+R23 Field QA · 2026-10-08
+Mix Exchange format: mbl-mix-v1 (backward compatible)
+
+- Display set position 1..N distinctly from catalog-native numbers.
+- Reject album IDs with leading/trailing whitespace instead of silently changing them.
+- Show per-track "unplayable" reason for nonexistent album or out-of-range track index.
+- Fill missing albumTitle, artist, and trackTitle on saved/exported/shared plans.
+- Preserve a computed advisory catalogWarnings receipt when exported titles disagree with today's catalog.
+- Offer a one-click Agent Mix Studio view near the top of Desk instead of burying it below the queue.
+- Keep the official Suno player in the page flow for Desk and Lab, not covering their controls.
+- Publish project-scoped llms.txt and read-only window.mblMix.validate/preview tools for public-agent integration.
+- Never run mixes without human approval; all DJ transitions remain suggestions.
+
+R22: Store independent Grok Bot / Mr. FL Golden Hour mix as regression fixture.
+R21: Structured validation, safe note fields, published JSON Schema and agent manifest.
+R20: Initial agent mix exchange and field usability fixes.
