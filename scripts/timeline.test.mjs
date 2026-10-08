@@ -40,7 +40,7 @@ test("source filters, year filters and text search work without mutating albums"
   assert.equal(filterTimeline(entries, {provider:"soundcloud",year:2022,query:"reflections"}).length, 1);
   assert.equal(filterTimeline(entries, {provider:"suno",year:2022,query:""}).length, 0);
   assert.equal(filterTimeline(entries, {provider:"all",year:"all",query:"NoSuchAlbum1234"}).length, 0);
-  assert.equal(filterTimeline(entries, {provider:"all",year:"all",query:"  DIMENSIONAL "}).length, 1);
+  assert.equal(filterTimeline(entries, {provider:"all",year:"all",query:"  BOGA BEATZ V.1 "}).length, 1);
   assert.equal(entries.length, inputCount);
 });
 
