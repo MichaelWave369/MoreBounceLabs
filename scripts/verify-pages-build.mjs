@@ -30,6 +30,8 @@ const js = assets.filter((name) => name.endsWith(".js")).map((name) => readFileS
 assert.ok(js.includes("catalog/albums.json"), "Built app must request its catalog");
 assert.ok(js.includes("MoreBounceLabs"), "Bundled UI should use the new site identity");
 assert.ok(js.includes("Sounds From the Mothership"), "SoundCloud archive releases must appear in the built Vault");
+assert.ok(js.includes("Boga Beatz V.1"), "Oldest Boga Beatz archive must appear in the built Vault");
+assert.ok(js.includes("Reflections"), "The 2022 Reflections release must appear in the built Vault");
 assert.ok(js.includes("w.soundcloud.com/player/"), "Official SoundCloud widget URL must be bundled");
 assert.ok(js.includes("The original record shelves"), "SoundCloud archive shelf must be visible in Vault");
 assert.ok(js.includes("Backspin"), "The Decks room must contain Backspin integration");
