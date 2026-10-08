@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
-import { collectStation, fmt, parseHash, reorderQueue, runtime, safeEmbed, safeHttps, sharedTrackIndex } from "./house-logic.mjs";
+import { collectStation, fmt, parseHash, playbackSource, reorderQueue, runtime, safeEmbed, safeHttps, sharedTrackIndex } from "./house-logic.mjs";
 
 test("catalog baseline stays 19 albums and 344 tracks", () => {
   const data = JSON.parse(readFileSync("public/catalog/albums.json", "utf8"));
@@ -87,4 +87,34 @@ test("shared song links reject malformed and out-of-bounds indexes", () => {
   }
   assert.equal(sharedTrackIndex("0", 0), null);
   assert.equal(sharedTrackIndex("0", -1), null);
+});
+
+test("Suno clip hosts open one official embedded player instead of duplicate native controls", () => {
+  const songId = "f3958d3d-24d1-4d45-bfd8-5181269dda4a";
+  assert.deepEqual(
+    playbackSource({ sunoId: songId, src: `https://d2lwuy8qc234o3.cloudfront.net/1/clip/${songId}.m4a` }),
+    { kind: "embed", url: `https://suno.com/embed/${songId}` },
+  );
+  assert.equal(playbackSource({ sunoId: songId }).kind, "embed");
+  assert.equal(playbackSource({ sunoId: songId, src: "https://cdn1.suno.ai/audio.mp3" }).kind, "embed");
+  assert.equal(playbackSource({ sunoId: songId, src: "https://cdn2.suno.ai/audio.mp3" }).kind, "embed");
+  assert.equal(playbackSource({ src: "https://d2lwuy8qc234o3.cloudfront.net/1/clip/test.m4a" }).kind, "none");
+});
+
+test("artist-controlled HTTPS files use native audio, malformed sources remain unavailable", () => {
+  const songId = "f3958d3d-24d1-4d45-bfd8-5181269dda4a";
+  assert.deepEqual(
+    playbackSource({ sunoId: songId, src: "https://media.example.org/music/song.mp3" }),
+    { kind: "native", url: "https://media.example.org/music/song.mp3" },
+  );
+  assert.equal(playbackSource({ src: "http://example.org/song.mp3" }).kind, "none");
+  assert.equal(playbackSource({ src: "javascript:alert(1)" }).kind, "none");
+  assert.equal(playbackSource(undefined).kind, "none");
+});
+
+test("all existing Suno catalog tracks resolve to a single official embed", () => {
+  const data = JSON.parse(readFileSync("public/catalog/albums.json", "utf8"));
+  const tracks = data.albums.flatMap((a) => a.tracks);
+  assert.equal(tracks.length, 344);
+  assert.ok(tracks.every((t) => playbackSource(t).kind === "embed"));
 });
