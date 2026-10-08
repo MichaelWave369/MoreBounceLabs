@@ -12,6 +12,7 @@
     "db:migrate": "node scripts/migrate.mjs",
     "build:dev": "node scripts/with-app-env.mjs vite build --mode development",
     "build:pages": "vite build --config vite.pages.config.ts",
+    "backspin:stage": "python3 scripts/stage-backspin96.py",
     "verify:pages": "node scripts/verify-pages-build.mjs",
     "dj:lab": "node scripts/dj-bot-lab.mjs --tracks=10",
     "dj:lab:headed": "node scripts/dj-bot-lab.mjs --headed --tracks=10",
