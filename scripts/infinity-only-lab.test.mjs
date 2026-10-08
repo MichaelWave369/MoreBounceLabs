@@ -6,8 +6,10 @@ const shell = readFileSync("src/components/HouseApp.tsx", "utf8");
 const lens = readFileSync("src/components/InfinityLensStage.tsx", "utf8");
 
 test("the Lab renders exactly one visual system: InfinityLens", () => {
-  const lab = shell.match(/\{house\.room === "lab" &&[^\n]+\}/)?.[0];
-  assert.ok(lab, "The dedicated Lab room must exist");
+  const start = shell.indexOf('{house.room === "lab" &&');
+  const end = shell.indexOf('{house.room === "radio" &&', start);
+  assert.ok(start >= 0 && end > start, "The dedicated Lab room must exist");
+  const lab = shell.slice(start, end);
   assert.match(lab, /<InfinityLensStage reduced=\{reduced\}/);
   assert.doesNotMatch(lab, /VizCanvas|VIZ_MODES|setViz|vizNote/);
   assert.equal((shell.match(/<InfinityLensStage /g) || []).length, 1);
