@@ -66,6 +66,11 @@ if (backspinStaged) {
 } else {
   assert.ok(!existsSync(join(root, "backspin96/mbl-stage.json")), "Cannot advertise an unverified Backspin booth");
 }
+assert.ok(js.includes("The Desk"), "Desk must contain the new image-first HQ");
+assert.ok(js.includes("desk-room-bg.png"), "Desk must request its approved original background");
+if (existsSync("public/desk/desk-room-bg.png")) {
+  assert.ok(existsSync(join(root, "desk/desk-room-bg.png")), "The original Desk image must reach Pages output");
+}
 assert.ok(js.includes("Infinity Lab"), "Lab must have the dedicated InfinityLens-only heading");
 assert.ok(js.includes("InfinityLens369"), "Visual Lab should contain InfinityLens guest stage");
 assert.ok(js.includes("mbl-infinitylens-v1"), "Visual Lab should include the versioned visual bridge");
