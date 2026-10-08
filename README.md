@@ -1,6 +1,6 @@
-# More Bounce Labs / MicTek House
+# MoreBounceLabs
 
-A local-first music house for **Mikey More Bounce / MicTek**, with an album vault, listening lounge, visual lab, radio stations, two DJ decks, browser-local favorites and playlists, and a persistent player.
+A local-first music experience by **Mikey More Bounce**, with an album vault, listening lounge, visual lab, radio stations, two DJ decks, browser-local favorites and playlists, and a persistent player.
 
 ## Catalog integrity
 
@@ -32,7 +32,7 @@ npm run build
 
 The inherited Grok platform test suite (`npm test`) currently includes PWA identity tests that fail against this branded export (8 failures observed on the initial GitHub Actions run). This first-flight CI checks the music-house regression tests separately; the full inherited suite still needs an isolated-fixture cleanup before it should become a required gate.
 
-The build currently uses **TanStack Start + Nitro with a Vercel preset** (see `vite.config.ts`). A push to this GitHub repository does **not** automatically publish a working GitHub Pages deployment. Deploy this build to a compatible host such as Vercel, or deliberately convert it to a static SPA before enabling GitHub Pages. The older `mictek-house` Pages site is separate and should not be overwritten without a tested migration.
+The project retains its **TanStack Start + Nitro/Vercel** build as well as a separate Vite static GitHub Pages build. The original `mictek-house` Pages site is a distinct legacy deployment and is not modified by this repository.
 
 ## Rooms
 
@@ -89,3 +89,7 @@ The public catalog includes 344 Suno clips with undocumented clip-host URLs. The
 - **Visualizer:** Suno embed mode is ambient only; it does not claim access to audio analysis.
 
 This is intentionally an honest two-source adapter, not an attempt to control or bypass Suno's cross-origin player. The Site cannot directly start the music inside a third-party iframe; visitors must tap Play inside the official player. The existing catalog is unchanged.
+
+## Public brand
+
+The **site and application** are named **MoreBounceLabs**, shortened to **MBL** in compact UI. The old public-facing “MicTek House” branding has been removed from the navigation, player, browser title, PWA/OG metadata, static Pages HTML and no-script message. Artist attribution and pre-existing technical paths/legacy repository links are retained where they still have meaning.
