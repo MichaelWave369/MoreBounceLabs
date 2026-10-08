@@ -18,6 +18,7 @@ import { currentTrack, getAudio, useHouse, type Album } from "@/lib/engine";
 import { VIZ_MODES, VizCanvas } from "@/components/VizCanvas";
 import { InfinityLensStage } from "@/components/InfinityLensStage";
 import { BackspinDecks } from "@/components/BackspinDecks";
+import { SoundCloudShelf } from "@/components/SoundCloudShelf";
 
 const ROOMS = [
   ["lobby", "Lobby"],
@@ -40,6 +41,7 @@ export function HouseApp() {
   const [egg, setEgg] = useState(0);
   const [vizLive, setVizLive] = useState(false);
   const [sharedTrack, setSharedTrack] = useState("");
+  const [selectedSoundCloud, setSelectedSoundCloud] = useState<string | null>(null);
 
   useEffect(() => {
     void house.loadCatalog();
@@ -77,6 +79,15 @@ export function HouseApp() {
     const id = window.setInterval(() => setSpot((n) => n + 1), 7000);
     return () => window.clearInterval(id);
   }, [reduced, house.room]);
+
+  useEffect(() => {
+    if (house.room !== "vault") setSelectedSoundCloud(null);
+  }, [house.room]);
+
+  function selectSoundCloud(id: string | null) {
+    if (id) house.suspendForExternal();
+    setSelectedSoundCloud(id);
+  }
 
   const albums = house.albums;
   const now = currentTrack(house);
@@ -189,8 +200,11 @@ export function HouseApp() {
             sort={sort}
             setLayout={setLayout}
             setSort={setSort}
-            onOpen={(id) => house.go("album", id)}
-            onPlay={(id) => house.playAlbum(id, 0)}
+            onOpen={(id) => { selectSoundCloud(null); house.go("album", id); }}
+            onPlay={(id) => { selectSoundCloud(null); house.playAlbum(id, 0); }}
+            query={query}
+            selectedSoundCloud={selectedSoundCloud}
+            onSelectSoundCloud={selectSoundCloud}
           />
         )}
         {house.room === "album" && openAlbum && (
@@ -264,7 +278,7 @@ export function HouseApp() {
         {house.ready && house.room === "album" && !openAlbum && <p>That album is not in the catalog.</p>}
       </main>
 
-      {house.room !== "decks" && <Player onLounge={() => house.go("lounge")} />}
+      {house.room !== "decks" && !(house.room === "vault" && selectedSoundCloud) && <Player onLounge={() => house.go("lounge")} />}
     </div>
   );
 }
@@ -338,8 +352,14 @@ function Vault({
   setSort,
   onOpen,
   onPlay,
+  query,
+  selectedSoundCloud,
+  onSelectSoundCloud,
 }: {
   albums: Album[];
+  query: string;
+  selectedSoundCloud: string | null;
+  onSelectSoundCloud: (id: string | null) => void;
   layout: "grid" | "list" | "bin";
   sort: "listed" | "title" | "tracks";
   setLayout: (v: "grid" | "list" | "bin") => void;
@@ -364,7 +384,9 @@ function Vault({
           ))}
         </div>
       </div>
-      {albums.length === 0 && <p className="mt-6 text-mist">No records match that search.</p>}
+      <SoundCloudShelf query={query} selectedId={selectedSoundCloud} onSelect={onSelectSoundCloud} />
+      <h2 className="mt-8 font-display text-2xl">Suno releases</h2>
+      {albums.length === 0 && <p className="mt-6 text-mist">No Suno records match that search.</p>}
       {albums.length > 0 && layout === "bin" ? (
         <div className="bin mt-5 flex gap-4 overflow-x-auto pb-4">
           {albums.map((album) => (

@@ -50,6 +50,7 @@ type EngineState = {
   resume: (QueueItem & { position?: number }) | null;
   loadCatalog: () => Promise<void>;
   go: (room: string, albumId?: string) => void;
+  suspendForExternal: () => void;
   playAlbum: (albumId: string, start?: number, shuffled?: boolean) => void;
   playStation: (items: QueueItem[]) => void;
   playQueue: (items: QueueItem[]) => void;
@@ -231,6 +232,14 @@ export const useHouse = create<EngineState>((set, get) => {
       } catch {
         set({ ready: true, loadError: get().albums.length ? "" : "The catalog did not load." });
       }
+    },
+
+    suspendForExternal: () => {
+      // One listening surface at a time: remove both the MBL native stream
+      // and a previously mounted Suno iframe before activating SoundCloud.
+      playRequest += 1;
+      stopNativeForEmbed();
+      set({ embed: "", status: "idle", message: "", sleepAt: 0, analyzed: false });
     },
 
     go: (room, albumId) => {
