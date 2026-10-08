@@ -34,6 +34,8 @@ assert.ok(js.includes("Boga Beatz V.1"), "Oldest Boga Beatz archive must appear 
 assert.ok(js.includes("Reflections"), "The 2022 Reflections release must appear in the built Vault");
 assert.ok(js.includes("w.soundcloud.com/player/"), "Official SoundCloud widget URL must be bundled");
 assert.ok(js.includes("The original record shelves"), "SoundCloud archive shelf must be visible in Vault");
+assert.ok(js.includes("The music house hit a snag."), "React error boundary must avoid a blank app when embedded widgets fail");
+assert.ok(js.includes("Restore MoreBounceLabs"), "Error boundary must expose a recovery action");
 assert.ok(js.includes("Every record is a little universe."), "The Music Timeline must be included in the Pages JS");
 assert.ok(js.includes("Timeline"), "Timeline room/navigation should appear in the static application");
 assert.ok(js.includes("Foundations & Boga Beatz"), "The historical 2023 era must be present");

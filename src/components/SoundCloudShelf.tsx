@@ -27,7 +27,10 @@ function getWidgetAPI(): Promise<WidgetFactory> {
       document.head.appendChild(script);
     }
     const target = script;
-    const clean = () => { target.removeEventListener("load", ready); target.removeEventListener("error", failed); };
+    const clean = () => {
+      target.removeEventListener("load", ready);
+      target.removeEventListener("error", failed);
+    };
     const ready = () => {
       clean();
       if (win.SC?.Widget) resolve(win.SC);
@@ -114,9 +117,21 @@ export function SoundCloudShelf({
       if (!disposed) setWidgetStatus("Official SoundCloud embed available. Advanced playback event controls unavailable.");
     });
     return () => {
+      // Unmounting the iframe and destroying its cross-origin widget can race
+      // with third-party SDK setup. Never let that teardown exception escape
+      // a React effect cleanup and blank the entire MBL application.
       disposed = true;
       if (scheduled !== undefined) window.clearTimeout(scheduled);
-      if (widget) for (const event of events) widget.unbind(event);
+      if (widget) {
+        for (const event of events) {
+          try {
+            widget.unbind(event);
+          } catch {
+            // Best effort. The iframe is being removed, and any late
+            // asynchronous widget callbacks already observe disposed=true.
+          }
+        }
+      }
     };
   }, [selected?.id]);
 
