@@ -13,9 +13,11 @@ The app references remote Suno media and embeds. **A track in the catalog is not
 Requires Node.js 22 and npm:
 
 ```bash
-npm ci
+npm install
 npm run dev
 ```
+
+The exported lockfile currently fails a clean `npm ci` because some transitive dependencies are out of sync. `npm install` reconciles those versions during installation; a future cleanup should commit a refreshed lockfile so CI can return to strict `npm ci`.
 
 The development server listens at `http://localhost:8080`.
 
