@@ -91,6 +91,12 @@ export function HouseApp() {
     setSelectedSoundCloud(id);
   }
 
+  function navigateRoom(room: string, albumId?: string) {
+    // Close SoundCloud in the same event that changes the room.
+    setSelectedSoundCloud(null);
+    house.go(room, albumId);
+  }
+
   const albums = house.albums;
   const now = currentTrack(house);
   const featured = albums[2] || albums[0];
@@ -141,7 +147,7 @@ export function HouseApp() {
             className="text-left"
             onClick={() => {
               setEgg((n) => n + 1);
-              house.go("lobby");
+              navigateRoom("lobby");
             }}
           >
             <span className="eq mr-2" aria-hidden>
@@ -157,7 +163,7 @@ export function HouseApp() {
               <button
                 key={id}
                 className={`min-h-11 shrink-0 rounded-full px-3 text-sm ${house.room === id ? "bg-amber text-ink" : "text-mist"}`}
-                onClick={() => house.go(id)}
+                onClick={() => navigateRoom(id)}
               >
                 {label}
               </button>
@@ -202,7 +208,7 @@ export function HouseApp() {
             sort={sort}
             setLayout={setLayout}
             setSort={setSort}
-            onOpen={(id) => { selectSoundCloud(null); house.go("album", id); }}
+            onOpen={(id) => navigateRoom("album", id)}
             onPlay={(id) => { selectSoundCloud(null); house.playAlbum(id, 0); }}
             query={query}
             selectedSoundCloud={selectedSoundCloud}
@@ -214,7 +220,7 @@ export function HouseApp() {
             sunoAlbums={albums}
             query={query}
             reduced={reduced}
-            onOpenSuno={(id) => house.go("album", id)}
+            onOpenSuno={(id) => navigateRoom("album", id)}
             onOpenSoundCloud={(id) => {
               house.go("vault");
               selectSoundCloud(id);
