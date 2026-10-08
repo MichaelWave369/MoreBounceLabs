@@ -12,7 +12,7 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
-import { collectStation, fmt, parseHash, runtime, safeEmbed, sharedTrackIndex, STATIONS } from "../../scripts/house-logic.mjs";
+import { fmt, parseHash, runtime, safeEmbed, sharedTrackIndex } from "../../scripts/house-logic.mjs";
 import { currentTrack, getAudio, useHouse, type Album } from "@/lib/engine";
 import { VIZ_MODES, VizCanvas } from "@/components/VizCanvas";
 import { InfinityLensStage } from "@/components/InfinityLensStage";
