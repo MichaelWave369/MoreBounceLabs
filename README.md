@@ -190,3 +190,13 @@ Selecting a **Suno** release opens the MBL album route. Selecting a **SoundCloud
 Atmospheric animations respect the browser's **prefers-reduced-motion** setting and do not use microphone access, WebGL, or SoundCloud/Suno audio analysis. A future optional InfinityLens enhancement could select visual scene presets by historical era but would require its own permission-checked bridge rung.
 
 Development tests: `node --experimental-strip-types --test scripts/timeline.test.mjs`. GitHub CI now checks the Timeline route, year grouping, filter correctness, preserved catalog totals and Pages bundle inclusion.
+
+## SoundCloud navigation reliability (PR #13)
+
+The official SoundCloud embed is scoped to the Vault. Navigating elsewhere now closes the selected player **in the same user action**, rather than deferring teardown until after the next room is rendered. The SoundCloud Widget SDK's `unbind` calls are guarded so an iframe disappearing or a late third-party callback cannot throw from a React cleanup and crash the entire music house.
+
+An application error boundary guards both the GitHub Pages and the server-rendered entry points. If an unexpected React error still occurs, a clear **Restore MoreBounceLabs** recovery button takes the visitor back to `#/lobby` and reloads, rather than presenting an unexplained blank screen.
+
+CI builds the real static React bundle and uses Chromium to exercise `Vault → SoundCloud album → Timeline → Vault → SoundCloud album → Lobby → Vault → close SoundCloud → reload Timeline`. It deliberately supplies a local mock of the SoundCloud Widget API whose `unbind()` throws, proving navigation survives provider teardown errors. The browser test does not make requests for streamed SoundCloud audio or rely on the live SoundCloud player network.
+
+The original **19 Suno + 18 SoundCloud albums** are untouched; this is solely a player-lifecycle, navigation and recovery fix.
