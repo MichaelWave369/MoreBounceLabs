@@ -241,7 +241,7 @@ The **Decks** tab gets a new poster-first design based on the original uploaded 
 Download the original art from this ChatGPT conversation or its original uploaded source, keep the PNG bytes unchanged, and upload it directly to the **PR #15 branch** with the exact repository path:
 
 ```
-public/backspin96-poster.png
+public/backspin96-decks-art.png
 ```
 
 Expected **SHA-256** (1055×1491 PNG):
@@ -267,3 +267,8 @@ CI checks the image hash/dimensions and verifies that Pages includes the identic
 - The poster is art, not a semantic UI. Actual controls live in focusable buttons and range inputs over it, with keyboard names and a separate touch rail. Reduced-motion preferences disable decorative platter glow animations.
 
 **Note:** The artist's poster has promotional claims about whole-catalog mixing; those claims remain part of the unchanged artwork. The actual playable Backspin library consists of audio the listener has locally imported and is authorized to use. Merely seeing MBL's Suno/SoundCloud albums in the Vault does not grant downloadable files to the DJ engine.
+
+
+## Rung 16: Backspin poster filename repair
+
+The exact original image was uploaded to `public/backspin96-decks-art.png` when PR #15 was merged, but the Decks UI was still requesting `backspin96-poster.png`. That mismatch displayed the fallback placeholder even though the real asset was present. The runtime now uses the actual committed filename; the asset integrity gate requires the file and verifies its original SHA-256 plus dimensions, while the Pages verifier requires the copied file in the static output. Missing artwork is no longer allowed to pass CI silently.

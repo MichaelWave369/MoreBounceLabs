@@ -4,7 +4,7 @@ import { Disc3, Headphones, Maximize2, Pause, Play, RotateCcw, ShieldAlert } fro
 const BASE = import.meta.env.BASE_URL;
 const BOOTH_URL = `${BASE}backspin96/`;
 const MANIFEST_URL = `${BOOTH_URL}mbl-stage.json`;
-const POSTER_URL = `${BASE}backspin96-poster.png`;
+const POSTER_URL = `${BASE}backspin96-decks-art.png`;
 type Deck = "A" | "B";
 type BoothStatus = "checking" | "ready" | "missing";
 type Snapshot = {

@@ -4,13 +4,10 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 
-const source = "public/backspin96-poster.png";
-const output = "dist-pages/backspin96-poster.png";
+const source = "public/backspin96-decks-art.png";
+const output = "dist-pages/backspin96-decks-art.png";
 const HASH = "0f2764175607d944ac3be89e62ba114953d3bb9b7307e5e20be0421806d47bcf";
-if (!existsSync(source)) {
-  console.warn("BACKSPIN POSTER PENDING: upload the original artwork as public/backspin96-poster.png before merge.");
-  process.exit(0);
-}
+assert.ok(existsSync(source), "Original Backspin poster is required at public/backspin96-decks-art.png");
 const check = (path) => {
   const content = readFileSync(path);
   assert.equal(createHash("sha256").update(content).digest("hex"), HASH,
