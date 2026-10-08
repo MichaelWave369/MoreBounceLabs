@@ -43,7 +43,7 @@ export function parseSunoTracks(input: string): { title: string; sunoId: string 
     if (parts.length !== 2) throw new Error(`Song ${i + 1}: use Title | Suno song UUID.`);
     const title = parts[0].trim();
     const raw = parts[1].trim();
-    const id = raw.match(/(?:https:\/\/suno\.com\/(?:song|s)\/)?([0-9a-f-]{36})\/?$/i)?.[1];
+    const id = raw.match(/^(?:https:\/\/suno\.com\/(?:song|s)\/)?([0-9a-f-]{36})\/?$/i)?.[1];
     if (!title || title.length > 140 || !id || !UUID.test(id)) {
       throw new Error(`Song ${i + 1}: check its title and valid Suno song UUID.`);
     }
