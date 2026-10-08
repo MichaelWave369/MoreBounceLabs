@@ -30,6 +30,8 @@ const js = assets.filter((name) => name.endsWith(".js")).map((name) => readFileS
 assert.ok(js.includes("catalog/albums.json"), "Built app must request its catalog");
 assert.ok(js.includes("MoreBounceLabs"), "Bundled UI should use the new site identity");
 assert.ok(js.includes("InfinityLens369"), "Visual Lab should contain InfinityLens guest stage");
+assert.ok(js.includes("mbl-infinitylens-v1"), "Visual Lab should include the versioned visual bridge");
+assert.ok(js.includes("cosmic-drift"), "Guest scene controls must appear in MBL build");
 assert.ok(js.includes("https://michaelwave369.github.io/infinitylens369/"), "Guest stage should point to the maintained original");
 assert.ok(!js.includes("MicTek House"), "Legacy site name must not remain in the player UI");
 assert.ok(js.includes("/MoreBounceLabs/"), "Built app must know project base");
