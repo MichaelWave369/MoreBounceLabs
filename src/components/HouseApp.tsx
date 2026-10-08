@@ -131,7 +131,7 @@ export function HouseApp() {
   }
 
   return (
-    <div className={`${house.embed ? "player-safe-embed" : "player-safe"} min-h-screen bg-bg text-cream`}>
+    <div className={`${house.embed ? (house.room === "lab" ? "player-safe-embed-lab" : "player-safe-embed") : "player-safe"} min-h-screen bg-bg text-cream`}>
       <header className="sticky top-0 z-20 border-b border-line bg-bg/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
           <button
@@ -250,7 +250,7 @@ export function HouseApp() {
         {house.ready && house.room === "album" && !openAlbum && <p>That album is not in the catalog.</p>}
       </main>
 
-      {house.room !== "decks" && !(house.room === "vault" && selectedSoundCloud) && <Player onQueue={() => navigateRoom("desk")} />}
+      {house.room !== "decks" && !(house.room === "vault" && selectedSoundCloud) && <Player onQueue={() => navigateRoom("desk")} inLab={house.room === "lab"} />}
     </div>
   );
 }
@@ -514,7 +514,7 @@ function AlbumView({
   );
 }
 
-function Player({ onQueue }: { onQueue: () => void }) {
+function Player({ onQueue, inLab }: { onQueue: () => void; inLab: boolean }) {
   const house = useHouse();
   const { album, track } = currentTrack(house);
   const [time, setTime] = useState(0);
@@ -530,7 +530,7 @@ function Player({ onQueue }: { onQueue: () => void }) {
   const speeds = [0.75, 1, 1.25, 1.5];
   if (house.embed) {
     return (
-      <footer className="fixed inset-x-0 bottom-0 z-30 border-t border-amber/40 bg-surface px-3 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-2xl" aria-label="Official Suno music player">
+      <footer className={`${inLab ? "relative mt-4 rounded-2xl" : "fixed inset-x-0 bottom-0"} z-30 border-t border-amber/40 bg-surface px-3 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-2xl`} aria-label="Official Suno music player">
         <div className="mx-auto max-w-6xl">
           <div className="flex flex-wrap items-center gap-3">
             {album?.cover && <img src={album.cover} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover" />}
@@ -540,6 +540,7 @@ function Player({ onQueue }: { onQueue: () => void }) {
               <p className="truncate text-xs text-mist">{album?.title || "MoreBounceLabs"}</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
+              {inLab && <span className="text-xs text-amber">Music player moved below Lab to keep fractals unobstructed.</span>}
               <button
                 className="min-h-11 rounded-full border border-line px-3 text-xs disabled:cursor-not-allowed disabled:opacity-40"
                 disabled={house.cursor <= 0}
@@ -571,7 +572,7 @@ function Player({ onQueue }: { onQueue: () => void }) {
             className="mt-2 h-28 w-full rounded-xl border border-line bg-bg"
           />
           <p className="mt-1 text-xs text-mist">
-            Play, pause, seek and volume live inside Suno above. Choosing another song loads its player; playback does not auto-advance.
+            Suno owns playback inside this official widget; the MBL transport cannot observe play/pause or detect a song ending. Choose Next song above to load another widget, then press Play in Suno. Automatic cross-song playback is not guaranteed.
           </p>
         </div>
       </footer>
