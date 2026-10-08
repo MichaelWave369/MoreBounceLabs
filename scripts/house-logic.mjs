@@ -130,7 +130,7 @@ export function parseHash(hash) {
     .split("/")
     .filter(Boolean);
   const room = parts[0] || "lobby";
-  const known = new Set(["lobby", "vault", "lounge", "lab", "radio", "decks", "desk", "album"]);
+  const known = new Set(["lobby", "vault", "timeline", "lounge", "lab", "radio", "decks", "desk", "album"]);
   if (!known.has(room)) return { room: "lobby", albumId: "", track: "" };
   if (room === "album") return { room, albumId: parts[1] || "", track: parts[2] || "" };
   return { room, albumId: "", track: "" };

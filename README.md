@@ -174,3 +174,19 @@ The SoundCloud Archive Shelf includes eight newly recovered public releases miss
 **SoundCloud archive now: 18 albums, 200 album-track placements** (not necessarily 200 unique songs). The original Suno catalog remains 19 albums and 344 tracks. This is a manually verified snapshot, **not an exhaustive account export**: SoundCloud's public listing stops after the first ten visible albums, so additional historical releases may still exist. We do not invent a public SoundCloud player for titles seen only on a different distributor. A separate `/sets` collection hosts playlists, not albums; these stay outside the album total.
 
 The archived album pages are played in their official SoundCloud playlist widget with the same transport-hand-off behavior and best-effort next-track assist as PR #10. No tracks, streams, API keys or private downloads are saved by this import.
+
+## Music Timeline: Explore the Eras (PR #12)
+
+The **Timeline** navigation room at `#/timeline` presents MoreBounceLabs' entire currently verified discography as a colorful year-by-year journey. It's a static GitHub Pages view built from two **existing** catalog sources, not a new database or scraper:
+
+- **19 Suno releases (344 tracks)** from `public/catalog/albums.json`
+- **18 SoundCloud albums (200 album-track placements)** from `src/data/soundcloud-albums.json`
+- **37 releases, 544 track placements, 5 represented years** (2026 through 2022). Some tracks may appear in more than one collection; these figures do **not** claim 544 unique recordings.
+
+Listeners can filter by year, platform (All / SoundCloud archive / Suno releases), and the shared header search. Each year has a lightweight ambient color atmosphere and original cover art. The **release year** is the only chronological precision claimed; album order within a year is deterministic alphabetical, not a claim of exact release dates.
+
+Selecting a **Suno** release opens the MBL album route. Selecting a **SoundCloud** release navigates into the Vault with its official embedded playlist player; MBL's native transport is suspended during that playback, following the PR #10 player handoff. Backspin, radio, Vault, and InfinityLens code are unchanged.
+
+Atmospheric animations respect the browser's **prefers-reduced-motion** setting and do not use microphone access, WebGL, or SoundCloud/Suno audio analysis. A future optional InfinityLens enhancement could select visual scene presets by historical era but would require its own permission-checked bridge rung.
+
+Development tests: `node --experimental-strip-types --test scripts/timeline.test.mjs`. GitHub CI now checks the Timeline route, year grouping, filter correctness, preserved catalog totals and Pages bundle inclusion.
