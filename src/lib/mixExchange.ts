@@ -2,6 +2,8 @@
  * MBL Mix Exchange v1: strictly declarative, untrusted DJ set instructions.
  * A validated mix is never authority to load/play audio or change the DJ rig.
  */
+import { cleanCatalogTrackNumber } from "./displayTrackTitle.ts";
+
 export type MixTransition = "cut" | "fade" | "blend";
 export type MixTrack = {
   albumId: string;
@@ -27,7 +29,7 @@ export type ExchangeMix = {
 };
 export type CatalogAlbum = { id: string; title: string; artist?: string; tracks: { title: string; duration?: number; bpm?: number; key?: string }[] };
 export type MixValidationIssue = {
-  code: "album_missing" | "track_missing" | "metadata_mismatch";
+  code: "album_missing" | "track_missing" | "metadata_mismatch" | "albumId_whitespace";
   trackIndex: number;
   albumId: string;
   message: string;
@@ -40,6 +42,20 @@ export type MixReview = {
   missing: string[];
   queue: { albumId: string; index: number }[];
 };
+/**
+ * Typed input failure for fields that cannot be normalized without silently
+ * changing a canonical catalog identity. Agents get the same track context
+ * even when the importer rejects the mix before creating a review object.
+ */
+export class MixTrackInputError extends Error {
+  readonly code = "albumId_whitespace" as const;
+  constructor(readonly trackIndex: number, readonly albumId: string) {
+    super("Track " + (trackIndex + 1) + " (" + JSON.stringify(albumId) +
+      "): albumId must match the catalog exactly; remove leading/trailing whitespace.");
+    this.name = "MixTrackInputError";
+  }
+}
+
 const MAX_TRACKS = 40;
 const MAX_JSON = 18000;
 const PROHIBITED_SCHEMES = /\b(?:file|javascript|data|vbscript)\s*:/i;
@@ -85,7 +101,7 @@ export function validateMix(raw: unknown, catalog: readonly CatalogAlbum[]): Mix
     if (!item || typeof item !== "object" || Array.isArray(item)) throw new Error(location + ": expected a track object.");
     const t = item as Record<string, unknown>;
     const albumId = str(t.albumId, 160, location + " album ID");
-    if (t.albumId !== albumId) throw new Error(location + " (" + JSON.stringify(t.albumId) + "): albumId must match the catalog exactly; remove leading/trailing whitespace.");
+    if (t.albumId !== albumId) throw new MixTrackInputError(i, t.albumId as string);
     const context = location + " (" + albumId + ")";
     if (!Number.isInteger(t.index) || (t.index as number) < 0 || (t.index as number) > 200)
       throw new Error(context + ": invalid track index; use a zero-based integer between 0 and 200.");
@@ -114,7 +130,7 @@ export function validateMix(raw: unknown, catalog: readonly CatalogAlbum[]): Mix
       missing.push(albumId + " / song " + (index + 1));
     } else {
       queue.push({ albumId, index });
-      if ((albumTitle && albumTitle !== album.title) || (trackTitle && trackTitle !== album.tracks[index].title)) {
+      if ((albumTitle && albumTitle !== album.title) || (trackTitle && cleanCatalogTrackNumber(trackTitle) !== cleanCatalogTrackNumber(album.tracks[index].title))) {
         warnings.push({ code: "metadata_mismatch", trackIndex: i, albumId,
           message: context + ": readable title differs from the current catalog. The catalog identity takes priority." });
       }
@@ -150,7 +166,12 @@ export function prepareMixForExport(mix: ExchangeMix, catalog: readonly CatalogA
       ...item,
       albumTitle: item.albumTitle || album.title,
       ...(album.artist ? { artist: item.artist || album.artist } : {}),
-      trackTitle: item.trackTitle || song.title,
+      // Only strip legacy catalog numbering for titles matching the current
+      // record. Preserve truly different/historic titles with their warnings.
+      trackTitle: !item.trackTitle ||
+        cleanCatalogTrackNumber(item.trackTitle) === cleanCatalogTrackNumber(song.title)
+        ? cleanCatalogTrackNumber(song.title)
+        : item.trackTitle,
     };
   });
   return {
@@ -201,7 +222,7 @@ export function newMixFromQueue(
       const album = catalog.find((a) => a.id === item.albumId);
       return {
         ...item, transition: "cut",
-        ...(album ? { albumTitle: album.title, ...(album.artist ? { artist: album.artist } : {}), trackTitle: album.tracks[item.index]?.title } : {}),
+        ...(album ? { albumTitle: album.title, ...(album.artist ? { artist: album.artist } : {}), trackTitle: album.tracks[item.index] ? cleanCatalogTrackNumber(album.tracks[item.index].title) : undefined } : {}),
       };
     }),
   };
