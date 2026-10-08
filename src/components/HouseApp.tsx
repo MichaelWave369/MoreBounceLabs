@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { fmt, parseHash, runtime, safeEmbed, sharedTrackIndex } from "../../scripts/house-logic.mjs";
 import { currentTrack, getAudio, useHouse, type Album } from "@/lib/engine";
-import { VIZ_MODES, VizCanvas } from "@/components/VizCanvas";
+import { VizCanvas } from "@/components/VizCanvas";
 import { InfinityLensStage } from "@/components/InfinityLensStage";
 import { BackspinDecks } from "@/components/BackspinDecks";
 import { SoundCloudShelf } from "@/components/SoundCloudShelf";
