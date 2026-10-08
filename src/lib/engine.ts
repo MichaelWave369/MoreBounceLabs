@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import catalogFile from "../../public/catalog/albums.json";
-import { parseHash, safeEmbed, safeHttps, shuffleIds } from "../../scripts/house-logic.mjs";
+import { parseHash, reorderQueue, safeEmbed, safeHttps, shuffleIds } from "../../scripts/house-logic.mjs";
 
 export type Track = {
   title: string;
@@ -329,13 +329,9 @@ export const useHouse = create<EngineState>((set, get) => {
       writePersonal({ vizMode });
     },
     moveQueue: (from, dir) => {
-      const queue = get().queue.slice();
-      const to = from + dir;
-      if (to < 0 || to >= queue.length) return;
-      const [item] = queue.splice(from, 1);
-      queue.splice(to, 0, item);
-      const cursor = get().cursor === from ? to : get().cursor;
-      set({ queue, cursor });
+      const { queue, cursor } = get();
+      const result = reorderQueue(queue, cursor, from, dir);
+      if (result.queue !== queue) set(result);
     },
     toggleFavAlbum: (id) => {
       const albums = new Set(get().favorites.albums);
