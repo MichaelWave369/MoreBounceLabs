@@ -37,6 +37,9 @@ assert.ok(js.includes("w.soundcloud.com/player/"), "Official SoundCloud widget U
 assert.ok(js.includes("The original record shelves"), "SoundCloud archive shelf must be visible in Vault");
 assert.ok(js.includes("Radio Control Room"), "New MBL retro radio room must be bundled");
 assert.ok(js.includes("Solar Bounce FM"), "Radio station controls must be bundled");
+assert.ok(js.includes("Next album spotlight"), "Lobby must offer changing featured albums");
+assert.ok(js.includes("Auto new album"), "Vault must expose the one-link owner import");
+assert.ok(js.includes("Station playlist preview"), "Radio station tuning should reveal real catalog tracks");
 assert.ok(js.includes("mbl-radio-console.png"), "Radio backdrop must reference the approved static image");
 assert.ok(js.includes("The music house hit a snag."), "React error boundary must avoid a blank app when embedded widgets fail");
 assert.ok(js.includes("Restore MoreBounceLabs"), "Error boundary must expose a recovery action");

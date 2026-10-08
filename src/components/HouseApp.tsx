@@ -22,6 +22,7 @@ import { MusicTimeline } from "@/components/MusicTimeline";
 import { RadioConsole } from "@/components/RadioConsole";
 import { UpdateAlbums } from "@/components/UpdateAlbums";
 import { installReadOnlyMixApi } from "@/lib/mixAgentApi";
+import { chooseSpotlightIndex, spotlightNextIndex } from "../../scripts/lobby-spotlight.mjs";
 
 const ROOMS = [
   ["lobby", "Lobby"],
@@ -39,6 +40,7 @@ export function HouseApp() {
   const [sort, setSort] = useState<"listed" | "title" | "tracks">("listed");
   const [layout, setLayout] = useState<"grid" | "list" | "bin">("grid");
   const [spot, setSpot] = useState(0);
+  const [heroIndex, setHeroIndex] = useState(-1);
   const [reduced, setReduced] = useState(false);
   const [copied, setCopied] = useState("");
   const [egg, setEgg] = useState(0);
@@ -79,6 +81,27 @@ export function HouseApp() {
   useEffect(() => installReadOnlyMixApi(house.albums), [house.albums]);
 
   useEffect(() => {
+    if (house.room !== "lobby" || !house.albums.length) return;
+    let previousId = "";
+    try { previousId = localStorage.getItem("mbl-last-spotlight-album-v1") || ""; } catch { /* private mode */ }
+    const index = chooseSpotlightIndex(house.albums, previousId);
+    setHeroIndex(index);
+    if (index >= 0) {
+      try { localStorage.setItem("mbl-last-spotlight-album-v1", house.albums[index].id); } catch { /* private mode */ }
+    }
+  }, [house.room, house.albums]);
+
+  function nextHero() {
+    setHeroIndex((previous) => {
+      const next = spotlightNextIndex(house.albums.length, previous);
+      if (next >= 0) {
+        try { localStorage.setItem("mbl-last-spotlight-album-v1", house.albums[next].id); } catch { /* private mode */ }
+      }
+      return next;
+    });
+  }
+
+  useEffect(() => {
     if (reduced || house.room !== "lobby") return;
     const id = window.setInterval(() => setSpot((n) => n + 1), 7000);
     return () => window.clearInterval(id);
@@ -100,8 +123,8 @@ export function HouseApp() {
   }
 
   const albums = house.albums;
-  const featured = albums[2] || albums[0];
-  const spotAlbum = albums.length ? albums[spot % Math.min(albums.length, 8)] : undefined;
+  const featured = albums[heroIndex] || albums[0];
+  const spotAlbum = albums.length > 1 ? albums[(spot + Math.max(0, heroIndex) + 1) % albums.length] : undefined;
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -183,6 +206,7 @@ export function HouseApp() {
           <Lobby
             featured={featured}
             spot={spotAlbum}
+            onNextSpotlight={nextHero}
             albums={albums}
             onPlay={() => house.playAlbum(featured.id, 0)}
             onOpen={(id) => house.go("album", id)}
@@ -265,6 +289,7 @@ function Lobby({
   onPlay,
   onOpen,
   onVault,
+  onNextSpotlight,
   egg,
 }: {
   featured: Album;
@@ -273,6 +298,7 @@ function Lobby({
   onPlay: () => void;
   onOpen: (id: string) => void;
   onVault: () => void;
+  onNextSpotlight: () => void;
   egg: boolean;
 }) {
   return (
@@ -280,15 +306,18 @@ function Lobby({
       <p className="text-xs uppercase tracking-[0.22em] text-amber">Making music to make you feel good, baby.</p>
       <div className="mt-4 grid items-center gap-6 md:grid-cols-[minmax(0,280px)_1fr]">
         <button className="sleeve vinyl mx-auto w-full max-w-xs" onClick={() => onOpen(featured.id)}>
-          <img src={featured.cover} alt="" className="aspect-square w-full rounded-full object-cover shadow-2xl" />
+          <img key={featured.id} src={featured.cover} alt="" className="aspect-square w-full rounded-full object-cover shadow-2xl" />
         </button>
         <div>
-          <p className="text-mist">Mikey More Bounce</p>
+          <p className="text-mist">Mikey More Bounce · Rotating album spotlight</p>
           <h1 className="font-display text-5xl leading-none sm:text-6xl">{featured.title}</h1>
           <p className="mt-3 max-w-lg text-mist">{featured.description || "A record from the house."}</p>
           <div className="mt-5 flex flex-wrap gap-3">
             <button className="min-h-12 rounded-full bg-heat px-6 font-semibold text-cream" onClick={onPlay}>
               Play music
+            </button>
+            <button type="button" className="min-h-12 rounded-full border border-amber/60 px-5 text-amber" onClick={onNextSpotlight}>
+              Next album spotlight ↻
             </button>
             <button className="min-h-12 rounded-full border border-line px-5" onClick={onVault}>
               Record vault

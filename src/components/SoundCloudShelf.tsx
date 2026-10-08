@@ -164,7 +164,7 @@ export function SoundCloudShelf({
               <img src={album.cover} alt="" loading="lazy" referrerPolicy="no-referrer"
                 className="aspect-square w-full rounded-2xl bg-surface object-cover" />
               <span className="mt-2 block font-medium">{album.title}</span>
-              <span className="block text-xs text-mist">{album.year} · {album.trackCount} tracks · SoundCloud</span>
+              <span className="block text-xs text-mist">{album.year} · {album.trackCount > 0 ? album.trackCount + " tracks" : "Track count pending"} · SoundCloud</span>
             </button>
           ))}
         </div>
