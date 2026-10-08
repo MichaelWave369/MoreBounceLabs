@@ -127,7 +127,7 @@ export function SoundCloudShelf({
           <p className="text-xs font-semibold uppercase tracking-widest text-amber">MoreBounceLabs · SoundCloud archives</p>
           <h2 className="mt-1 font-display text-3xl">The original record shelves</h2>
           <p className="mt-2 max-w-2xl text-sm text-mist">
-            ${SOUNDCLOUD_ALBUMS.length} public albums from the original MicTek SoundCloud profile. Select a record to open its official
+            {SOUNDCLOUD_ALBUMS.length} public albums from the original MicTek SoundCloud profile. Select a record to open its official
             playlist player without downloading or copying the audio.
           </p>
         </div>
