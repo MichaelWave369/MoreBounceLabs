@@ -13,10 +13,11 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
-import { collectStation, fmt, parseHash, runtime, safeEmbed, safeHttps, sharedTrackIndex, STATIONS } from "../../scripts/house-logic.mjs";
+import { collectStation, fmt, parseHash, runtime, safeEmbed, sharedTrackIndex, STATIONS } from "../../scripts/house-logic.mjs";
 import { currentTrack, getAudio, useHouse, type Album } from "@/lib/engine";
 import { VIZ_MODES, VizCanvas } from "@/components/VizCanvas";
 import { InfinityLensStage } from "@/components/InfinityLensStage";
+import { BackspinDecks } from "@/components/BackspinDecks";
 
 const ROOMS = [
   ["lobby", "Lobby"],
@@ -55,6 +56,7 @@ export function HouseApp() {
     const keys = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
       if (target.matches("input, textarea, select")) return;
+      if (useHouse.getState().room === "decks") return; // Backspin owns booth keyboard shortcuts and audio.
       if (e.code === "Space") {
         e.preventDefault();
         house.toggle();
@@ -161,7 +163,7 @@ export function HouseApp() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-6">
+      <main className={`mx-auto px-4 py-6 ${house.room === "decks" ? "max-w-[1760px]" : "max-w-6xl"}`}>
         {house.loadError && <p className="mb-4 text-heat">{house.loadError}</p>}
         {!house.ready && <p className="text-mist">Opening the house…</p>}
         {house.room === "lobby" && featured && (
@@ -249,7 +251,7 @@ export function HouseApp() {
           </section>
         )}
         {house.room === "radio" && <RadioRoom albums={albums} onPlay={house.playStation} />}
-        {house.room === "decks" && <Decks albums={albums} />}
+        {house.room === "decks" && <BackspinDecks />}
         {house.room === "desk" && (
           <Desk
             albums={albums}
@@ -262,7 +264,7 @@ export function HouseApp() {
         {house.ready && house.room === "album" && !openAlbum && <p>That album is not in the catalog.</p>}
       </main>
 
-      <Player onLounge={() => house.go("lounge")} />
+      {house.room !== "decks" && <Player onLounge={() => house.go("lounge")} />}
     </div>
   );
 }
@@ -626,62 +628,6 @@ function RadioRoom({ albums, onPlay }: { albums: Album[]; onPlay: (items: { albu
           );
         })}
       </div>
-    </section>
-  );
-}
-
-function Decks({ albums }: { albums: Album[] }) {
-  const [a, setA] = useState(albums[0]?.id || "");
-  const [b, setB] = useState(albums[1]?.id || albums[0]?.id || "");
-  const [cross, setCross] = useState(0.5);
-  const [note, setNote] = useState("Two independent players. Volume crossfade only. This is not beatmatched.");
-  useEffect(() => {
-    if (!a && albums[0]) setA(albums[0].id);
-    if (!b && (albums[1] || albums[0])) setB((albums[1] || albums[0]).id);
-  }, [albums, a, b]);
-  useEffect(() => {
-    const left = document.getElementById("deck-a") as HTMLAudioElement | null;
-    const right = document.getElementById("deck-b") as HTMLAudioElement | null;
-    if (left) left.volume = Math.min(1, (1 - cross) * 2);
-    if (right) right.volume = Math.min(1, cross * 2);
-  }, [cross, a, b]);
-  function load(which: "a" | "b", id: string) {
-    const album = albums.find((x) => x.id === id);
-    if (which === "a") setA(id);
-    else setB(id);
-    setNote(album ? `Selected ${album.title}. Press play on that deck. Direct file access is source-dependent.` : "No album selected.");
-  }
-  return (
-    <section>
-      <h1 className="font-display text-4xl">DJ decks</h1>
-      <p className="mt-2 text-mist">{note}</p>
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
-        {(["a", "b"] as const).map((side) => (
-          <div key={side} className="rounded-3xl bg-surface p-4">
-            <label className="text-sm text-mist">Deck {side.toUpperCase()}</label>
-            <select className="mt-2 min-h-11 w-full rounded-xl bg-bg px-2" value={side === "a" ? a : b} onChange={(e) => load(side, e.target.value)}>
-              {albums.map((album) => (
-                <option key={album.id} value={album.id}>
-                  {album.title}
-                </option>
-              ))}
-            </select>
-            <audio
-              id={side === "a" ? "deck-a" : "deck-b"}
-              controls
-              preload="metadata"
-              crossOrigin="anonymous"
-              src={safeHttps(albums.find((album) => album.id === (side === "a" ? a : b))?.tracks[0]?.src)}
-              onError={() => setNote(`Deck ${side.toUpperCase()} could not load this source. Try the main player's Suno fallback.`)}
-              className="mt-3 w-full"
-            />
-          </div>
-        ))}
-      </div>
-      <label className="mt-4 block text-sm text-mist">
-        Crossfader
-        <input className="mt-2 w-full" type="range" min={0} max={1} step={0.01} value={cross} onChange={(e) => setCross(Number(e.target.value))} />
-      </label>
     </section>
   );
 }
