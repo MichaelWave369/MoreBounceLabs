@@ -52,3 +52,7 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Verify ten synthetic songs transition
         run: npm run dj:lab
+      - name: Build static site for browser navigation regression
+        run: npm run build:pages
+      - name: SoundCloud player teardown and cross-room navigation smoke
+        run: node scripts/soundcloud-navigation.browser.mjs
