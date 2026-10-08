@@ -128,7 +128,22 @@ async function main() {
     await page.goto(base + "#/timeline", { waitUntil: "domcontentloaded" });
     await page.getByRole("heading", { name: "Every record is a little universe." }).waitFor({ state: "visible" });
     await checkPage(page);
-    assert.deepEqual(errors, [], "No uncaught JS errors during SoundCloud navigation: " + errors.join(" | "));
+    // Radio is a real room with usable controls even before the final art
+    // is committed. The visual is a backdrop, not an inaccessible image map.
+    await page.route("https://suno.com/embed/**", async (route) =>
+      route.fulfill({ status: 200, contentType: "text/html", body: "<html><body>Official media test placeholder</body></html>" }),
+    );
+    await nav.getByRole("button", { name: "Radio" }).click();
+    await page.getByRole("heading", { name: "Radio Control Room" }).waitFor({ state: "visible" });
+    await checkPage(page);
+    await page.getByRole("button", { name: "Scan next", exact: true }).click();
+    await page.getByRole("heading", { name: "Night Trucker" }).waitFor({ state: "visible" });
+    await page.getByRole("button", { name: "Tune & Play" }).click();
+    await page.getByText("Night Trucker").first().waitFor({ state: "visible" });
+    await nav.getByRole("button", { name: "Vault" }).click();
+    await checkPage(page);
+    await page.getByRole("heading", { name: "Record vault" }).waitFor({ state: "visible" });
+        assert.deepEqual(errors, [], "No uncaught JS errors during SoundCloud navigation: " + errors.join(" | "));
     console.log("PASS SoundCloud navigation: player → Timeline → Vault → player → Lobby → Vault → close → direct Timeline refresh; no blank screen or JS exceptions.");
   } finally {
     await browser?.close();
