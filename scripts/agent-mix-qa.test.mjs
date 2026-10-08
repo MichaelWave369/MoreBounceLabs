@@ -82,7 +82,7 @@ test("compact accessible UI reveals review errors before import and blocks savin
   const ui=readFileSync("src/components/AgentMixStudio.tsx","utf8");
   const preview=ui.indexOf("{review && (");
   const importBox=ui.indexOf("Import agent-created mix JSON");
-  assert.ok(preview>0 && preview<importBox,"Review must appear before the long editor");
+  assert.ok(importBox>0 && importBox<preview,"Quick import must appear before review for above-fold access");
   assert.match(ui,/UNPLAYABLE MIX/);
   assert.match(ui,/Can't play/);
   assert.match(ui,/disabled=\{!valid\} onClick=\{saveMix\}/);
