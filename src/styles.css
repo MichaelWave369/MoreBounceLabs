@@ -123,3 +123,13 @@
     transform: rotate(360deg);
   }
 }
+
+/* The single embedded Suno player is taller than the native transport dock. */
+.player-safe-embed {
+  padding-bottom: calc(16rem + env(safe-area-inset-bottom));
+}
+@media (max-width: 640px) {
+  .player-safe-embed {
+    padding-bottom: calc(20rem + env(safe-area-inset-bottom));
+  }
+}

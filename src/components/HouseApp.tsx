@@ -118,7 +118,7 @@ export function HouseApp() {
   }
 
   return (
-    <div className="player-safe min-h-screen bg-bg text-cream">
+    <div className={`${house.embed ? "player-safe-embed" : "player-safe"} min-h-screen bg-bg text-cream`}>
       <header className="sticky top-0 z-20 border-b border-line bg-bg/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
           <button
@@ -133,8 +133,8 @@ export function HouseApp() {
               <i />
               <i />
             </span>
-            <span className="font-display text-2xl tracking-tight">MicTek House</span>
-            <span className="mt-0.5 block text-xs uppercase tracking-[0.18em] text-amber">More Bounce Labs</span>
+            <span className="font-display text-2xl tracking-tight">MoreBounceLabs</span>
+            <span className="mt-0.5 block text-xs uppercase tracking-[0.18em] text-amber">MBL</span>
           </button>
           <nav className="flex flex-1 gap-1 overflow-x-auto" aria-label="Rooms">
             {ROOMS.map(([id, label]) => (
@@ -222,6 +222,8 @@ export function HouseApp() {
             onMove={house.moveQueue}
             onSleep={house.armSleep}
             sleepAt={house.sleepAt}
+            embedded={Boolean(house.embed)}
+            spinning={house.status === "playing" && !house.embed}
           />
         )}
         {house.room === "lab" && (
@@ -524,6 +526,8 @@ function Lounge({
   onMove,
   onSleep,
   sleepAt,
+  embedded,
+  spinning,
 }: {
   album?: Album;
   track?: { title: string };
@@ -539,12 +543,14 @@ function Lounge({
   onMove: (from: number, dir: number) => void;
   onSleep: (m: number) => void;
   sleepAt: number;
+  embedded: boolean;
+  spinning: boolean;
 }) {
   return (
     <section>
       <h1 className="font-display text-4xl">Listening lounge</h1>
       <div className="mt-4 grid gap-4 md:grid-cols-[280px_1fr]">
-        {album?.cover && <img src={album.cover} alt="" className={`aspect-square w-full rounded-3xl object-cover ${reduced ? "" : "spin"}`} style={reduced ? undefined : { animation: "spin 18s linear infinite" }} />}
+        {album?.cover && <img src={album.cover} alt="" className={`aspect-square w-full rounded-3xl object-cover ${reduced || !spinning ? "" : "spin"}`} style={reduced || !spinning ? undefined : { animation: "spin 18s linear infinite" }} />}
         <div>
           <p className="text-mist">{album?.title || "Nothing spinning"}</p>
           <p className="font-display text-4xl">{track?.title || "Pick a record"}</p>
@@ -559,16 +565,17 @@ function Lounge({
             <button className="min-h-11 rounded-full bg-surface px-3" onClick={() => document.documentElement.requestFullscreen?.()}>
               Fullscreen
             </button>
-            {[15, 30, 45].map((m) => (
+            {!embedded && [15, 30, 45].map((m) => (
               <button key={m} className="min-h-11 rounded-full bg-surface px-3" onClick={() => onSleep(m)}>
                 Sleep {m}m
               </button>
             ))}
-            {sleepAt > 0 && (
+            {!embedded && sleepAt > 0 && (
               <button className="min-h-11 text-sm text-mist" onClick={() => onSleep(0)}>
                 Cancel sleep
               </button>
             )}
+            {embedded && <p className="text-sm text-mist">Suno handles its own playback. The house sleep timer cannot pause an embedded track.</p>}
           </div>
         </div>
       </div>
@@ -582,7 +589,7 @@ function Lounge({
           return (
             <li key={`${item.albumId}-${item.index}-${i}`} className="flex items-center gap-1">
               <button className={`min-h-11 flex-1 text-left ${i === cursor ? "text-amber" : "text-mist"}`} onClick={() => onJump(i)}>
-                {i === cursor ? "Now · " : `${i + 1}. `}
+                {i === cursor ? (embedded ? "Selected · " : "Now · ") : `${i + 1}. `}
                 {t?.title} — {a?.title}
               </button>
               <button className="min-h-11 min-w-11 text-mist" aria-label="Move earlier" onClick={() => onMove(i, -1)}>
@@ -765,6 +772,55 @@ function Player({ onLounge }: { onLounge: () => void }) {
     return () => window.clearInterval(id);
   }, [track?.title, track?.duration, track?.sunoId]);
   const speeds = [0.75, 1, 1.25, 1.5];
+  if (house.embed) {
+    return (
+      <footer className="fixed inset-x-0 bottom-0 z-30 border-t border-amber/40 bg-surface px-3 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-2xl" aria-label="Official Suno music player">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex flex-wrap items-center gap-3">
+            {album?.cover && <img src={album.cover} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover" />}
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold uppercase tracking-wider text-amber">Official Suno player</p>
+              <p className="truncate font-semibold">{track?.title || "Selected song"}</p>
+              <p className="truncate text-xs text-mist">{album?.title || "MoreBounceLabs"}</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                className="min-h-11 rounded-full border border-line px-3 text-xs disabled:cursor-not-allowed disabled:opacity-40"
+                disabled={house.cursor <= 0}
+                onClick={house.prev}
+                aria-label="Select previous song"
+              >
+                Previous song
+              </button>
+              <button
+                className="min-h-11 rounded-full border border-line px-3 text-xs disabled:cursor-not-allowed disabled:opacity-40"
+                disabled={house.cursor >= house.queue.length - 1}
+                onClick={house.next}
+                aria-label="Select next song"
+              >
+                Next song
+              </button>
+              <button className="min-h-11 rounded-full bg-amber px-3 text-xs font-semibold text-ink" onClick={onLounge}>
+                View queue
+              </button>
+            </div>
+          </div>
+          <iframe
+            key={house.embed}
+            title={`Official Suno player for ${track?.title || "selected song"}`}
+            src={house.embed}
+            allow="autoplay; encrypted-media; fullscreen"
+            loading="eager"
+            referrerPolicy="strict-origin-when-cross-origin"
+            className="mt-2 h-28 w-full rounded-xl border border-line bg-bg"
+          />
+          <p className="mt-1 text-xs text-mist">
+            Play, pause, seek and volume live inside Suno above. Choosing another song loads its player; playback does not auto-advance.
+          </p>
+        </div>
+      </footer>
+    );
+  }
   return (
     <footer className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur">
       <div className="mx-auto grid max-w-6xl items-center gap-2 md:grid-cols-[1.2fr_1.4fr_auto]">
@@ -772,7 +828,7 @@ function Player({ onLounge }: { onLounge: () => void }) {
           {album?.cover ? <img src={album.cover} alt="" className="h-12 w-12 rounded-lg object-cover" /> : <Disc3 />}
           <span className="min-w-0">
             <span className="block truncate">{track?.title || "Nothing playing"}</span>
-            <span className="block truncate text-sm text-mist">{album?.title || "MicTek House"}</span>
+            <span className="block truncate text-sm text-mist">{album?.title || "MoreBounceLabs"}</span>
           </span>
         </button>
         <div>
@@ -830,9 +886,6 @@ function Player({ onLounge }: { onLounge: () => void }) {
           </button>
         </div>
       </div>
-      {house.embed && (
-        <iframe className="mx-auto mt-2 h-24 w-full max-w-xl rounded-xl" title="Suno player" src={safeEmbed(house.embed.split("/").pop()) || house.embed} allow="autoplay; encrypted-media; fullscreen" />
-      )}
     </footer>
   );
 }

@@ -8,7 +8,8 @@ const htmlFile = join(root, "index.html");
 assert.ok(existsSync(htmlFile), "GitHub Pages build should contain root index.html");
 const html = readFileSync(htmlFile, "utf8");
 assert.match(html, /<div id="root"><\/div>/, "React mount must exist");
-assert.match(html, /MicTek House/, "Music house identity should survive export");
+assert.match(html, /MoreBounceLabs/, "MoreBounceLabs identity should survive export");
+assert.doesNotMatch(html, /MicTek House/i, "Legacy brand must not appear in published HTML");
 assert.match(html, /\/MoreBounceLabs\/assets\//, "JS and CSS links must use the project base");
 assert.doesNotMatch(html, /src=["']\/assets\//, "No root-relative JS paths");
 assert.ok(existsSync(join(root, "catalog/albums.json")), "Catalog must be copied to Pages");
@@ -27,5 +28,7 @@ for (const utility of [".max-w-6xl", ".grid", ".flex", ".rounded-3xl", ".bg-heat
 }
 const js = assets.filter((name) => name.endsWith(".js")).map((name) => readFileSync(join(root, "assets", name), "utf8")).join("\n");
 assert.ok(js.includes("catalog/albums.json"), "Built app must request its catalog");
+assert.ok(js.includes("MoreBounceLabs"), "Bundled UI should use the new site identity");
+assert.ok(!js.includes("MicTek House"), "Legacy site name must not remain in the player UI");
 assert.ok(js.includes("/MoreBounceLabs/"), "Built app must know project base");
 console.log("PASS GitHub Pages static build: index, hashed assets, Tailwind layout utilities, scoped URLs, 19 albums, 344 tracks.");

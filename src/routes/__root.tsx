@@ -8,8 +8,8 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "MicTek House" },
-      { name: "description", content: "More Bounce Labs. Making music to make you feel good, baby." },
+      { title: "MoreBounceLabs" },
+      { name: "description", content: "MoreBounceLabs. Making music to make you feel good, baby." },
       { name: "theme-color", content: "#100E0C" },
     ],
     links: [
