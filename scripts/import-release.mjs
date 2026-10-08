@@ -4,7 +4,7 @@
  * Invoked exclusively by GitHub Actions for an issue opened by the repo owner.
  * Pure parser/merge functions are exported so fixture tests never need network.
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, appendFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -28,6 +28,7 @@ export function parseReleaseIssue(body) {
   const item = JSON.parse(match[1]);
   ensure(item && item.kind === "mbl-release-v1", "Unsupported release protocol.");
   ensure(item.provider === "soundcloud" || item.provider === "suno", "Invalid provider.");
+  ensure(item.mode === undefined || item.mode === "auto", "Invalid request mode.");
   ensure(Number.isInteger(item.year) && item.year >= 1990 && item.year <= 2100, "Invalid release year.");
   ensure(typeof item.url === "string" && item.url.length < 400, "Invalid release link.");
   const parsed = new URL(item.url);
@@ -35,11 +36,18 @@ export function parseReleaseIssue(body) {
     !parsed.search && !parsed.hash, "Release links must be canonical HTTPS URLs.");
   if (item.provider === "soundcloud") {
     ensure(soundcloudUrl.test(item.url), "Only public /microneesia/sets/ albums can be imported.");
-    ensure(Number.isInteger(item.trackCount) && item.trackCount >= 1 && item.trackCount <= 200,
-      "SoundCloud release requires an accurate track count.");
+    if (item.mode !== "auto") {
+      ensure(Number.isInteger(item.trackCount) && item.trackCount >= 1 && item.trackCount <= 200,
+        "SoundCloud release requires an accurate track count.");
+    } else ensure(item.trackCount === undefined, "Auto SoundCloud import doesn't invent a track count.");
   } else {
     const id = sunoUrl.exec(item.url)?.[1];
     ensure(id && UUID.test(id), "Invalid Suno album UUID.");
+    if (item.mode === "auto") {
+      ensure(item.title === undefined && item.cover === undefined && item.tracks === undefined,
+        "Auto Suno requests contain only a public album link and year.");
+      return item; // action will request validated song IDs before publishing
+    }
     text(item.title, "Suno album title", 140);
     const cover = new URL(text(item.cover, "Suno cover URL", 500));
     ensure(cover.protocol === "https:" &&
@@ -85,7 +93,7 @@ export async function mergeRelease(sunoCatalog, soundcloudCatalog, item, loadSou
     const description = typeof item.description === "string" ? item.description.trim() : "";
     soundcloud.albums.push({
       id, title, artist: "MicTek", year: item.year,
-      trackCount: item.trackCount, description,
+      trackCount: item.mode === "auto" ? 0 : item.trackCount, ...(item.mode === "auto" ? { trackCountVerified: false } : {}), description,
       url: item.url, cover: coverURL.toString(),
     });
     // Snapshot date signals this was reviewed, not an automatic feed claim.
@@ -125,6 +133,13 @@ async function main() {
   const soundcloudFile = resolve(directory, "src/data/soundcloud-albums.json");
   const suno = JSON.parse(readFileSync(sunoFile, "utf8"));
   const soundcloud = JSON.parse(readFileSync(soundcloudFile, "utf8"));
+  if (issue.mode === "auto" && issue.provider === "suno") {
+    // Suno has not exposed an authenticated song listing to this static app.
+    // Leave the catalog unchanged and tell the owner precisely what's needed.
+    if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, "needs_manual_suno=true\n");
+    console.log("NEEDS_METADATA_SUNO: Keep source album unchanged; use the manual form with official song IDs.");
+    return;
+  }
   const result = await mergeRelease(suno, soundcloud, issue, oembedSoundCloud);
   if (!result.changed) {
     console.log("ALREADY_PRESENT: This exact album already exists; leaving catalogs unchanged.");
