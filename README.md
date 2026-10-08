@@ -158,10 +158,19 @@ The included original `LICENSE` is staged with the app. Reference source: user-s
 
 ## SoundCloud Archive Shelf (PR #10)
 
-The **Vault** now includes a SoundCloud Archives section with 10 publicly listed albums from [MicTek's original SoundCloud page](https://soundcloud.com/microneesia/albums), totaling **107 listed album-track placements** as of the 2026-10-07 catalog snapshot. Album links and artwork were verified against their actual public SoundCloud pages. Each album plays via SoundCloud's **official playlist iframe widget**; the original 19 Suno albums and 344 tracks remain intact.
+The **Vault** now includes a SoundCloud Archives section with 18 verified public albums from [MicTek's original SoundCloud page](https://soundcloud.com/microneesia/albums), totaling **200 listed album-track placements** as of the 2026-10-07 catalog snapshot. Album links and artwork were verified against their actual public SoundCloud pages. Each album plays via SoundCloud's **official playlist iframe widget**; the original 19 Suno albums and 344 tracks remain intact.
 
 Select an album's cover to open its playlist in the Vault. SoundCloud provides the Play, Pause, seek, and other media controls within its own iframe. While that player is selected, the MBL bottom mini-player is hidden and its native/Suno audio is suspended, preventing two independent playback controls. Closing the official SoundCloud player returns the MBL mini-player.
 
 For optional continuity support, the page loads SoundCloud's [HTML5 Widget API](https://developers.soundcloud.com/docs/api/html5-widget). After a FINISH event, the **Assist next-track playback** option (enabled by default) waits a second for SoundCloud's own playlist auto-advance, then **only if SoundCloud is still paused** tries the documented `next()` and `play()` methods. The help text explicitly warns when autoplay might be blocked by a browser. This is best-effort, not guaranteed radio; it does not skip tracks if SoundCloud is already playing. Cross-*album* continuous radio is not included in this first archive import.
 
 The archive snapshot is manually maintained in `src/data/soundcloud-albums.json`. It includes no SoundCloud API tokens, direct transcoding/stream URLs, downloaded music or audio caching. Public playback availability remains subject to SoundCloud's own restrictions. **Backspin '96** still uses separately imported authorized local audio files and does not capture SoundCloud's playback. User-facing site branding stays MoreBounceLabs or MBL, while historic **MicTek** artist attribution is preserved where it identifies the original recording account.
+
+
+## SoundCloud Archive Expansion (PR #11)
+
+The SoundCloud Archive Shelf includes eight newly recovered public releases missing from SoundCloud's first ten visible album results: **Boga Beatz V.1, V.2, V.3, V.4, V.5, V.6, V.7**, and the 2022 instrumental album **Reflections**. Each album's published SoundCloud set, artwork and track count were independently checked against its public page. The complete Boga Beatz **V.1–V.9** album sequence is now represented.
+
+**SoundCloud archive now: 18 albums, 200 album-track placements** (not necessarily 200 unique songs). The original Suno catalog remains 19 albums and 344 tracks. This is a manually verified snapshot, **not an exhaustive account export**: SoundCloud's public listing stops after the first ten visible albums, so additional historical releases may still exist. We do not invent a public SoundCloud player for titles seen only on a different distributor. A separate `/sets` collection hosts playlists, not albums; these stay outside the album total.
+
+The archived album pages are played in their official SoundCloud playlist widget with the same transport-hand-off behavior and best-effort next-track assist as PR #10. No tracks, streams, API keys or private downloads are saved by this import.
