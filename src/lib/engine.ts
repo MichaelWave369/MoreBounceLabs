@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import catalogFile from "../../public/catalog/albums.json";
-import { parseHash, reorderQueue, safeEmbed, safeHttps, shuffleIds } from "../../scripts/house-logic.mjs";
+import { parseHash, playbackSource, reorderQueue, safeEmbed, shuffleIds } from "../../scripts/house-logic.mjs";
 
 export type Track = {
   title: string;
@@ -23,7 +23,7 @@ export type Album = {
 
 export type QueueItem = { albumId: string; index: number };
 
-type Status = "idle" | "loading" | "playing" | "paused" | "error";
+type Status = "idle" | "loading" | "playing" | "paused" | "embedded" | "error";
 
 type EngineState = {
   albums: Album[];
@@ -76,6 +76,7 @@ type EngineState = {
 const KEY = "mbl-personal-v1";
 const seeded = ((catalogFile as { albums?: Album[] }).albums || []) as Album[];
 const audio = typeof Audio !== "undefined" ? new Audio() : (null as unknown as HTMLAudioElement);
+let playRequest = 0;
 
 function readPersonal() {
   try {
@@ -111,31 +112,59 @@ export function getAudio() {
   return audio;
 }
 
+/** When the official iframe owns playback, clear native audio and OS controls. */
+function stopNativeForEmbed() {
+  if (audio) {
+    audio.pause();
+    audio.removeAttribute("src");
+    audio.load();
+  }
+  if (typeof navigator !== "undefined" && "mediaSession" in navigator) {
+    try {
+      navigator.mediaSession.metadata = null;
+      for (const action of ["play", "pause", "nexttrack", "previoustrack"] as const) {
+        navigator.mediaSession.setActionHandler(action, null);
+      }
+    } catch {
+      // Media Session API is optional.
+    }
+  }
+}
+
 export const useHouse = create<EngineState>((set, get) => {
   if (audio) {
     audio.preload = "auto";
     audio.crossOrigin = "anonymous";
-    audio.addEventListener("waiting", () => set({ status: "loading" }));
-    audio.addEventListener("playing", () => set({ status: "playing", message: "" }));
-    audio.addEventListener("pause", () => {
-      if (get().status !== "error") set({ status: "paused" });
+    audio.addEventListener("waiting", () => {
+      if (!get().embed) set({ status: "loading" });
     });
-    audio.addEventListener("ended", () => get().next());
+    audio.addEventListener("playing", () => {
+      if (!get().embed) set({ status: "playing", message: "" });
+    });
+    audio.addEventListener("pause", () => {
+      if (!get().embed && get().status !== "error") set({ status: "paused" });
+    });
+    audio.addEventListener("ended", () => {
+      if (!get().embed) get().next();
+    });
     audio.addEventListener("error", () => {
+      if (get().embed) return;
       const item = get().queue[get().cursor];
       const album = get().albums.find((a) => a.id === item?.albumId);
       const track = album?.tracks[item?.index ?? -1];
       const embed = safeEmbed(track?.sunoId);
       if (embed) {
         set({
-          status: "error",
+          status: "embedded",
           embed,
-          message: "Direct stream blocked. Official Suno player is open. The visualizer is ambient, not analyzing this embed.",
+          message: "Use the Play and seek controls inside the official Suno player.",
           analyzed: false,
+          sleepAt: 0,
         });
+        stopNativeForEmbed();
         return;
       }
-      set({ status: "error", message: "This track has no playable source.", embed: "" });
+      set({ status: "error", message: "This track has no playable source.", embed: "", analyzed: false });
     });
     audio.addEventListener("timeupdate", () => {
       const item = get().queue[get().cursor];
@@ -246,7 +275,7 @@ export const useHouse = create<EngineState>((set, get) => {
     },
 
     toggle: () => {
-      if (!audio) return;
+      if (get().embed || !audio) return;
       if (!get().queue.length) {
         const first = get().albums[0];
         if (first) get().playAlbum(first.id, 0);
@@ -259,7 +288,7 @@ export const useHouse = create<EngineState>((set, get) => {
     next: () => {
       const { queue, cursor, repeat, shuffle } = get();
       if (!queue.length) return;
-      if (repeat === "one") {
+      if (repeat === "one" && !get().embed) {
         if (audio) {
           audio.currentTime = 0;
           void audio.play();
@@ -277,8 +306,10 @@ export const useHouse = create<EngineState>((set, get) => {
       if (next >= queue.length) {
         if (repeat === "all") next = 0;
         else {
-          audio?.pause();
-          set({ status: "paused" });
+          if (!get().embed) {
+            audio?.pause();
+            set({ status: "paused" });
+          }
           return;
         }
       }
@@ -287,7 +318,7 @@ export const useHouse = create<EngineState>((set, get) => {
     },
 
     prev: () => {
-      if (audio && audio.currentTime > 3) {
+      if (!get().embed && audio && audio.currentTime > 3) {
         audio.currentTime = 0;
         return;
       }
@@ -302,7 +333,7 @@ export const useHouse = create<EngineState>((set, get) => {
     },
 
     seek: (sec) => {
-      if (audio && Number.isFinite(sec)) audio.currentTime = sec;
+      if (!get().embed && audio && Number.isFinite(sec)) audio.currentTime = sec;
     },
     setVolume: (n) => {
       const volume = Math.min(1, Math.max(0, n));
@@ -358,7 +389,10 @@ export const useHouse = create<EngineState>((set, get) => {
       set({ playlists });
       writePersonal({ playlists });
     },
-    armSleep: (minutes) => set({ sleepAt: minutes ? Date.now() + minutes * 60000 : 0 }),
+    armSleep: (minutes) => {
+      if (get().embed) return; // An iframe cannot be paused by our sleep timer.
+      set({ sleepAt: minutes ? Date.now() + minutes * 60000 : 0 });
+    },
     resumeSaved: () => {
       const savedNow = readPersonal();
       if (!savedNow.resume) return;
@@ -367,7 +401,7 @@ export const useHouse = create<EngineState>((set, get) => {
         cursor: 0,
       });
       void startCurrent(get, set).then(() => {
-        if (audio && savedNow.resume.position) audio.currentTime = savedNow.resume.position;
+        if (!get().embed && audio && savedNow.resume.position) audio.currentTime = savedNow.resume.position;
       });
     },
   };
@@ -382,24 +416,33 @@ async function startCurrent(
   const album = albums.find((a) => a.id === item?.albumId);
   const track = album?.tracks[item?.index ?? -1];
   if (!track || !audio) return;
-  const src = safeHttps(track.src);
-  set({ status: "loading", message: "", embed: "" });
-  audio.volume = muted ? 0 : volume;
-  audio.playbackRate = rate;
-  if (!src) {
-    const embed = safeEmbed(track.sunoId);
+  const request = ++playRequest;
+  const source = playbackSource(track);
+  if (source.kind === "embed") {
     set({
-      status: embed ? "error" : "error",
-      embed,
-      message: embed ? "No direct file. Official Suno player is open." : "Nothing to play on this track.",
+      status: "embedded",
+      embed: source.url,
+      message: "Use the Play and seek controls inside the official Suno player.",
       analyzed: false,
+      sleepAt: 0,
     });
+    stopNativeForEmbed();
     return;
   }
-  audio.src = src;
+  if (source.kind === "none") {
+    set({ status: "error", embed: "", message: "No supported playback source for this song.", analyzed: false });
+    audio.pause();
+    audio.removeAttribute("src");
+    audio.load();
+    return;
+  }
+  set({ status: "loading", message: "", embed: "", analyzed: false });
+  audio.volume = muted ? 0 : volume;
+  audio.playbackRate = rate;
+  audio.src = source.url;
   try {
     await audio.play();
-    if (get().embed) return;
+    if (request !== playRequest || get().embed) return;
     const history = [item, ...get().history.filter((h) => !(h.albumId === item.albumId && h.index === item.index))].slice(0, 30);
     set({ history, analyzed: true });
     writePersonal({ history });
@@ -420,7 +463,20 @@ async function startCurrent(
       }
     }
   } catch {
-    if (!get().embed) set({ message: "Playback needs another tap.", status: "paused" });
+    if (request !== playRequest || get().embed) return;
+    const fallback = safeEmbed(track.sunoId);
+    if (fallback) {
+      set({
+        status: "embedded",
+        embed: fallback,
+        message: "Native playback was unavailable. Use the official Suno player below.",
+        analyzed: false,
+        sleepAt: 0,
+      });
+      stopNativeForEmbed();
+    } else {
+      set({ message: "This audio could not be played. Try another song.", status: "error", analyzed: false });
+    }
   }
 }
 
