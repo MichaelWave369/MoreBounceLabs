@@ -1,0 +1,45 @@
+{
+  "name": "MoreBounceLabs Agent Mix Exchange",
+  "format": "mbl-mix-v1",
+  "schema": "https://michaelwave369.github.io/MoreBounceLabs/agent/mix-schema-v1.json",
+  "catalog": "https://michaelwave369.github.io/MoreBounceLabs/catalog/albums.json",
+  "ui": "https://michaelwave369.github.io/MoreBounceLabs/#/desk",
+  "instructions": [
+    "Read the public album catalog. Use exact album IDs and zero-based track indexes; do not invent records.",
+    "Draft a mix from 1 to 40 catalog songs, with a name, creator (agent or human), a description, and optional text notes.",
+    "Transitions cut/fade/blend are suggestions only. The hosted Suno player is cross-origin and cannot be controlled for automatic transitions.",
+    "Optional BPM/key/energy/startAtSec are human/agent creative estimates unless separately verified. Never claim they are measured.",
+    "Include albumTitle, artist, and trackTitle for human readability, while retaining albumId and index as stable canonical references.",
+    "Never include file://, javascript:, data:, or other executable/file references.",
+    "Return the JSON object to the human for review in Agent Mix Studio. Do not autonomously play audio, operate decks, or upload files."
+  ],
+  "validation": {
+    "onMissingReference": "error",
+    "onCatalogTitleMismatch": "warning",
+    "requiresHumanApproval": true
+  },
+  "limits": {
+    "maxTracks": 40,
+    "maxJsonBytes": 18000,
+    "maxURLChars": 7600
+  },
+  "sample": {
+    "format": "mbl-mix-v1",
+    "name": "Golden Hour Proposal",
+    "creator": {
+      "type": "agent",
+      "name": "Example Agent"
+    },
+    "description": "A human-reviewed set proposal, from warm opening to mellow finish.",
+    "tracks": [
+      {
+        "albumId": "REPLACE_WITH_REAL_CATALOG_ID",
+        "index": 0,
+        "transition": "cut",
+        "note": "Open gently",
+        "trackTitle": "REPLACE_WITH_REAL_TRACK_TITLE",
+        "energy": 0.35
+      }
+    ]
+  }
+}
