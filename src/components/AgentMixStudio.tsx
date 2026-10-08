@@ -6,6 +6,7 @@ import {
 } from "@/lib/mixExchange";
 import { useHouse, type Album, type QueueItem } from "@/lib/engine";
 import { cleanCatalogTrackNumber } from "@/lib/displayTrackTitle";
+import { dedupeSavedMixes, savedMixKey, upsertSavedMix } from "@/lib/savedMixes";
 
 const STORAGE = "mbl-approved-mixes-v1";
 const MAX_SAVED = 20;
@@ -35,10 +36,10 @@ export function AgentMixStudio({ albums, onPlay }: { albums: Album[]; onPlay: (i
     try {
       const fromStorage: unknown = JSON.parse(localStorage.getItem(STORAGE) || "[]");
       if (Array.isArray(fromStorage)) {
-        const valid = fromStorage.slice(0, MAX_SAVED).flatMap((value: unknown) => {
+        const valid = fromStorage.slice(0, 100).flatMap((value: unknown) => {
           try { return [validateMix(value, albums).mix]; } catch { return []; }
         });
-        setSaved(valid);
+        setSaved(dedupeSavedMixes(valid, MAX_SAVED));
       }
     } catch { /* User may have cleared or blocked local storage. */ }
     const shared = new URL(window.location.href).searchParams.get("mix");
@@ -80,11 +81,11 @@ export function AgentMixStudio({ albums, onPlay }: { albums: Album[]; onPlay: (i
   function saveMix() {
     if (!review?.ok) { setMessage("This mix is unplayable and cannot be saved until all catalog references are fixed."); return; }
     const exported = prepareMixForExport(review.mix, albums);
-    const next = [exported, ...saved.filter((mix) => JSON.stringify(mix) !== JSON.stringify(exported))].slice(0, MAX_SAVED);
+    const { mixes: next, updated } = upsertSavedMix(exported, saved);
     try {
       localStorage.setItem(STORAGE, JSON.stringify(next));
       setSaved(next);
-      setMessage("Mix saved to this browser. Download its JSON if you want a durable backup.");
+      setMessage(updated ? "Existing mix updated in this browser. No duplicate chip was created." : "Mix saved to this browser. Download its JSON for a durable backup.");
     } catch { setMessage("Browser storage unavailable. Download the mix JSON to save it."); }
   }
 
@@ -129,14 +130,26 @@ export function AgentMixStudio({ albums, onPlay }: { albums: Album[]; onPlay: (i
           <p className="text-xs font-semibold uppercase tracking-[0.15em] text-fuchsia-200">Human × agent collaboration · Mix Exchange v1</p>
           <h2 id="mix-studio-heading" className="mt-1 font-display text-2xl">Agent Mix Studio</h2>
           <p className="mt-2 max-w-3xl text-sm text-[#e3d2c6]">
-            Humans and agents can build a set, save it, exchange JSON or share a link. Every imported mix is checked against
-            the MBL Suno catalog before you choose to play it. No agent receives hidden control of your browser or Backspin.
+            Paste a mix, review its real catalog songs, then approve playback. Agents cannot operate your browser audio or Backspin.
           </p>
         </div>
         <button type="button" onClick={() => void copyAgentInstructions()}
           className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-fuchsia-300/50 px-4 text-sm">
           <ClipboardCopy size={16} aria-hidden="true" /> Copy agent DJ instructions
         </button>
+      </div>
+      <div className="mt-3 border-t border-white/10 pt-2">
+        <h3 className="text-sm font-semibold text-fuchsia-200">Quick import · Paste a mix plan</h3>
+        <label className="mt-3 block text-sm text-[#e4d3c9]">
+        Import agent-created mix JSON
+        <textarea value={importText} onChange={(e) => setImportText(e.target.value)}
+          rows={2} maxLength={18000} placeholder='Paste an MBL Mix Exchange v1 JSON document from your agent here'
+          className="mt-1 block w-full rounded-xl border border-white/20 bg-black/50 p-3 font-mono text-xs text-cream" />
+      </label>
+      <button type="button" onClick={importMix} className="mt-2 min-h-11 rounded-xl border border-amber/60 px-4 text-sm">
+        Review imported JSON
+      </button>
+
       </div>
       <div className="mt-3 flex flex-wrap gap-2 text-xs text-amber">
         <span>Schema: <a className="underline" href={import.meta.env.BASE_URL + "agent/mix-schema-v1.json"} target="_blank" rel="noopener noreferrer">Mix Exchange v1</a></span>
@@ -204,6 +217,19 @@ export function AgentMixStudio({ albums, onPlay }: { albums: Album[]; onPlay: (i
             className="mt-3 min-h-11 w-full rounded-lg border border-white/20 bg-black/40 px-3 text-xs" />}
         </div>
       )}
+      {saved.length > 0 && (
+        <div className="mt-4">
+          <h3 className="font-semibold">Saved mixes on this browser</h3>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {saved.map((mix) => (
+              <button key={savedMixKey(mix)} type="button" onClick={() => preview(mix)}
+                className="min-h-11 rounded-full border border-white/25 bg-black/30 px-3 text-xs">
+                {mix.name} · {mix.creator.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <details className="mt-4 rounded-xl border border-white/20 bg-black/20 p-3">
         <summary className="cursor-pointer font-semibold text-fuchsia-200">Create a mix from my queue · Creator &amp; title</summary>
         <div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -231,28 +257,6 @@ export function AgentMixStudio({ albums, onPlay }: { albums: Album[]; onPlay: (i
       </div>
 
       </details>
-      <label className="mt-5 block text-sm text-[#e4d3c9]">
-        Import agent-created mix JSON
-        <textarea value={importText} onChange={(e) => setImportText(e.target.value)}
-          rows={2} maxLength={18000} placeholder='Paste an MBL Mix Exchange v1 JSON document from your agent here'
-          className="mt-1 block w-full rounded-xl border border-white/20 bg-black/50 p-3 font-mono text-xs text-cream" />
-      </label>
-      <button type="button" onClick={importMix} className="mt-2 min-h-11 rounded-xl border border-amber/60 px-4 text-sm">
-        Review imported JSON
-      </button>
-      {saved.length > 0 && (
-        <div className="mt-4">
-          <h3 className="font-semibold">Saved mixes on this browser</h3>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {saved.map((mix, index) => (
-              <button key={index} type="button" onClick={() => preview(mix)}
-                className="min-h-11 rounded-full border border-white/25 bg-black/30 px-3 text-xs">
-                {mix.name} · {mix.creator.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
       <p className="mt-3 text-xs text-[#c9b8ad]">
         Mix Exchange v1 shares <strong>plans and catalog references, not audio or rendered recordings</strong>.
         Fade/blend are creative directions, not automated Suno crossfades. For live scratching or recorded output,
