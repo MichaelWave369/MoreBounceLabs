@@ -29,6 +29,9 @@ for (const utility of [".max-w-6xl", ".grid", ".flex", ".rounded-3xl", ".bg-heat
 const js = assets.filter((name) => name.endsWith(".js")).map((name) => readFileSync(join(root, "assets", name), "utf8")).join("\n");
 assert.ok(js.includes("catalog/albums.json"), "Built app must request its catalog");
 assert.ok(js.includes("MoreBounceLabs"), "Bundled UI should use the new site identity");
+assert.ok(js.includes("Sounds From the Mothership"), "SoundCloud archive releases must appear in the built Vault");
+assert.ok(js.includes("w.soundcloud.com/player/"), "Official SoundCloud widget URL must be bundled");
+assert.ok(js.includes("The original record shelves"), "SoundCloud archive shelf must be visible in Vault");
 assert.ok(js.includes("Backspin"), "The Decks room must contain Backspin integration");
 const backspinStaged = existsSync("vendor/backspin96-source.zip");
 if (backspinStaged) {
