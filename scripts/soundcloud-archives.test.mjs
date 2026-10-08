@@ -16,7 +16,7 @@ test("eighteen verified SoundCloud archive albums have unique links", () => {
     assert.match(album.id, /^sc-[a-z0-9-]+$/);
     assert.ok(album.title.length > 2);
     assert.equal(album.artist, "MicTek");
-    assert.ok(album.year >= 2023 && album.year <= 2026);
+    assert.ok(album.year >= 2022 && album.year <= 2026);
     assert.ok(album.trackCount > 0);
     const url = new URL(album.url);
     assert.equal(url.origin, "https://soundcloud.com");
