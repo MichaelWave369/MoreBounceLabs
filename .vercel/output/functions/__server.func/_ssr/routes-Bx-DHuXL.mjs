@@ -1,0 +1,4074 @@
+import { i as __toESM } from "../_runtime.mjs";
+import { K as require_react, b as require_jsx_runtime } from "../_libs/@tanstack/react-router+[...].mjs";
+import { a as SkipBack, c as Radio, d as ListMusic, f as Heart, i as SkipForward, l as Play, n as Volume2, o as Shuffle, p as Disc3, s as Repeat, t as VolumeX, u as Pause } from "../_libs/lucide-react.mjs";
+import { t as create } from "../_libs/zustand.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-Bx-DHuXL.js
+var import_react = /* @__PURE__ */ __toESM(require_react());
+var import_jsx_runtime = require_jsx_runtime();
+/**
+* @param {number} sec
+*/
+function fmt(sec) {
+	if (!Number.isFinite(sec) || sec < 0) return "0:00";
+	const m = Math.floor(sec / 60);
+	const s = Math.floor(sec % 60);
+	return `${m}:${String(s).padStart(2, "0")}`;
+}
+/**
+* @param {{ duration?: number }[] | undefined} tracks
+*/
+function runtime(tracks) {
+	return (tracks || []).reduce((n, t) => n + (Number(t.duration) || 0), 0);
+}
+/** @typedef {{ albumId: string, index: number, title: string, albumTitle: string }} StationItem */
+var STATIONS = [
+	{
+		id: "funk",
+		name: "Funk Headquarters",
+		blurb: "Album titles that say funk or bap. Not a genre tag.",
+		/** @param {string} title */
+		test: (title) => /funk|bap/i.test(title)
+	},
+	{
+		id: "night",
+		name: "Night Drive",
+		blurb: "Cruise, altitude, and departure records.",
+		/** @param {string} title */
+		test: (title) => /cruise|altitude|departure/i.test(title)
+	},
+	{
+		id: "orbit",
+		name: "Chill Orbit",
+		blurb: "Ocean, dream, and tide records.",
+		/** @param {string} title */
+		test: (title) => /ocean|dream|tide/i.test(title)
+	},
+	{
+		id: "space",
+		name: "Deep Space",
+		blurb: "Parallax, gravity, azure, neon, glitch, lucid, architecture.",
+		/** @param {string} title */
+		test: (title) => /parallax|gravity|azure|neon|glitch|lucid|architect/i.test(title)
+	},
+	{
+		id: "weird",
+		name: "Weird Science",
+		blurb: "Memetendo, science, nine, and glitch titles.",
+		/** @param {string} title */
+		test: (title) => /meme|science|nine|glitch/i.test(title)
+	},
+	{
+		id: "all",
+		name: "Shuffle Everything",
+		blurb: "Every track in the house, shuffled.",
+		test: () => true
+	}
+];
+/** @param {string} id */
+function stationById(id) {
+	return STATIONS.find((s) => s.id === id) || STATIONS[STATIONS.length - 1];
+}
+/**
+* @param {{ id: string, title?: string, tracks?: { title?: string }[] }[]} albums
+* @param {string} id
+* @returns {StationItem[]}
+*/
+function collectStation(albums, id) {
+	const station = stationById(id);
+	/** @type {StationItem[]} */
+	const items = [];
+	for (const album of albums || []) {
+		if (!station.test(album.title || "")) continue;
+		(album.tracks || []).forEach((track, index) => {
+			items.push({
+				albumId: album.id,
+				index,
+				title: track.title || "",
+				albumTitle: album.title || ""
+			});
+		});
+	}
+	return items;
+}
+/** @param {string | undefined} id */
+function safeEmbed(id) {
+	if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) return "";
+	return `https://suno.com/embed/${id}`;
+}
+/** @param {string | undefined} url */
+function safeHttps(url) {
+	if (!url || typeof url !== "string") return "";
+	try {
+		const u = new URL(url);
+		if (u.protocol !== "https:") return "";
+		return u.toString();
+	} catch {
+		return "";
+	}
+}
+/** @param {string} hash */
+function parseHash(hash) {
+	const parts = String(hash || "").replace(/^#\/?/, "").split("/").filter(Boolean);
+	const room = parts[0] || "lobby";
+	if (!(/* @__PURE__ */ new Set([
+		"lobby",
+		"vault",
+		"lounge",
+		"lab",
+		"radio",
+		"decks",
+		"desk",
+		"album"
+	])).has(room)) return {
+		room: "lobby",
+		albumId: "",
+		track: ""
+	};
+	if (room === "album") return {
+		room,
+		albumId: parts[1] || "",
+		track: parts[2] || ""
+	};
+	return {
+		room,
+		albumId: "",
+		track: ""
+	};
+}
+/**
+* @template T
+* @param {T[]} list
+* @returns {T[]}
+*/
+function shuffleIds(list) {
+	const next = list.slice();
+	for (let i = next.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[next[i], next[j]] = [next[j], next[i]];
+	}
+	return next;
+}
+var albums_default = {
+	artist: "Mikey More Bounce",
+	aka: "MicTek",
+	tagline: "Making music to make you feel good, baby.",
+	links: { "suno": "https://suno.com/@michaelwave369" },
+	albums: [
+		{
+			"id": "trunk-funk",
+			"title": "Trunk Funk",
+			"artist": "Mikey More Bounce",
+			"type": "LP",
+			"year": "2026",
+			"description": "Get the FUNK outta my face bro!",
+			"cover": "https://cdn2.suno.ai/af32b2b4.jpeg",
+			"suno": "https://suno.com/album/cd0ac73c-f56e-4827-afab-f1cedae36fc4",
+			"tracks": [
+				{
+					"title": "Fractal Licious",
+					"sunoId": "c2ed2c5b-caa7-42ae-84f1-46d91e776efa",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/c2ed2c5b-caa7-42ae-84f1-46d91e776efa.m4a",
+					"duration": 143.36
+				},
+				{
+					"title": "Funk Out My Face",
+					"sunoId": "2164eca8-5db7-405a-92f2-6b92e536dd0a",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/2164eca8-5db7-405a-92f2-6b92e536dd0a.m4a",
+					"duration": 220.6
+				},
+				{
+					"title": "Funky Dust Boogie",
+					"sunoId": "f5e9902e-a0a1-4255-935c-1962a4a6d853",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/f5e9902e-a0a1-4255-935c-1962a4a6d853.m4a",
+					"duration": 214.8
+				},
+				{
+					"title": "Tin Drum Synthesis",
+					"sunoId": "dc90e3e6-28eb-4571-b2bb-3088b8eb9db1",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/dc90e3e6-28eb-4571-b2bb-3088b8eb9db1.m4a",
+					"duration": 129.76
+				},
+				{
+					"title": "Vinyl Heartbreak",
+					"sunoId": "799b7039-bf91-40ab-b8f9-faba20b42947",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/799b7039-bf91-40ab-b8f9-faba20b42947.m4a",
+					"duration": 139.92
+				},
+				{
+					"title": "DYS",
+					"sunoId": "42d5722f-07ed-4145-bd9d-8bbefee03127",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/42d5722f-07ed-4145-bd9d-8bbefee03127.m4a",
+					"duration": 184.8
+				},
+				{
+					"title": "Dust on Needle",
+					"sunoId": "60d46f50-0dfd-4130-9e74-bfec644941ca",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/60d46f50-0dfd-4130-9e74-bfec644941ca.m4a",
+					"duration": 204.6
+				},
+				{
+					"title": "Outstanding Demand",
+					"sunoId": "d08c4ce2-fc4c-4732-86a2-e2b225416773",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d08c4ce2-fc4c-4732-86a2-e2b225416773.m4a",
+					"duration": 141.68
+				},
+				{
+					"title": "Skippin'",
+					"sunoId": "e2cbcb16-88d9-48ee-bc8e-bcc1fdf35863",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/e2cbcb16-88d9-48ee-bc8e-bcc1fdf35863.m4a",
+					"duration": 130.36
+				},
+				{
+					"title": "Ride Engineered",
+					"sunoId": "d1318711-81d6-4bd0-b8fd-1aee307a72ef",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d1318711-81d6-4bd0-b8fd-1aee307a72ef.m4a",
+					"duration": 165.96
+				},
+				{
+					"title": "Let's Party",
+					"sunoId": "6f18b674-9508-404c-8341-d5b453bbc4f9",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/6f18b674-9508-404c-8341-d5b453bbc4f9.m4a",
+					"duration": 168.04
+				},
+				{
+					"title": "Say it Again",
+					"sunoId": "c5e4402e-8b59-47f7-b66f-f7ff34cddf0f",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/c5e4402e-8b59-47f7-b66f-f7ff34cddf0f.m4a",
+					"duration": 136.52
+				},
+				{
+					"title": "Cycloned",
+					"sunoId": "a427ea26-dfdf-4404-a537-6d6745a09f86",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/a427ea26-dfdf-4404-a537-6d6745a09f86.m4a",
+					"duration": 212.4
+				},
+				{
+					"title": "Fresh Dressed",
+					"sunoId": "210e1e5f-470d-4988-bf10-bc08f360188b",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/210e1e5f-470d-4988-bf10-bc08f360188b.m4a",
+					"duration": 150.68
+				},
+				{
+					"title": "Disco Saints",
+					"sunoId": "bd4c0114-a35e-4cd4-8274-7b5ecd230e69",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/bd4c0114-a35e-4cd4-8274-7b5ecd230e69.m4a",
+					"duration": 163.32
+				},
+				{
+					"title": "Cracked Sunshine",
+					"sunoId": "5a07f63e-76ec-4360-892d-afd0aca9e0b3",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/5a07f63e-76ec-4360-892d-afd0aca9e0b3.m4a",
+					"duration": 148.32
+				},
+				{
+					"title": "Swing Surprise",
+					"sunoId": "3d61f030-e5cd-4141-98c3-ce61d07873b7",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/3d61f030-e5cd-4141-98c3-ce61d07873b7.m4a",
+					"duration": 207.6
+				},
+				{
+					"title": "Levitate",
+					"sunoId": "fa11b7cb-1cc7-46ed-b966-ede916e9d521",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/fa11b7cb-1cc7-46ed-b966-ede916e9d521.m4a",
+					"duration": 127.28
+				},
+				{
+					"title": "Wax Rope",
+					"sunoId": "c5d3cb1d-9a11-483c-9a1e-064668adfc01",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/c5d3cb1d-9a11-483c-9a1e-064668adfc01.m4a",
+					"duration": 127.44
+				},
+				{
+					"title": "Online Transaction",
+					"sunoId": "f533bfa8-f16a-4b7a-8e6a-66febca6a218",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/f533bfa8-f16a-4b7a-8e6a-66febca6a218.m4a",
+					"duration": 144.68
+				},
+				{
+					"title": "Vinyl Dust Gold",
+					"sunoId": "24402cd7-9836-4701-99ab-79b86feb3547",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/24402cd7-9836-4701-99ab-79b86feb3547.m4a",
+					"duration": 182.4
+				},
+				{
+					"title": "Vinyl Bananas",
+					"sunoId": "616afa49-8f51-4ff3-bd43-528f83d8380f",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/616afa49-8f51-4ff3-bd43-528f83d8380f.m4a",
+					"duration": 174.32
+				},
+				{
+					"title": "That Feeling",
+					"sunoId": "821aaaaa-6d94-4c69-84e0-76025d91ee5a",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/821aaaaa-6d94-4c69-84e0-76025d91ee5a.m4a",
+					"duration": 154.64
+				},
+				{
+					"title": "Toke Float",
+					"sunoId": "fffa2da6-b715-471d-94de-2e321a5cf4ab",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/fffa2da6-b715-471d-94de-2e321a5cf4ab.m4a",
+					"duration": 153.44
+				},
+				{
+					"title": "Funk Train",
+					"sunoId": "c2d086bb-79f7-4de5-8e2a-0d9fbedf08eb",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/c2d086bb-79f7-4de5-8e2a-0d9fbedf08eb.m4a",
+					"duration": 134.52
+				},
+				{
+					"title": "Quick Pump",
+					"sunoId": "2c3749a9-dd3d-4312-a38b-fbfb0d729c85",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/2c3749a9-dd3d-4312-a38b-fbfb0d729c85.m4a",
+					"duration": 103.48
+				},
+				{
+					"title": "May the Funk Be With You",
+					"sunoId": "f2a2135a-f8e0-46c9-9f51-1c2e98ec7973",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/f2a2135a-f8e0-46c9-9f51-1c2e98ec7973.m4a",
+					"duration": 132
+				},
+				{
+					"title": "Beefs Cherky",
+					"sunoId": "3a7f5574-fa8e-4c97-b1c9-76db89abca33",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/3a7f5574-fa8e-4c97-b1c9-76db89abca33.m4a",
+					"duration": 156.44
+				},
+				{
+					"title": "Don’t Stop Now",
+					"sunoId": "0bc418fb-99de-436f-a9af-bb3ad8a6d2a3",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/0bc418fb-99de-436f-a9af-bb3ad8a6d2a3.m4a",
+					"duration": 149.92
+				},
+				{
+					"title": "Can't Have That VIP",
+					"sunoId": "7aff7669-36de-4105-b20e-54529cda4f4e",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/7aff7669-36de-4105-b20e-54529cda4f4e.m4a",
+					"duration": 172.92
+				},
+				{
+					"title": "Brotato Chip",
+					"sunoId": "d8204766-76ee-4d9b-987f-941ffa2fca49",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d8204766-76ee-4d9b-987f-941ffa2fca49.m4a",
+					"duration": 144.92
+				},
+				{
+					"title": "Summer Feelin",
+					"sunoId": "57ebf146-44db-40a3-a173-831ee39ce7dd",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/57ebf146-44db-40a3-a173-831ee39ce7dd.m4a",
+					"duration": 178.8
+				},
+				{
+					"title": "Funky Britches",
+					"sunoId": "4e41641c-f5a4-4610-bf29-562312bb46b6",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/4e41641c-f5a4-4610-bf29-562312bb46b6.m4a",
+					"duration": 194.48
+				},
+				{
+					"title": "City Lights",
+					"sunoId": "8326eb22-5f48-40fc-a383-527fa5712acf",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/8326eb22-5f48-40fc-a383-527fa5712acf.m4a",
+					"duration": 138.08
+				},
+				{
+					"title": "Funk Thirty VIP",
+					"sunoId": "30a1506a-c00b-4175-af82-f6a3e5dead89",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/30a1506a-c00b-4175-af82-f6a3e5dead89.m4a",
+					"duration": 208.76
+				},
+				{
+					"title": "Dirt Funk",
+					"sunoId": "d2ee16a3-44f0-4022-b0ce-015b0c2535f3",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d2ee16a3-44f0-4022-b0ce-015b0c2535f3.m4a",
+					"duration": 126.84
+				},
+				{
+					"title": "Romeograph",
+					"sunoId": "62b81540-82d4-4625-a860-c7c3ff02d9f2",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/62b81540-82d4-4625-a860-c7c3ff02d9f2.m4a",
+					"duration": 216.8
+				},
+				{
+					"title": "Calculator",
+					"sunoId": "86334965-3b2f-477c-adca-787c7cac98a5",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/86334965-3b2f-477c-adca-787c7cac98a5.m4a",
+					"duration": 198.68
+				},
+				{
+					"title": "Groove Coordinates",
+					"sunoId": "10005b76-92b8-4523-9403-2b14522016d4",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/10005b76-92b8-4523-9403-2b14522016d4.m4a",
+					"duration": 190.6
+				},
+				{
+					"title": "SLowwah Yo Rollah",
+					"sunoId": "834ba6b6-3500-4f85-818b-e8f64c1ce213",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/834ba6b6-3500-4f85-818b-e8f64c1ce213.m4a",
+					"duration": 219.92
+				},
+				{
+					"title": "Disco Bump Ups",
+					"sunoId": "e570f85f-25a1-4931-a4b3-9c780144b457",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/e570f85f-25a1-4931-a4b3-9c780144b457.m4a",
+					"duration": 191.68
+				},
+				{
+					"title": "It's Already OverFunked",
+					"sunoId": "6a0664df-6ff0-42ef-8f01-a645410de055",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/6a0664df-6ff0-42ef-8f01-a645410de055.m4a",
+					"duration": 164.52
+				},
+				{
+					"title": "Dixie Land Jazz Disco Funktropia Infinity",
+					"sunoId": "4ac7b2b2-a95c-4aed-b060-2a313d5e0cba",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/4ac7b2b2-a95c-4aed-b060-2a313d5e0cba.m4a",
+					"duration": 190.56
+				},
+				{
+					"title": "Siphon State",
+					"sunoId": "6cd07907-5499-49b5-81a6-13775c5abbd9",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/6cd07907-5499-49b5-81a6-13775c5abbd9.m4a",
+					"duration": 164.4
+				},
+				{
+					"title": "DiscoKO",
+					"sunoId": "91201443-b76f-4c4d-a6b8-c8e2f1a6beec",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/91201443-b76f-4c4d-a6b8-c8e2f1a6beec.m4a",
+					"duration": 164.56
+				},
+				{
+					"title": "SAFAWDTT VIP",
+					"sunoId": "a1940353-f420-4b50-aa55-eb62e9eeb52d",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/a1940353-f420-4b50-aa55-eb62e9eeb52d.m4a",
+					"duration": 144.68
+				},
+				{
+					"title": "Evening Stroll",
+					"sunoId": "e3113548-3795-48a5-87d2-a7c935fe154d",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/e3113548-3795-48a5-87d2-a7c935fe154d.m4a",
+					"duration": 194.8
+				},
+				{
+					"title": "It All Went Dim",
+					"sunoId": "498472f5-b7d3-4373-bb84-965854d990d6",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/498472f5-b7d3-4373-bb84-965854d990d6.m4a",
+					"duration": 196.8
+				},
+				{
+					"title": "Don't You Stop",
+					"sunoId": "997d1f4b-72d9-4500-be17-00acfecc249b",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/997d1f4b-72d9-4500-be17-00acfecc249b.m4a",
+					"duration": 189.6
+				},
+				{
+					"title": "Dance Froo",
+					"sunoId": "02dd0f15-910b-48e5-a332-51d913a9aea9",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/02dd0f15-910b-48e5-a332-51d913a9aea9.m4a",
+					"duration": 190
+				},
+				{
+					"title": "Clutchin' 5K",
+					"sunoId": "deeff66d-2ea5-4144-855f-c5ac9d45d2c2",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/deeff66d-2ea5-4144-855f-c5ac9d45d2c2.m4a",
+					"duration": 181.6
+				},
+				{
+					"title": "Circumplanetary",
+					"sunoId": "43f1a736-d62d-4e4e-8b51-50461a6fb6a8",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/43f1a736-d62d-4e4e-8b51-50461a6fb6a8.m4a",
+					"duration": 183.2
+				},
+				{
+					"title": "Love Template",
+					"sunoId": "2615cd44-5182-4612-b366-cc6a1fb8aaab",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/2615cd44-5182-4612-b366-cc6a1fb8aaab.m4a",
+					"duration": 182.8
+				},
+				{
+					"title": "Knocked the FUNK Out",
+					"sunoId": "97662f9e-cbf2-4432-adde-dc4a35885287",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/97662f9e-cbf2-4432-adde-dc4a35885287.m4a",
+					"duration": 142.88
+				}
+			]
+		},
+		{
+			"id": "the-ocean-has-an-alibi",
+			"title": "The Ocean Has an Alibi",
+			"artist": "Mikey More Bounce",
+			"type": "LP",
+			"year": "2026",
+			"description": "Relax gumshoe... the facts are quite elementary...",
+			"cover": "https://cdn2.suno.ai/image_7e24f18b-56f9-44f2-90c8-e4dee4bc1fc8.jpeg",
+			"suno": "https://suno.com/album/39205fb1-ab87-471e-a4c3-8d145275b439",
+			"tracks": [
+				{
+					"title": "Canned Ocean",
+					"sunoId": "68407ac4-104d-4495-9945-532a06fe59b8",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/68407ac4-104d-4495-9945-532a06fe59b8.m4a",
+					"duration": 194.2
+				},
+				{
+					"title": "Smoked Dry",
+					"sunoId": "ee9a9f42-538b-4452-b600-a8d8c8207ca0",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/ee9a9f42-538b-4452-b600-a8d8c8207ca0.m4a",
+					"duration": 213.88
+				},
+				{
+					"title": "Tide L Waved",
+					"sunoId": "a5c35192-7ba1-470a-9405-345bd2a68731",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/a5c35192-7ba1-470a-9405-345bd2a68731.m4a",
+					"duration": 199.48
+				},
+				{
+					"title": "Over Boards",
+					"sunoId": "5ae3c90c-a5ff-49d6-9655-530c6a258204",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/5ae3c90c-a5ff-49d6-9655-530c6a258204.m4a",
+					"duration": 189.36
+				},
+				{
+					"title": "Dreamy Drift",
+					"sunoId": "3f1309d6-c69c-4b44-b1d5-88adb19b3a24",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/3f1309d6-c69c-4b44-b1d5-88adb19b3a24.m4a",
+					"duration": 153.92
+				},
+				{
+					"title": "Slid Smooth",
+					"sunoId": "0538e593-9348-44d9-b5d2-f93f1661497e",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/0538e593-9348-44d9-b5d2-f93f1661497e.m4a",
+					"duration": 184.64
+				},
+				{
+					"title": "Crooked Level",
+					"sunoId": "36d3af4d-54df-410d-8a73-b65d650f69ac",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/36d3af4d-54df-410d-8a73-b65d650f69ac.m4a",
+					"duration": 214.4
+				},
+				{
+					"title": "Roped Out",
+					"sunoId": "423deb4b-3ebb-4c06-92ed-c4a12636fe7e",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/423deb4b-3ebb-4c06-92ed-c4a12636fe7e.m4a",
+					"duration": 238.68
+				},
+				{
+					"title": "Smooth Landing",
+					"sunoId": "3e5d31e5-29d8-43fe-8ff2-a6c0994bcc0f",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/3e5d31e5-29d8-43fe-8ff2-a6c0994bcc0f.m4a",
+					"duration": 201.52
+				},
+				{
+					"title": "Dove Sideways",
+					"sunoId": "27a29859-a129-427f-94b7-5bc1fac6a7a3",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/27a29859-a129-427f-94b7-5bc1fac6a7a3.m4a",
+					"duration": 224.72
+				},
+				{
+					"title": "Wake Rider",
+					"sunoId": "66547f3c-167b-4b62-b0b7-141e70611645",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/66547f3c-167b-4b62-b0b7-141e70611645.m4a",
+					"duration": 274.68
+				},
+				{
+					"title": "Tube Floater",
+					"sunoId": "e0042e72-554a-45eb-8083-48de07e6f816",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/e0042e72-554a-45eb-8083-48de07e6f816.m4a",
+					"duration": 239.72
+				}
+			]
+		},
+		{
+			"id": "the-azure-inheritance",
+			"title": "The Azure Inheritance",
+			"artist": "Mikey More Bounce",
+			"type": "LP",
+			"year": "2026",
+			"description": "A 15-track Mediterranean yacht-rock journey through golden harbors, quiet coves, midnight water, long lunches, summer storms and the bittersweet beauty of leaving at the right time.",
+			"cover": "https://cdn2.suno.ai/image_f9c60894-d987-4bfc-94d1-694ac7851c8f.jpeg",
+			"suno": "https://suno.com/album/d5a51e0f-ce5a-4e4c-83a0-b5d28ca4ddbf",
+			"tracks": [
+				{
+					"title": "Portofino at Seven",
+					"sunoId": "520439fc-6754-42ed-bada-7a7ccb8da9a4",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/520439fc-6754-42ed-bada-7a7ccb8da9a4.m4a",
+					"duration": 324.08
+				},
+				{
+					"title": "White Linen Weather",
+					"sunoId": "07c2ba07-f92a-4915-b379-78939b60d629",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/07c2ba07-f92a-4915-b379-78939b60d629.m4a",
+					"duration": 287.8
+				},
+				{
+					"title": "Tender to Capri",
+					"sunoId": "1f155417-be6b-4f71-aab0-52cc41de821c",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/1f155417-be6b-4f71-aab0-52cc41de821c.m4a",
+					"duration": 254.52
+				},
+				{
+					"title": "The Azure Inheritance",
+					"sunoId": "ddac4911-9893-4a67-b231-2d79a504c47e",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/ddac4911-9893-4a67-b231-2d79a504c47e.m4a",
+					"duration": 329.4
+				},
+				{
+					"title": "Lunch at La Fontelina",
+					"sunoId": "cc135544-c2e6-4b18-9a54-ddc984edafcf",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/cc135544-c2e6-4b18-9a54-ddc984edafcf.m4a",
+					"duration": 268.72
+				},
+				{
+					"title": "No Wake",
+					"sunoId": "c93f1203-2659-44e8-b385-09184c563744",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/c93f1203-2659-44e8-b385-09184c563744.m4a",
+					"duration": 339.4
+				},
+				{
+					"title": "Mahogany and Salt",
+					"sunoId": "16356565-796d-42d5-929e-bfe0925857ff",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/16356565-796d-42d5-929e-bfe0925857ff.m4a",
+					"duration": 304.64
+				},
+				{
+					"title": "Monaco Blue",
+					"sunoId": "ffa3740c-09dc-48ac-ba18-3f77baa713c4",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/ffa3740c-09dc-48ac-ba18-3f77baa713c4.m4a",
+					"duration": 278.2
+				},
+				{
+					"title": "Barefoot on the Aft Deck",
+					"sunoId": "36ebfb4f-8a7c-4228-aba0-30d59777bd7f",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/36ebfb4f-8a7c-4228-aba0-30d59777bd7f.m4a",
+					"duration": 279.76
+				},
+				{
+					"title": "One More Island",
+					"sunoId": "060b7647-c8fc-442e-9f5d-ac289a2eebe2",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/060b7647-c8fc-442e-9f5d-ac289a2eebe2.m4a",
+					"duration": 279.72
+				},
+				{
+					"title": "Below the Waterline",
+					"sunoId": "781473f4-2731-4bee-a476-2cf35172e70b",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/781473f4-2731-4bee-a476-2cf35172e70b.m4a",
+					"duration": 349.6
+				},
+				{
+					"title": "Rosé After Midnight",
+					"sunoId": "a8e1e58c-7f66-4f65-8660-666df5a3dce6",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/a8e1e58c-7f66-4f65-8660-666df5a3dce6.m4a",
+					"duration": 334.48
+				},
+				{
+					"title": "Mistral",
+					"sunoId": "8f50201a-0168-49e7-a598-35d122ac2a4d",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/8f50201a-0168-49e7-a598-35d122ac2a4d.m4a",
+					"duration": 349.76
+				},
+				{
+					"title": "Last Light on the Côte d’Azur",
+					"sunoId": "47c7b001-8d32-44ae-b372-64d3eb4e1b14",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/47c7b001-8d32-44ae-b372-64d3eb4e1b14.m4a",
+					"duration": 369.52
+				},
+				{
+					"title": "Wake Behind Us",
+					"sunoId": "8f1364ed-5fc9-41f9-aba2-c6ed17e934e0",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/8f1364ed-5fc9-41f9-aba2-c6ed17e934e0.m4a",
+					"duration": 394.48
+				}
+			]
+		},
+		{
+			"id": "anti-gravity-protocol",
+			"title": "Anti-Gravity Protocol",
+			"artist": "Mikey More Bounce",
+			"type": "LP",
+			"year": "2026",
+			"description": "Please continue listening so anti-drift stays active.",
+			"cover": "https://cdn2.suno.ai/image_8d13d0d9-a57b-4507-90cf-2881a3440f7a.jpeg",
+			"suno": "https://suno.com/album/c2add57c-3b4e-4725-9042-fa46009e30f6",
+			"tracks": [
+				{
+					"title": "Onramp",
+					"sunoId": "c242a958-de5c-45a2-9491-2e6128d5c658",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/c242a958-de5c-45a2-9491-2e6128d5c658.m4a",
+					"duration": 200.2
+				},
+				{
+					"title": "Palm Vape",
+					"sunoId": "d1ca0cac-be96-4d90-b049-2ccb352610ea",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d1ca0cac-be96-4d90-b049-2ccb352610ea.m4a",
+					"duration": 190.6
+				},
+				{
+					"title": "Malibu Nocturnals",
+					"sunoId": "a1519025-c312-43f9-b179-5670749a81d3",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/a1519025-c312-43f9-b179-5670749a81d3.m4a",
+					"duration": 191.64
+				},
+				{
+					"title": "Bloomington",
+					"sunoId": "f93b06bb-59dc-4037-ba5a-78cda51e0540",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/f93b06bb-59dc-4037-ba5a-78cda51e0540.m4a",
+					"duration": 184.68
+				},
+				{
+					"title": "Ghost Biggs",
+					"sunoId": "4c12e302-2871-4c0e-9cde-87f17fc69ea3",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/4c12e302-2871-4c0e-9cde-87f17fc69ea3.m4a",
+					"duration": 200.96
+				},
+				{
+					"title": "Aquatic Tear",
+					"sunoId": "9b8f5d6b-9fce-4660-a36e-f75a21817a58",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/9b8f5d6b-9fce-4660-a36e-f75a21817a58.m4a",
+					"duration": 177.36
+				},
+				{
+					"title": "Gathering Cliffs",
+					"sunoId": "2f78bcf4-0cdf-4339-8050-5846fc8d64e2",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/2f78bcf4-0cdf-4339-8050-5846fc8d64e2.m4a",
+					"duration": 187.24
+				},
+				{
+					"title": "Air Flow",
+					"sunoId": "96b9cdb3-4c52-4880-a06e-2e4d52f06b28",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/96b9cdb3-4c52-4880-a06e-2e4d52f06b28.m4a",
+					"duration": 170.08
+				},
+				{
+					"title": "Rising Morning Water",
+					"sunoId": "60f78e9f-ee89-45e4-a0d7-fff7f58434df",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/60f78e9f-ee89-45e4-a0d7-fff7f58434df.m4a",
+					"duration": 190.72
+				}
+			]
+		},
+		{
+			"id": "lucid-altitude",
+			"title": "Lucid Altitude",
+			"artist": "Mikey More Bounce",
+			"type": "LP",
+			"year": "2026",
+			"description": "Remixed alternative output",
+			"cover": "https://cdn2.suno.ai/image_e97d00b5-835d-44e2-a784-fd9c91bec24f.jpeg",
+			"suno": "https://suno.com/album/79f7fdb5-6b65-44ff-9853-407e06802656",
+			"tracks": [
+				{
+					"title": "1. Pacific Onramp",
+					"sunoId": "2c9043e4-aecc-4806-95bb-036cbddd46ff",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/2c9043e4-aecc-4806-95bb-036cbddd46ff.m4a",
+					"duration": 217.12
+				},
+				{
+					"title": "2. Sodium Vapor Palms",
+					"sunoId": "e0d96b7e-9dad-4fea-a3cb-244046ded015",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/e0d96b7e-9dad-4fea-a3cb-244046ded015.m4a",
+					"duration": 169.72
+				},
+				{
+					"title": "3. Malibu After Midnight",
+					"sunoId": "131e3593-8af4-4ffb-8799-30bb83695e2c",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/131e3593-8af4-4ffb-8799-30bb83695e2c.m4a",
+					"duration": 213.4
+				},
+				{
+					"title": "4. Tunnel Bloom",
+					"sunoId": "d33314b6-9e0b-4a28-bb93-7cb50ad83410",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d33314b6-9e0b-4a28-bb93-7cb50ad83410.m4a",
+					"duration": 203.88
+				},
+				{
+					"title": "5. Big Sur Ghostline",
+					"sunoId": "65ff11d2-9553-438c-b696-4673ebabccab",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/65ff11d2-9553-438c-b696-4673ebabccab.m4a",
+					"duration": 189.28
+				},
+				{
+					"title": "6. Marine Layer",
+					"sunoId": "e9c9ccbb-d330-4825-af3d-2b1a3c67c824",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/e9c9ccbb-d330-4825-af3d-2b1a3c67c824.m4a",
+					"duration": 202.72
+				},
+				{
+					"title": "7. Cliffside Retriever",
+					"sunoId": "0768faa3-8941-4a4c-b069-175b333db0f6",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/0768faa3-8941-4a4c-b069-175b333db0f6.m4a",
+					"duration": 194.72
+				},
+				{
+					"title": "8. Cruising Altitude",
+					"sunoId": "c2de95df-afba-43a1-b4b7-e39b23384124",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/c2de95df-afba-43a1-b4b7-e39b23384124.m4a",
+					"duration": 183.08
+				},
+				{
+					"title": "9. Dawn Above the Pacific",
+					"sunoId": "8383c778-596d-4221-a953-ae2f1a34075d",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/8383c778-596d-4221-a953-ae2f1a34075d.m4a",
+					"duration": 208.12
+				}
+			]
+		},
+		{
+			"id": "cruising-altitude",
+			"title": "Cruising Altitude",
+			"artist": "Mikey More Bounce",
+			"type": "LP",
+			"year": "2026",
+			"description": "It's the nighttime, grooving, driving, smooth moving music to funk 2...",
+			"cover": "https://cdn2.suno.ai/image_ddc3cc83-421a-4a61-bec7-cf35ec3665df.jpeg",
+			"suno": "https://suno.com/album/59cea7b7-4569-4d35-b99d-c27d6a5e1963",
+			"tracks": [
+				{
+					"title": "1. Pacific Onramp",
+					"sunoId": "d696eaa5-e322-4daf-81bc-f4620e9ef70a",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d696eaa5-e322-4daf-81bc-f4620e9ef70a.m4a",
+					"duration": 189.24
+				},
+				{
+					"title": "2. Sodium Vapor Palms",
+					"sunoId": "28a5d605-2e1b-415c-8d0f-c47539d2f753",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/28a5d605-2e1b-415c-8d0f-c47539d2f753.m4a",
+					"duration": 159.6
+				},
+				{
+					"title": "3. Malibu After Midnight",
+					"sunoId": "9d38f59e-b897-4b5a-9ddc-1fa7fd288d16",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/9d38f59e-b897-4b5a-9ddc-1fa7fd288d16.m4a",
+					"duration": 193.12
+				},
+				{
+					"title": "4. Tunnel Bloom",
+					"sunoId": "82137d74-e0ea-4b6d-b61e-3d1ff2c676e9",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/82137d74-e0ea-4b6d-b61e-3d1ff2c676e9.m4a",
+					"duration": 219.04
+				},
+				{
+					"title": "5. Big Sur Ghostline",
+					"sunoId": "1c2f0f4b-4939-43b8-85d8-ad811748c17c",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/1c2f0f4b-4939-43b8-85d8-ad811748c17c.m4a",
+					"duration": 224.48
+				},
+				{
+					"title": "6. Marine Layer",
+					"sunoId": "c44f84da-2284-475d-a3fc-b8633c769080",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/c44f84da-2284-475d-a3fc-b8633c769080.m4a",
+					"duration": 169.52
+				},
+				{
+					"title": "7. Cliffside Retriever",
+					"sunoId": "b21d381c-3252-4b5c-982a-8bcb9f88eb04",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/b21d381c-3252-4b5c-982a-8bcb9f88eb04.m4a",
+					"duration": 179.68
+				},
+				{
+					"title": "8. Cruising Altitude",
+					"sunoId": "9b948955-fdaa-4083-bd5a-67d30c2ce753",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/9b948955-fdaa-4083-bd5a-67d30c2ce753.m4a",
+					"duration": 184.16
+				},
+				{
+					"title": "9. Dawn Above the Pacific",
+					"sunoId": "4aa676d0-1e3b-4df9-95b9-f04cfe0ea78d",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/4aa676d0-1e3b-4df9-95b9-f04cfe0ea78d.m4a",
+					"duration": 209.48
+				}
+			]
+		},
+		{
+			"id": "nine-2tha-0",
+			"title": "Nine 2Tha 0",
+			"artist": "Mikey More Bounce",
+			"type": "LP",
+			"year": "2026",
+			"description": "Remixing remixes of my remixes..",
+			"cover": "https://cdn2.suno.ai/image_47b71bd3-9233-4e69-8bc7-2610e1234dc0.jpeg",
+			"suno": "https://suno.com/album/320eac94-6286-4930-bf70-e4c66b2015dd",
+			"tracks": [
+				{
+					"title": "Tunnel Force",
+					"sunoId": "95dba8d4-ede1-456e-89d8-2355b0351121",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/95dba8d4-ede1-456e-89d8-2355b0351121.m4a",
+					"duration": 199.56
+				},
+				{
+					"title": "Nevah Gon' Stahppp",
+					"sunoId": "6d7d4a72-599e-454a-a04d-852c73b8642c",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/6d7d4a72-599e-454a-a04d-852c73b8642c.m4a",
+					"duration": 147.72
+				},
+				{
+					"title": "Calculating Computational Calculations",
+					"sunoId": "8995fc08-e4c0-46b8-99f3-decf50385f20",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/8995fc08-e4c0-46b8-99f3-decf50385f20.m4a",
+					"duration": 174.64
+				},
+				{
+					"title": "Can't Have That",
+					"sunoId": "4bf9bfbc-fa2f-4a53-87b4-3c4054f4a4bc",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/4bf9bfbc-fa2f-4a53-87b4-3c4054f4a4bc.m4a",
+					"duration": 199.8
+				},
+				{
+					"title": "Humorous Financials",
+					"sunoId": "d73bd6c3-f777-4166-b6df-296d9ab5945b",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d73bd6c3-f777-4166-b6df-296d9ab5945b.m4a",
+					"duration": 204.72
+				},
+				{
+					"title": "Escape Technique MK.1",
+					"sunoId": "40e7d053-b20a-4051-bea2-1166ff2ea4b9",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/40e7d053-b20a-4051-bea2-1166ff2ea4b9.m4a",
+					"duration": 180.76
+				},
+				{
+					"title": "Atmosphunked",
+					"sunoId": "2fa46043-14c5-4174-bf9d-4731f817384d",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/2fa46043-14c5-4174-bf9d-4731f817384d.m4a",
+					"duration": 184.16
+				},
+				{
+					"title": "Summer Romance",
+					"sunoId": "e8a05395-82d8-4ad9-9207-a92dad024e72",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/e8a05395-82d8-4ad9-9207-a92dad024e72.m4a",
+					"duration": 198
+				},
+				{
+					"title": "Center Gravity",
+					"sunoId": "7fdcc763-fe18-44cb-8e2f-80d852971c2a",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/7fdcc763-fe18-44cb-8e2f-80d852971c2a.m4a",
+					"duration": 184.72
+				},
+				{
+					"title": "Wharf Barf Shop",
+					"sunoId": "2be07c57-6965-40a2-80e5-eb87236a4fc7",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/2be07c57-6965-40a2-80e5-eb87236a4fc7.m4a",
+					"duration": 194.68
+				},
+				{
+					"title": "Aquatica Statistica",
+					"sunoId": "1952b870-ed6d-49ce-97c9-beec83269919",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/1952b870-ed6d-49ce-97c9-beec83269919.m4a",
+					"duration": 179.72
+				},
+				{
+					"title": "Sunset Ride Dystopia",
+					"sunoId": "4a68eb59-2171-429b-bbfe-d8fb5a8a5e33",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/4a68eb59-2171-429b-bbfe-d8fb5a8a5e33.m4a",
+					"duration": 163.08
+				}
+			]
+		},
+		{
+			"id": "the-dreaming-tide",
+			"title": "The Dreaming Tide",
+			"artist": "Mikey More Bounce",
+			"type": "LP",
+			"year": "2026",
+			"description": "A controlled descent from consciousness into dream space and back.",
+			"cover": "https://cdn2.suno.ai/image_c35b3f9f-cb3f-4867-a6b7-994e2d1c7c23.jpeg",
+			"suno": "https://suno.com/album/08ea67ec-e72e-4df7-ad82-76fc133368b3",
+			"tracks": [
+				{
+					"title": "The Dreaming Tide",
+					"sunoId": "b67cce8d-cd22-4771-8498-5099d4bf9c19",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/b67cce8d-cd22-4771-8498-5099d4bf9c19.m4a",
+					"duration": 283.92
+				},
+				{
+					"title": "Headlights Across Black Water",
+					"sunoId": "8cab72dd-cdc5-4601-8047-c79484f646e7",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/8cab72dd-cdc5-4601-8047-c79484f646e7.m4a",
+					"duration": 262.64
+				},
+				{
+					"title": "The Tide Knows Your Name",
+					"sunoId": "ceddc6b5-b2fb-4f29-b7c2-3fb37aadfb1e",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/ceddc6b5-b2fb-4f29-b7c2-3fb37aadfb1e.m4a",
+					"duration": 241.16
+				},
+				{
+					"title": "REM Club Lobby",
+					"sunoId": "48798ead-8299-48e9-9f48-a7935fd89347",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/48798ead-8299-48e9-9f48-a7935fd89347.m4a",
+					"duration": 128.6
+				},
+				{
+					"title": "Subconscious Soundsystem",
+					"sunoId": "e93d2371-30af-4fdd-b436-e84668568b0e",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/e93d2371-30af-4fdd-b436-e84668568b0e.m4a",
+					"duration": 179.68
+				},
+				{
+					"title": "Blue Room With No Walls",
+					"sunoId": "1bed05e2-1204-42c9-b07f-127b719b87ff",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/1bed05e2-1204-42c9-b07f-127b719b87ff.m4a",
+					"duration": 180.08
+				},
+				{
+					"title": "Slow Motion Amen",
+					"sunoId": "f819e288-d9db-445d-b618-ad9e72aa8702",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/f819e288-d9db-445d-b618-ad9e72aa8702.m4a",
+					"duration": 179.72
+				},
+				{
+					"title": "Dreams Have Basslines",
+					"sunoId": "25dbf933-dd89-477e-b138-c0b27621ffea",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/25dbf933-dd89-477e-b138-c0b27621ffea.m4a",
+					"duration": 180.28
+				},
+				{
+					"title": "Midnight Below Midnight",
+					"sunoId": "8e4e924e-ce17-4a25-8373-167b917f331f",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/8e4e924e-ce17-4a25-8373-167b917f331f.m4a",
+					"duration": 179.64
+				},
+				{
+					"title": "Someone Left the Jazz Club Open",
+					"sunoId": "5cc34e86-9aed-4522-8b57-a87f4aa34c36",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/5cc34e86-9aed-4522-8b57-a87f4aa34c36.m4a",
+					"duration": 180.2
+				},
+				{
+					"title": "The Ocean is Dreaming Too",
+					"sunoId": "d4be879f-6e75-47dd-809c-695f4f27fd9b",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d4be879f-6e75-47dd-809c-695f4f27fd9b.m4a",
+					"duration": 179.72
+				},
+				{
+					"title": "Sunrise Without Waking",
+					"sunoId": "398c1d2f-8352-4767-8fba-6e1e99c60a4f",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/398c1d2f-8352-4767-8fba-6e1e99c60a4f.m4a",
+					"duration": 179.72
+				}
+			]
+		},
+		{
+			"id": "architectural-intuition",
+			"title": "Architectural Intuition",
+			"artist": "Mikey More Bounce",
+			"type": "LP",
+			"year": "2026",
+			"description": "A map of invisible structures in motion, Architectural Intuition drifts between dream and design, translating recursion, signal, memory, and wonder into sound.",
+			"cover": "https://cdn2.suno.ai/image_d5f0108a-46aa-4f7f-8ac9-a923bb16014c.jpeg",
+			"suno": "https://suno.com/album/b32497c3-ef81-4bb7-b861-15c32988953d",
+			"tracks": [
+				{
+					"title": "1) Observer Bloom",
+					"sunoId": "bc8410cb-4270-41e7-b832-56bc45d861ea",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/bc8410cb-4270-41e7-b832-56bc45d861ea.m4a",
+					"duration": 254.76
+				},
+				{
+					"title": "2. Latent Geometry",
+					"sunoId": "280bb899-d851-424e-a9cb-481ac06895c2",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/280bb899-d851-424e-a9cb-481ac06895c2.m4a",
+					"duration": 209.76
+				},
+				{
+					"title": "3) Causal Drift",
+					"sunoId": "3540c76d-e4d0-4e67-a449-38bc9d73df0c",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/3540c76d-e4d0-4e67-a449-38bc9d73df0c.m4a",
+					"duration": 199.72
+				},
+				{
+					"title": "4) Recursive Sky",
+					"sunoId": "d889d79f-f608-4838-aa9d-d9a8fe4a6d3a",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d889d79f-f608-4838-aa9d-d9a8fe4a6d3a.m4a",
+					"duration": 219.2
+				},
+				{
+					"title": "5. Glass Memory",
+					"sunoId": "02999adf-fc01-4ced-a109-039b7439a305",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/02999adf-fc01-4ced-a109-039b7439a305.m4a",
+					"duration": 202.8
+				},
+				{
+					"title": "6. Signal Orchard",
+					"sunoId": "daad5419-2ad3-4ac0-92e8-f708dd599a2e",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/daad5419-2ad3-4ac0-92e8-f708dd599a2e.m4a",
+					"duration": 184.6
+				},
+				{
+					"title": "7. Emergent Weather",
+					"sunoId": "b706e46a-f46c-4623-aa4e-1757489f3552",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/b706e46a-f46c-4623-aa4e-1757489f3552.m4a",
+					"duration": 242.76
+				},
+				{
+					"title": "8. Soft Collapse",
+					"sunoId": "e26ce973-c16d-4279-9f33-b626e0aeb8ea",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/e26ce973-c16d-4279-9f33-b626e0aeb8ea.m4a",
+					"duration": 194.2
+				},
+				{
+					"title": "9. Provenance of Stars",
+					"sunoId": "92fbb90f-3284-4312-9e0a-35b35d73570d",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/92fbb90f-3284-4312-9e0a-35b35d73570d.m4a",
+					"duration": 228.92
+				},
+				{
+					"title": "10. State Transition",
+					"sunoId": "1580554a-2609-4b8e-8e47-d7690aba73f7",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/1580554a-2609-4b8e-8e47-d7690aba73f7.m4a",
+					"duration": 179.52
+				},
+				{
+					"title": "11. The World Graph",
+					"sunoId": "715c0324-9635-4edc-a214-7b578e0260f8",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/715c0324-9635-4edc-a214-7b578e0260f8.m4a",
+					"duration": 222.4
+				},
+				{
+					"title": "12. Architectural Intuition",
+					"sunoId": "3b09f570-013b-4482-b18c-f340a7ee25c1",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/3b09f570-013b-4482-b18c-f340a7ee25c1.m4a",
+					"duration": 229.16
+				}
+			]
+		},
+		{
+			"id": "neon-afterglow-society",
+			"title": "Neon Afterglow Society",
+			"artist": "Mikey More Bounce",
+			"type": "LP",
+			"year": "2026",
+			"description": "Maybe just step back and funk about it for a second why don't cha??!?!?!",
+			"cover": "https://cdn2.suno.ai/image_0017a825-5d60-4d25-af85-c87a6b0b0270.jpeg",
+			"suno": "https://suno.com/album/8db30ed7-707d-4fd1-ab99-893b8538c20b",
+			"tracks": [
+				{
+					"title": "Disco Mirage",
+					"sunoId": "516bb9dd-a89d-48b2-ab47-2fa69b150e6a",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/516bb9dd-a89d-48b2-ab47-2fa69b150e6a.m4a",
+					"duration": 184.8
+				},
+				{
+					"title": "The Funk Engine",
+					"sunoId": "6dd5f173-6f95-4ada-858a-00bb1a193f8c",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/6dd5f173-6f95-4ada-858a-00bb1a193f8c.m4a",
+					"duration": 134.8
+				},
+				{
+					"title": "Velvet Circuit",
+					"sunoId": "d5c01596-f124-4b59-b8d4-ae8700d5c34f",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d5c01596-f124-4b59-b8d4-ae8700d5c34f.m4a",
+					"duration": 48.52
+				},
+				{
+					"title": "Bounce Protocol",
+					"sunoId": "721cfd4b-7610-4022-9842-2b73cb025e16",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/721cfd4b-7610-4022-9842-2b73cb025e16.m4a",
+					"duration": 149.68
+				},
+				{
+					"title": "Midnight Plushie",
+					"sunoId": "d836cf04-475c-456c-9450-723fc83557d7",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d836cf04-475c-456c-9450-723fc83557d7.m4a",
+					"duration": 181.52
+				},
+				{
+					"title": "Velour Frequency",
+					"sunoId": "db207107-ec8b-4447-8d60-c0ae281dcad5",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/db207107-ec8b-4447-8d60-c0ae281dcad5.m4a",
+					"duration": 111.68
+				},
+				{
+					"title": "Satellite Funk",
+					"sunoId": "b0bc0c18-9f51-4b2f-b4d1-fccf6ca3a85f",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/b0bc0c18-9f51-4b2f-b4d1-fccf6ca3a85f.m4a",
+					"duration": 76.28
+				},
+				{
+					"title": "Electric Avenue",
+					"sunoId": "578e326e-469e-4509-b822-75ce49072217",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/578e326e-469e-4509-b822-75ce49072217.m4a",
+					"duration": 69.64
+				},
+				{
+					"title": "Neon Leisure",
+					"sunoId": "51f38fd1-fcdf-4300-be6b-bf9ace6dfb4d",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/51f38fd1-fcdf-4300-be6b-bf9ace6dfb4d.m4a",
+					"duration": 138.92
+				},
+				{
+					"title": "Chrome Groove",
+					"sunoId": "83c96626-c4d6-4c9d-98ba-3fae9b14131d",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/83c96626-c4d6-4c9d-98ba-3fae9b14131d.m4a",
+					"duration": 136.88
+				},
+				{
+					"title": "Afterglow FM",
+					"sunoId": "fd7bd949-ba78-4db9-9a29-561a73f7856e",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/fd7bd949-ba78-4db9-9a29-561a73f7856e.m4a",
+					"duration": 83.28
+				},
+				{
+					"title": "Midnight Velvet",
+					"sunoId": "219f0805-130e-4caf-8451-526e3bf357c4",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/219f0805-130e-4caf-8451-526e3bf357c4.m4a",
+					"duration": 68.68
+				}
+			]
+		},
+		{
+			"id": "glitch-remix",
+			"title": "Glitch Remix",
+			"artist": "Mikey More Bounce",
+			"type": "LP",
+			"year": "2026",
+			"description": "",
+			"cover": "https://cdn2.suno.ai/image_ed57b4f0-a96b-44c5-b875-7238211a85e3.jpeg",
+			"suno": "https://suno.com/album/d3500e4d-92d0-47df-921f-8fd283a4da5b",
+			"tracks": [
+				{
+					"title": "Tunnel Force",
+					"sunoId": "92fbe300-14ab-4755-8b33-c6b2851240a8",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/92fbe300-14ab-4755-8b33-c6b2851240a8.m4a",
+					"duration": 198.48
+				},
+				{
+					"title": "Nevah Gon' Stahppp",
+					"sunoId": "5bb2a5e8-ea3f-4fce-a584-9364054eee03",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/5bb2a5e8-ea3f-4fce-a584-9364054eee03.m4a",
+					"duration": 227.32
+				},
+				{
+					"title": "Calculating Computational Calculations",
+					"sunoId": "dc8d7203-2915-4383-b68c-a5d9671a55f2",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/dc8d7203-2915-4383-b68c-a5d9671a55f2.m4a",
+					"duration": 214.6
+				},
+				{
+					"title": "Can't Have That",
+					"sunoId": "15351e35-461b-4560-b79e-bacd712529fd",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/15351e35-461b-4560-b79e-bacd712529fd.m4a",
+					"duration": 208.36
+				},
+				{
+					"title": "Humorous Financials",
+					"sunoId": "c62965c6-8de4-4e3b-ab97-4297d9f9ad9f",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/c62965c6-8de4-4e3b-ab97-4297d9f9ad9f.m4a",
+					"duration": 192.76
+				},
+				{
+					"title": "Escape Technique MK.1",
+					"sunoId": "61869d55-1ccd-46aa-a03a-81626ef14635",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/61869d55-1ccd-46aa-a03a-81626ef14635.m4a",
+					"duration": 184.64
+				},
+				{
+					"title": "Atmosphunked",
+					"sunoId": "8c195709-54cd-4299-8383-b9f448aabfc7",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/8c195709-54cd-4299-8383-b9f448aabfc7.m4a",
+					"duration": 179.24
+				},
+				{
+					"title": "Summer Romance",
+					"sunoId": "3a07e20a-ef43-4a29-8622-42531b7c7781",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/3a07e20a-ef43-4a29-8622-42531b7c7781.m4a",
+					"duration": 184.68
+				},
+				{
+					"title": "Center Gravity",
+					"sunoId": "727cb310-365f-4bc8-8fa2-24aefadff791",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/727cb310-365f-4bc8-8fa2-24aefadff791.m4a",
+					"duration": 194.72
+				},
+				{
+					"title": "Wharf Barf Shop",
+					"sunoId": "1866c290-51d4-4fb6-a199-b6afc2049c7b",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/1866c290-51d4-4fb6-a199-b6afc2049c7b.m4a",
+					"duration": 202.92
+				},
+				{
+					"title": "Aquatica Statistica",
+					"sunoId": "b53b6cee-6ab6-4f4d-8554-c94f6218355c",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/b53b6cee-6ab6-4f4d-8554-c94f6218355c.m4a",
+					"duration": 173.96
+				},
+				{
+					"title": "Sunset Ride Dystopia",
+					"sunoId": "81fb253f-cbea-44e4-8ac3-45d0a437186c",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/81fb253f-cbea-44e4-8ac3-45d0a437186c.m4a",
+					"duration": 279.76
+				}
+			]
+		},
+		{
+			"id": "funktendo-369",
+			"title": "Funktendo 369",
+			"artist": "Mikey More Bounce",
+			"type": "LP",
+			"year": "2026",
+			"description": "Just some funky interpretations of some old classics bruh.",
+			"cover": "https://cdn2.suno.ai/image_e1772303-b029-47a0-996f-7180d98ae360.jpeg",
+			"suno": "https://suno.com/album/0ea2906a-db6f-4c64-9f0f-ee26630fb288",
+			"tracks": [
+				{
+					"title": "Funked Openings",
+					"sunoId": "58021b80-5794-4cdd-af99-f56b205c6b3b",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/58021b80-5794-4cdd-af99-f56b205c6b3b.m4a",
+					"duration": 184
+				},
+				{
+					"title": "Dark Funky World",
+					"sunoId": "5b67af12-1c3b-4927-a6c9-d14d9e5215f1",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/5b67af12-1c3b-4927-a6c9-d14d9e5215f1.m4a",
+					"duration": 184.68
+				},
+				{
+					"title": "Funky Wood Man",
+					"sunoId": "b7ec5260-17a7-425f-a7c1-dea5f173734a",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/b7ec5260-17a7-425f-a7c1-dea5f173734a.m4a",
+					"duration": 184.8
+				},
+				{
+					"title": "Funk Somethin' Will Ya!",
+					"sunoId": "3deb77e3-8a03-46e4-b106-9eab06ef067e",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/3deb77e3-8a03-46e4-b106-9eab06ef067e.m4a",
+					"duration": 180.36
+				},
+				{
+					"title": "Spring Yard Funk",
+					"sunoId": "365fbcf6-42ec-41c6-bff7-e641e15a88f8",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/365fbcf6-42ec-41c6-bff7-e641e15a88f8.m4a",
+					"duration": 189.68
+				},
+				{
+					"title": "1-2 Wiley Stew",
+					"sunoId": "f7e0e584-3dd0-41e3-a68b-d30695b5afcd",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/f7e0e584-3dd0-41e3-a68b-d30695b5afcd.m4a",
+					"duration": 184.6
+				},
+				{
+					"title": "Funky Joe",
+					"sunoId": "316140ab-a5ba-4cf8-89c4-3af7a6d44cce",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/316140ab-a5ba-4cf8-89c4-3af7a6d44cce.m4a",
+					"duration": 184.72
+				},
+				{
+					"title": "Blaster Mast-Funk",
+					"sunoId": "b56d5cdb-9a02-4baa-93e6-f6469045b6bb",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/b56d5cdb-9a02-4baa-93e6-f6469045b6bb.m4a",
+					"duration": 179.72
+				},
+				{
+					"title": "Funk Mii",
+					"sunoId": "362befbc-88f0-4e98-9c95-eeabaccf54e7",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/362befbc-88f0-4e98-9c95-eeabaccf54e7.m4a",
+					"duration": 207.8
+				},
+				{
+					"title": "Skate Shop Funk",
+					"sunoId": "a5b57641-15a0-4ba9-9613-e4d2c6035b8a",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/a5b57641-15a0-4ba9-9613-e4d2c6035b8a.m4a",
+					"duration": 164.6
+				},
+				{
+					"title": "OverFunk",
+					"sunoId": "e37e55bb-fbb1-41c8-a8d0-4008fe6cf435",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/e37e55bb-fbb1-41c8-a8d0-4008fe6cf435.m4a",
+					"duration": 164.6
+				},
+				{
+					"title": "Funky Results",
+					"sunoId": "7e5cb9c5-1fb4-4850-b53d-8fb4cd4fef8a",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/7e5cb9c5-1fb4-4850-b53d-8fb4cd4fef8a.m4a",
+					"duration": 163.96
+				}
+			]
+		},
+		{
+			"id": "parallax-nx-98971-funk-mode-engaged",
+			"title": "Parallax  NX-98971 - FUNK Mode Engaged",
+			"artist": "Mikey More Bounce",
+			"type": "EP",
+			"year": "2026",
+			"description": "Someone hit the FUNK button by accident...",
+			"cover": "https://cdn2.suno.ai/image_8d9148a9-a703-4b37-a14a-d5287d92439d.jpeg",
+			"suno": "https://suno.com/album/36cbe645-7565-448a-b03b-d7d25f061c83",
+			"tracks": [
+				{
+					"title": "Resonance Nebula",
+					"sunoId": "2e3f5093-3a53-4bae-9641-514a300eaa64",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/2e3f5093-3a53-4bae-9641-514a300eaa64.m4a",
+					"duration": 202.8
+				},
+				{
+					"title": "Over the Horizon",
+					"sunoId": "548c5728-ef76-492b-ab5e-0b892d581004",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/548c5728-ef76-492b-ab5e-0b892d581004.m4a",
+					"duration": 181.72
+				},
+				{
+					"title": "Cosmos Eternal",
+					"sunoId": "a585440c-57e7-4953-a300-9cb9ab8ef7c0",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/a585440c-57e7-4953-a300-9cb9ab8ef7c0.m4a",
+					"duration": 175.56
+				},
+				{
+					"title": "Between the Stars",
+					"sunoId": "7223333b-e8f5-476e-a734-76e36a9c2260",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/7223333b-e8f5-476e-a734-76e36a9c2260.m4a",
+					"duration": 219.56
+				},
+				{
+					"title": "Void Drift",
+					"sunoId": "2e6c374c-6b30-4efd-9a6f-8dc9fd7b8294",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/2e6c374c-6b30-4efd-9a6f-8dc9fd7b8294.m4a",
+					"duration": 184.52
+				},
+				{
+					"title": "Atmospheric Render",
+					"sunoId": "931a7155-f817-4ae8-8ae3-6a9037bfd29f",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/931a7155-f817-4ae8-8ae3-6a9037bfd29f.m4a",
+					"duration": 193
+				},
+				{
+					"title": "Stairway Onwards",
+					"sunoId": "6a2ed3f5-8af3-4e0b-ba5a-7452064510ba",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/6a2ed3f5-8af3-4e0b-ba5a-7452064510ba.m4a",
+					"duration": 191.6
+				}
+			]
+		},
+		{
+			"id": "contact-integration-cycle",
+			"title": "Contact / Integration Cycle",
+			"artist": "Mikey More Bounce",
+			"type": "LP",
+			"year": "2026",
+			"description": "STELLAR ABRAXAS\nConvergence Audio Archive SA-003 — Contact / Integration Cycle",
+			"cover": "https://cdn2.suno.ai/image_403c1365-41a4-4256-860d-08f2ab9a2e82.jpeg",
+			"suno": "https://suno.com/album/a0857c29-edca-40de-839e-e9c90f1f19d5",
+			"tracks": [
+				{
+					"title": "01. Known Unknown",
+					"sunoId": "7a07b69d-4a24-409b-90bc-adfc947bc640",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/7a07b69d-4a24-409b-90bc-adfc947bc640.m4a",
+					"duration": 158.48
+				},
+				{
+					"title": "02. Gravity of Familiar Things",
+					"sunoId": "584b45e8-f0b4-4bfe-a4fb-351614901355",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/584b45e8-f0b4-4bfe-a4fb-351614901355.m4a",
+					"duration": 154.72
+				},
+				{
+					"title": "03. Static Constellations",
+					"sunoId": "de8291a5-aaa5-459f-a2d0-4dc17a6d3d66",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/de8291a5-aaa5-459f-a2d0-4dc17a6d3d66.m4a",
+					"duration": 164.32
+				},
+				{
+					"title": "04. The Third Horizon",
+					"sunoId": "5e04e2c6-70d5-45b5-8569-b737e692d635",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/5e04e2c6-70d5-45b5-8569-b737e692d635.m4a",
+					"duration": 203.28
+				},
+				{
+					"title": "05. Borrowed Signal",
+					"sunoId": "339887fd-3644-4cb5-98e8-516dc75c3add",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/339887fd-3644-4cb5-98e8-516dc75c3add.m4a",
+					"duration": 173.04
+				},
+				{
+					"title": "06. Halfway Is a Place",
+					"sunoId": "6bcfa1da-6e13-4b2b-bfbd-6d65fda4244e",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/6bcfa1da-6e13-4b2b-bfbd-6d65fda4244e.m4a",
+					"duration": 153.4
+				},
+				{
+					"title": "07. Abraxas Engine Room",
+					"sunoId": "d575fdd1-e099-49d8-9a93-d60c62694560",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d575fdd1-e099-49d8-9a93-d60c62694560.m4a",
+					"duration": 197.4
+				},
+				{
+					"title": "08. We Recognize You",
+					"sunoId": "0f335065-651b-4bb9-886d-e200763ee36f",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/0f335065-651b-4bb9-886d-e200763ee36f.m4a",
+					"duration": 189.36
+				},
+				{
+					"title": "09. Feedback Species",
+					"sunoId": "fa93c313-83f1-43a2-b070-4f50843e9d65",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/fa93c313-83f1-43a2-b070-4f50843e9d65.m4a",
+					"duration": 153.44
+				},
+				{
+					"title": "10. Known by Collision",
+					"sunoId": "9a7a01cc-a807-47a8-8ce0-779d42c2963a",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/9a7a01cc-a807-47a8-8ce0-779d42c2963a.m4a",
+					"duration": 199.12
+				},
+				{
+					"title": "11. Neither Side of Home",
+					"sunoId": "3f91ba4f-451b-44ff-b34a-2a2b28566148",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/3f91ba4f-451b-44ff-b34a-2a2b28566148.m4a",
+					"duration": 164.72
+				},
+				{
+					"title": "12. The Known Unknown Returns",
+					"sunoId": "35e2bcc4-30f1-41f2-bacc-eb71e6925ee8",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/35e2bcc4-30f1-41f2-bacc-eb71e6925ee8.m4a",
+					"duration": 194.68
+				}
+			]
+		},
+		{
+			"id": "cruise-departure-cycle",
+			"title": "Cruise /Departure Cycle",
+			"artist": "Mikey More Bounce",
+			"type": "LP",
+			"year": "2026",
+			"description": "XALLARAP XN-17989 Archive Audio Mission KM-100 — Cruise / Departure Cycle",
+			"cover": "https://cdn2.suno.ai/image_884603a8-187c-4223-a54d-55e124993ce5.jpeg",
+			"suno": "https://suno.com/album/f65889c7-0752-4174-88d9-4c50c75466cf",
+			"tracks": [
+				{
+					"title": "1A. Departure First",
+					"sunoId": "cb060367-add1-4e8d-b6dc-4bb69af82089",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/cb060367-add1-4e8d-b6dc-4bb69af82089.m4a",
+					"duration": 183.56
+				},
+				{
+					"title": "1B. erutrapeD tsriF",
+					"sunoId": "682c4b52-e22a-4c74-8b69-61ebb2ea616e",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/682c4b52-e22a-4c74-8b69-61ebb2ea616e.m4a",
+					"duration": 220.48
+				},
+				{
+					"title": "2A. Below, the Blue World",
+					"sunoId": "3e0d4361-d0bb-449d-a1d8-b392624aad91",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/3e0d4361-d0bb-449d-a1d8-b392624aad91.m4a",
+					"duration": 210.6
+				},
+				{
+					"title": "2B. woleB dlroW eulB",
+					"sunoId": "98209f9c-d36e-402f-a85b-1397daccd63c",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/98209f9c-d36e-402f-a85b-1397daccd63c.m4a",
+					"duration": 198.2
+				},
+				{
+					"title": "3A. Heliosphere, Leaving",
+					"sunoId": "93d80047-1252-41cf-adf8-7ef80be92ea4",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/93d80047-1252-41cf-adf8-7ef80be92ea4.m4a",
+					"duration": 237.88
+				},
+				{
+					"title": "3B. erehpsoileH eht gnivaeL",
+					"sunoId": "2efc54a8-d5f0-4a78-9ccc-58b482278006",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/2efc54a8-d5f0-4a78-9ccc-58b482278006.m4a",
+					"duration": 169.72
+				},
+				{
+					"title": "4A. Observation Deck / Night Watch",
+					"sunoId": "eb4bf29b-6ab5-4b14-834a-5f592d7b5316",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/eb4bf29b-6ab5-4b14-834a-5f592d7b5316.m4a",
+					"duration": 190.64
+				},
+				{
+					"title": "4B. kceD noitavresbO / hctaW thgiN",
+					"sunoId": "bea212cc-a3ab-454e-8aa5-5852151e735f",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/bea212cc-a3ab-454e-8aa5-5852151e735f.m4a",
+					"duration": 193
+				},
+				{
+					"title": "5A. Cruise Warp",
+					"sunoId": "e0c33544-b4c6-47f0-84f0-57648959cfc4",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/e0c33544-b4c6-47f0-84f0-57648959cfc4.m4a",
+					"duration": 169.12
+				},
+				{
+					"title": "5B. esiurC praW",
+					"sunoId": "d59a095a-79be-4725-9540-8728cc6ea03c",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d59a095a-79be-4725-9540-8728cc6ea03c.m4a",
+					"duration": 181.12
+				},
+				{
+					"title": "6A. Approach Orbital",
+					"sunoId": "8aed82a6-961b-458e-916a-d8d560b6ca9c",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/8aed82a6-961b-458e-916a-d8d560b6ca9c.m4a",
+					"duration": 177.52
+				},
+				{
+					"title": "6B. hcaorppA latibrO",
+					"sunoId": "806bf1bb-7d60-43ba-8550-586a49bdc58d",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/806bf1bb-7d60-43ba-8550-586a49bdc58d.m4a",
+					"duration": 183.52
+				},
+				{
+					"title": "7A. 0300 at Engineering",
+					"sunoId": "1cccb30b-c12a-44da-9770-7bc0bab93d33",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/1cccb30b-c12a-44da-9770-7bc0bab93d33.m4a",
+					"duration": 214.28
+				},
+				{
+					"title": "7B. 0030 ta gnireenignE",
+					"sunoId": "8acf51f3-d3b9-420b-83e8-1b195209ceb0",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/8acf51f3-d3b9-420b-83e8-1b195209ceb0.m4a",
+					"duration": 211
+				},
+				{
+					"title": "8A. Stars Between the Quiet",
+					"sunoId": "3297de9b-a0ef-4697-ba32-759be5d8201e",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/3297de9b-a0ef-4697-ba32-759be5d8201e.m4a",
+					"duration": 197.16
+				},
+				{
+					"title": "8B. sratS neewteB teiuQ ehT",
+					"sunoId": "5e29dc75-3eb1-4582-86b4-88cab1a729ca",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/5e29dc75-3eb1-4582-86b4-88cab1a729ca.m4a",
+					"duration": 207.6
+				},
+				{
+					"title": "9A. Signal Unknown",
+					"sunoId": "c8d5df27-d79e-479c-9d53-25d355007f4f",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/c8d5df27-d79e-479c-9d53-25d355007f4f.m4a",
+					"duration": 181.04
+				},
+				{
+					"title": "9B. langiS nwonknU",
+					"sunoId": "f0191d63-773f-4bf2-8d1a-20f702fa9399",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/f0191d63-773f-4bf2-8d1a-20f702fa9399.m4a",
+					"duration": 228.92
+				},
+				{
+					"title": "10A. Contact First",
+					"sunoId": "3dd569e5-fd0e-4fc6-81be-4330bbf56419",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/3dd569e5-fd0e-4fc6-81be-4330bbf56419.m4a",
+					"duration": 194.64
+				},
+				{
+					"title": "10B. tcatnoC tsriF",
+					"sunoId": "82c00a9a-2122-44fd-85b5-04cd3770be4c",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/82c00a9a-2122-44fd-85b5-04cd3770be4c.m4a",
+					"duration": 189.68
+				},
+				{
+					"title": "11A. Map Known, the Beyond",
+					"sunoId": "00afac94-5911-43b9-829f-9bb3af444c1e",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/00afac94-5911-43b9-829f-9bb3af444c1e.m4a",
+					"duration": 202.64
+				},
+				{
+					"title": "11B. paM nwonK eht dnoyeB",
+					"sunoId": "9fff5c62-66cf-43af-a0fe-8e072bf15fc4",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/9fff5c62-66cf-43af-a0fe-8e072bf15fc4.m4a",
+					"duration": 182.24
+				},
+				{
+					"title": "12A. Vector Home",
+					"sunoId": "f7fd8008-bf8d-4df6-b39e-6cbb71e41c43",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/f7fd8008-bf8d-4df6-b39e-6cbb71e41c43.m4a",
+					"duration": 165.88
+				},
+				{
+					"title": "12B. rotceV emoH",
+					"sunoId": "12d7f339-4925-47ec-9f9a-538322aba606",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/12d7f339-4925-47ec-9f9a-538322aba606.m4a",
+					"duration": 202.04
+				}
+			]
+		},
+		{
+			"id": "departure-cruise-cycle",
+			"title": "Departure /Cruise Cycle",
+			"artist": "Mikey More Bounce",
+			"type": "LP",
+			"year": "2026",
+			"description": "PARALLAX NX-98971 \nMission Audio Archive\nMK-001 — Departure / Cruise Cycle",
+			"cover": "https://cdn2.suno.ai/image_588de456-7d35-4528-8882-8803e0e3a3c5.jpeg",
+			"suno": "https://suno.com/album/12e49a4d-63d9-4e9a-ab0e-d3a26f9d2ff9",
+			"tracks": [
+				{
+					"title": "01 - First Departure",
+					"sunoId": "be6c7a54-a6c0-494f-bc26-f16de28614b1",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/be6c7a54-a6c0-494f-bc26-f16de28614b1.m4a",
+					"duration": 198.52
+				},
+				{
+					"title": "02 - Blue World Below",
+					"sunoId": "f1c6d6b0-699b-4bff-9d76-39b94f46ce0e",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/f1c6d6b0-699b-4bff-9d76-39b94f46ce0e.m4a",
+					"duration": 179.68
+				},
+				{
+					"title": "03 - Leaving the Heliosphere",
+					"sunoId": "c5132566-b795-4ab9-92e3-195b95b428ba",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/c5132566-b795-4ab9-92e3-195b95b428ba.m4a",
+					"duration": 261.48
+				},
+				{
+					"title": "04 - Night Watch / Observation Deck",
+					"sunoId": "0fa27342-920c-47dc-8827-79cdbb72a414",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/0fa27342-920c-47dc-8827-79cdbb72a414.m4a",
+					"duration": 173.8
+				},
+				{
+					"title": "05 - Warp Cruise",
+					"sunoId": "3a108862-15ef-41ee-9474-7522dbb691e3",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/3a108862-15ef-41ee-9474-7522dbb691e3.m4a",
+					"duration": 164.68
+				},
+				{
+					"title": "06 - Orbital Approach",
+					"sunoId": "f13e1d34-01cc-4123-aa86-57390677aeab",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/f13e1d34-01cc-4123-aa86-57390677aeab.m4a",
+					"duration": 209.72
+				},
+				{
+					"title": "07 - Engineering at 0300",
+					"sunoId": "029d17c1-7221-4b16-a9c2-ffad628d2af7",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/029d17c1-7221-4b16-a9c2-ffad628d2af7.m4a",
+					"duration": 189.72
+				},
+				{
+					"title": "08 - The Quiet Between Stars",
+					"sunoId": "239a63f3-8ff1-44f4-81b0-244502aa21e0",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/239a63f3-8ff1-44f4-81b0-244502aa21e0.m4a",
+					"duration": 198.84
+				},
+				{
+					"title": "09 - Unknown Signal",
+					"sunoId": "97b10c54-32f4-4ee6-aa86-d3b01056560d",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/97b10c54-32f4-4ee6-aa86-d3b01056560d.m4a",
+					"duration": 188.2
+				},
+				{
+					"title": "10 - First Contact",
+					"sunoId": "1b27bc43-3d44-4a78-901e-be24521e856b",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/1b27bc43-3d44-4a78-901e-be24521e856b.m4a",
+					"duration": 174.52
+				},
+				{
+					"title": "11 - Beyond the Known Map",
+					"sunoId": "fa8bfcc7-d1cd-4d04-9782-a2c668a7402b",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/fa8bfcc7-d1cd-4d04-9782-a2c668a7402b.m4a",
+					"duration": 189.64
+				},
+				{
+					"title": "12 - Home Vector",
+					"sunoId": "b051aea3-68c6-41cb-8d44-5b5a34d27c6b",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/b051aea3-68c6-41cb-8d44-5b5a34d27c6b.m4a",
+					"duration": 153.72
+				}
+			]
+		},
+		{
+			"id": "parallax-nx-98971",
+			"title": "Parallax NX-98971",
+			"artist": "Mikey More Bounce",
+			"type": "EP",
+			"year": "2026",
+			"description": "Soundscapes for Cruising the Cosmos.",
+			"cover": "https://cdn2.suno.ai/image_0ccfdc3e-ef8c-45e4-942d-7ffe1372a6b9.jpeg",
+			"suno": "https://suno.com/album/eaeb90f8-d32b-4f93-ae1a-f06e9ff49750",
+			"tracks": [
+				{
+					"title": "Resonance Nebula",
+					"sunoId": "3c54b8d1-68e9-4482-9b2a-fd8aee05e066",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/3c54b8d1-68e9-4482-9b2a-fd8aee05e066.m4a",
+					"duration": 169.68
+				},
+				{
+					"title": "Over the Horizon",
+					"sunoId": "4199fc25-7ef1-45c0-abc0-234397bb4a91",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/4199fc25-7ef1-45c0-abc0-234397bb4a91.m4a",
+					"duration": 214.68
+				},
+				{
+					"title": "Cosmos Eternal",
+					"sunoId": "8480a3f4-7afd-46f8-a751-aede601b9817",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/8480a3f4-7afd-46f8-a751-aede601b9817.m4a",
+					"duration": 184.68
+				},
+				{
+					"title": "Between the Stars",
+					"sunoId": "22630362-ede1-40cd-92bf-644ca397a8bd",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/22630362-ede1-40cd-92bf-644ca397a8bd.m4a",
+					"duration": 193.16
+				},
+				{
+					"title": "Void Drift",
+					"sunoId": "10d45e22-442e-413d-b1d3-fe9042ce1dbb",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/10d45e22-442e-413d-b1d3-fe9042ce1dbb.m4a",
+					"duration": 179.72
+				},
+				{
+					"title": "Atmospheric Render",
+					"sunoId": "5ac583ef-2cfb-45a1-9905-1f2d22b3112f",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/5ac583ef-2cfb-45a1-9905-1f2d22b3112f.m4a",
+					"duration": 243.4
+				},
+				{
+					"title": "Stairway Onwards",
+					"sunoId": "974a8157-64ef-4567-ab5f-517d9651a816",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/974a8157-64ef-4567-ab5f-517d9651a816.m4a",
+					"duration": 184.72
+				}
+			]
+		},
+		{
+			"id": "memetendo-5000",
+			"title": "Memetendo 5000",
+			"artist": "Mikey More Bounce",
+			"type": "LP",
+			"year": "2026",
+			"description": "a fresh take on some ancient genius.",
+			"cover": "https://cdn2.suno.ai/24c136f1.jpeg",
+			"suno": "https://suno.com/album/3fab5e07-62ea-41f1-9166-a6b41e02ac27",
+			"tracks": [
+				{
+					"title": "Wooden Guy",
+					"sunoId": "745f4490-5f3b-45fe-b41f-73fd5ee33076",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/745f4490-5f3b-45fe-b41f-73fd5ee33076.m4a",
+					"duration": 163.04
+				},
+				{
+					"title": "Master Blasted",
+					"sunoId": "0fdd8683-41ff-4228-80e5-a1f00748ba0b",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/0fdd8683-41ff-4228-80e5-a1f00748ba0b.m4a",
+					"duration": 146.36
+				},
+				{
+					"title": "Skate Shopped",
+					"sunoId": "7a9949be-c5a0-402b-8602-b9427347dfeb",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/7a9949be-c5a0-402b-8602-b9427347dfeb.m4a",
+					"duration": 158.96
+				},
+				{
+					"title": "War Still Don't Change",
+					"sunoId": "aac59002-caf5-4492-ad61-1cfb89411b19",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/aac59002-caf5-4492-ad61-1cfb89411b19.m4a",
+					"duration": 237.64
+				},
+				{
+					"title": "Polemosian Gardens",
+					"sunoId": "5e219cba-30c5-44c5-b7c3-c7d556ebe951",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/5e219cba-30c5-44c5-b7c3-c7d556ebe951.m4a",
+					"duration": 189.72
+				},
+				{
+					"title": "Buy Somethin' Will Ya!",
+					"sunoId": "a2fcf2b9-6697-4d84-9a07-d367fa98175c",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/a2fcf2b9-6697-4d84-9a07-d367fa98175c.m4a",
+					"duration": 156.24
+				},
+				{
+					"title": "Dr. Wily Mon",
+					"sunoId": "2df4aa49-586a-4078-b37a-d59bafd5725a",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/2df4aa49-586a-4078-b37a-d59bafd5725a.m4a",
+					"duration": 187.2
+				},
+				{
+					"title": "Temples to the Past Funk",
+					"sunoId": "dc4391a1-874a-4102-84f7-b2e6bfa49d5d",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/dc4391a1-874a-4102-84f7-b2e6bfa49d5d.m4a",
+					"duration": 178.2
+				},
+				{
+					"title": "Cutscene City",
+					"sunoId": "eb67af65-664b-4cae-a1bb-be87eecfe578",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/eb67af65-664b-4cae-a1bb-be87eecfe578.m4a",
+					"duration": 203.84
+				},
+				{
+					"title": "Credz",
+					"sunoId": "7d7c2be5-1f23-4adc-9d36-bb9b8e3ffa21",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/7d7c2be5-1f23-4adc-9d36-bb9b8e3ffa21.m4a",
+					"duration": 152.4
+				},
+				{
+					"title": "Joe's Bar",
+					"sunoId": "29d88b2e-04f9-4f2f-9608-e21363a87ab9",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/29d88b2e-04f9-4f2f-9608-e21363a87ab9.m4a",
+					"duration": 209.92
+				},
+				{
+					"title": "City River Ransomed",
+					"sunoId": "7dee25f6-aad4-4f81-a0dc-ef2f39d5da3c",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/7dee25f6-aad4-4f81-a0dc-ef2f39d5da3c.m4a",
+					"duration": 187.2
+				},
+				{
+					"title": "Yard  Act  Zoning Spring 1",
+					"sunoId": "fdf01f0e-a8ef-4979-9454-26f0d90cdbb3",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/fdf01f0e-a8ef-4979-9454-26f0d90cdbb3.m4a",
+					"duration": 159.92
+				},
+				{
+					"title": "Gallery of Marbles",
+					"sunoId": "e7e6e5a5-8f1f-4acf-877b-1d63dc710ffa",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/e7e6e5a5-8f1f-4acf-877b-1d63dc710ffa.m4a",
+					"duration": 184.92
+				},
+				{
+					"title": "Mii Mii",
+					"sunoId": "92fe894c-f9c5-4e84-997c-7f21a09b81e1",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/92fe894c-f9c5-4e84-997c-7f21a09b81e1.m4a",
+					"duration": 164.52
+				},
+				{
+					"title": "Dark World",
+					"sunoId": "b25b9e3b-b776-4151-b8d5-90f4ad58dbd5",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/b25b9e3b-b776-4151-b8d5-90f4ad58dbd5.m4a",
+					"duration": 159.68
+				},
+				{
+					"title": "Fantasy Final II",
+					"sunoId": "66aa6fae-34f1-4acf-96fb-b9b614a66c83",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/66aa6fae-34f1-4acf-96fb-b9b614a66c83.m4a",
+					"duration": 219.6
+				},
+				{
+					"title": "Church",
+					"sunoId": "952379b3-38ce-4620-bc80-d5c78c3ffe07",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/952379b3-38ce-4620-bc80-d5c78c3ffe07.m4a",
+					"duration": 206.88
+				},
+				{
+					"title": "Opening Demo",
+					"sunoId": "c9af37df-5dd6-4c28-9103-5735cfb241a0",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/c9af37df-5dd6-4c28-9103-5735cfb241a0.m4a",
+					"duration": 169.12
+				},
+				{
+					"title": "Overworld",
+					"sunoId": "cb8bc398-3ae4-4419-a1f6-83e0862c8df7",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/cb8bc398-3ae4-4419-a1f6-83e0862c8df7.m4a",
+					"duration": 159.72
+				},
+				{
+					"title": "Dreamy Tears",
+					"sunoId": "a7965c73-3878-483e-90a7-c73cd8b24014",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/a7965c73-3878-483e-90a7-c73cd8b24014.m4a",
+					"duration": 199.84
+				},
+				{
+					"title": "Freestyled",
+					"sunoId": "2ef06d00-0f0a-44a3-90b5-86ae53a7c52c",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/2ef06d00-0f0a-44a3-90b5-86ae53a7c52c.m4a",
+					"duration": 150.8
+				},
+				{
+					"title": "Tribute Under Rain",
+					"sunoId": "614f5cb2-14e1-40ac-ac79-e06d750f42cc",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/614f5cb2-14e1-40ac-ac79-e06d750f42cc.m4a",
+					"duration": 220.48
+				},
+				{
+					"title": "Skate Disco",
+					"sunoId": "f05d9f41-dd16-40bb-99ea-890894c90e32",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/f05d9f41-dd16-40bb-99ea-890894c90e32.m4a",
+					"duration": 174.76
+				},
+				{
+					"title": "Mii Mii Mii - Beyond the Stage",
+					"sunoId": "db9bc757-92a5-440d-9a35-b6824c67d9c8",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/db9bc757-92a5-440d-9a35-b6824c67d9c8.m4a",
+					"duration": 194.6
+				},
+				{
+					"title": "Acting Zone Marble Number 1",
+					"sunoId": "a2e14661-6c9d-4a33-ad80-2f17fe7ff070",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/a2e14661-6c9d-4a33-ad80-2f17fe7ff070.m4a",
+					"duration": 182.6
+				},
+				{
+					"title": "Crosstalk",
+					"sunoId": "409a2428-f001-47b8-ac26-7ec509d2495f",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/409a2428-f001-47b8-ac26-7ec509d2495f.m4a",
+					"duration": 164.4
+				},
+				{
+					"title": "Jungle Syndrome",
+					"sunoId": "9ef57bbe-3c61-45f7-b380-2c1a17b05793",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/9ef57bbe-3c61-45f7-b380-2c1a17b05793.m4a",
+					"duration": 178.6
+				},
+				{
+					"title": "Temples to the Past",
+					"sunoId": "d44d6388-7f44-40ed-92ce-d6437b72a53e",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d44d6388-7f44-40ed-92ce-d6437b72a53e.m4a",
+					"duration": 178.8
+				},
+				{
+					"title": "Fantasy Final",
+					"sunoId": "da5eafdb-59e0-46a1-a20a-932ada66c33b",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/da5eafdb-59e0-46a1-a20a-932ada66c33b.m4a",
+					"duration": 178.8
+				},
+				{
+					"title": "Dark World Disco",
+					"sunoId": "018844d1-57a6-4f41-adb3-d0136b2ba28e",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/018844d1-57a6-4f41-adb3-d0136b2ba28e.m4a",
+					"duration": 154.56
+				},
+				{
+					"title": "Wii Times",
+					"sunoId": "b4ba3f77-1dad-4794-85f6-82bfeeb34fb9",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/b4ba3f77-1dad-4794-85f6-82bfeeb34fb9.m4a",
+					"duration": 144.2
+				},
+				{
+					"title": "Overworld VIP",
+					"sunoId": "abe1bc8f-1f00-4ea0-ad7b-2622d8b8699b",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/abe1bc8f-1f00-4ea0-ad7b-2622d8b8699b.m4a",
+					"duration": 164.84
+				},
+				{
+					"title": "Cavern of Ice VIP",
+					"sunoId": "5c455642-2ad8-405d-80e1-18d348ade595",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/5c455642-2ad8-405d-80e1-18d348ade595.m4a",
+					"duration": 212.24
+				},
+				{
+					"title": "Fantasy Final VIP",
+					"sunoId": "3dc6edfd-26a8-4602-b751-7951bccb1d30",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/3dc6edfd-26a8-4602-b751-7951bccb1d30.m4a",
+					"duration": 219.88
+				},
+				{
+					"title": "Crosstalk VIP",
+					"sunoId": "21de0de9-2fd5-4f1d-916c-8dd44a95f181",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/21de0de9-2fd5-4f1d-916c-8dd44a95f181.m4a",
+					"duration": 138.12
+				},
+				{
+					"title": "City River Ransomed VIP",
+					"sunoId": "741fb707-265e-4d5b-83f5-9984b1e2f64a",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/741fb707-265e-4d5b-83f5-9984b1e2f64a.m4a",
+					"duration": 203.88
+				},
+				{
+					"title": "Buy Somethin' Will Ya! VIP",
+					"sunoId": "364c28a6-a52b-4552-b045-a42dac3a2d6b",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/364c28a6-a52b-4552-b045-a42dac3a2d6b.m4a",
+					"duration": 139.32
+				},
+				{
+					"title": "Wii-ness VIP",
+					"sunoId": "be47bc55-23c2-44e9-8c4f-df578d2199fd",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/be47bc55-23c2-44e9-8c4f-df578d2199fd.m4a",
+					"duration": 164.4
+				},
+				{
+					"title": "Master Blasted VIP",
+					"sunoId": "dbe0a6e6-2496-4433-9dc5-01d0a83d66d6",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/dbe0a6e6-2496-4433-9dc5-01d0a83d66d6.m4a",
+					"duration": 137.24
+				},
+				{
+					"title": "Gallery of Marbles VIP",
+					"sunoId": "f73953ba-a1a5-4897-98b9-e54a9b14fbdd",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/f73953ba-a1a5-4897-98b9-e54a9b14fbdd.m4a",
+					"duration": 215
+				},
+				{
+					"title": "Joe's Bar VIP",
+					"sunoId": "d266d384-010d-43c1-a454-f36911f7e9b1",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d266d384-010d-43c1-a454-f36911f7e9b1.m4a",
+					"duration": 204.88
+				}
+			]
+		},
+		{
+			"id": "bap-science-fundamentals",
+			"title": "Bap Science Fundamentals",
+			"artist": "Mikey More Bounce",
+			"type": "LP",
+			"year": "2026",
+			"description": "Bappity Bapps - A collection for that sudden, onset \"No-Bap Attack.\"  You junkie...here's your fix... ahhhh... now isn't that better??!?!?!",
+			"cover": "https://cdn2.suno.ai/image_0dac7041-5706-44be-a3db-5eefd55a5df1.jpeg",
+			"suno": "https://suno.com/album/0a9a8679-07ee-4b5e-8c8d-82d9dfd54925",
+			"tracks": [
+				{
+					"title": "Picky With It",
+					"sunoId": "f3958d3d-24d1-4d45-bfd8-5181269dda4a",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/f3958d3d-24d1-4d45-bfd8-5181269dda4a.m4a",
+					"duration": 156.4
+				},
+				{
+					"title": "Broadway Rydin",
+					"sunoId": "5e47bb7d-b10f-4b74-93dd-4f6ff8b13539",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/5e47bb7d-b10f-4b74-93dd-4f6ff8b13539.m4a",
+					"duration": 160.36
+				},
+				{
+					"title": "Good Times",
+					"sunoId": "f8cc7731-5548-45ad-8314-791eaa96fc2a",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/f8cc7731-5548-45ad-8314-791eaa96fc2a.m4a",
+					"duration": 157.92
+				},
+				{
+					"title": "Good Vibes, Good Code",
+					"sunoId": "f334361e-6ab1-4b06-be6d-ea47be0286e4",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/f334361e-6ab1-4b06-be6d-ea47be0286e4.m4a",
+					"duration": 149.56
+				},
+				{
+					"title": "Late on the One",
+					"sunoId": "a4dd9d52-98a8-4c3b-a2b6-b3513769d64d",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/a4dd9d52-98a8-4c3b-a2b6-b3513769d64d.m4a",
+					"duration": 266.76
+				},
+				{
+					"title": "Johnny Go Lucky",
+					"sunoId": "87389aa2-ec5c-4c7b-93f1-035366fa1742",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/87389aa2-ec5c-4c7b-93f1-035366fa1742.m4a",
+					"duration": 151.44
+				},
+				{
+					"title": "Dat Good Feelin'",
+					"sunoId": "89801896-39e2-46d6-aaf5-0699c60f7ca3",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/89801896-39e2-46d6-aaf5-0699c60f7ca3.m4a",
+					"duration": 188
+				},
+				{
+					"title": "Top Down",
+					"sunoId": "64135e80-0592-43aa-be3d-59a5a1327015",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/64135e80-0592-43aa-be3d-59a5a1327015.m4a",
+					"duration": 167.72
+				},
+				{
+					"title": "Puffy Clouds",
+					"sunoId": "9e0d89b9-005c-4521-b4d2-2da55dd79a21",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/9e0d89b9-005c-4521-b4d2-2da55dd79a21.m4a",
+					"duration": 178.4
+				},
+				{
+					"title": "Resonated Stations",
+					"sunoId": "b176515d-8ba2-429f-b708-566b14684fa9",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/b176515d-8ba2-429f-b708-566b14684fa9.m4a",
+					"duration": 179.84
+				},
+				{
+					"title": "Geiger Fire",
+					"sunoId": "719ce0b4-a242-4d24-b8a8-4db02c798ccd",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/719ce0b4-a242-4d24-b8a8-4db02c798ccd.m4a",
+					"duration": 189.44
+				},
+				{
+					"title": "Hope Floats",
+					"sunoId": "4b2e775f-ea6e-4d20-92b3-076b6ca232ff",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/4b2e775f-ea6e-4d20-92b3-076b6ca232ff.m4a",
+					"duration": 183.2
+				},
+				{
+					"title": "Golden State",
+					"sunoId": "fed5f741-29e0-4bcf-a62c-413be02293a1",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/fed5f741-29e0-4bcf-a62c-413be02293a1.m4a",
+					"duration": 207.6
+				},
+				{
+					"title": "For the Future Ones",
+					"sunoId": "0ba11953-be83-45bb-8c65-116cf5a151e1",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/0ba11953-be83-45bb-8c65-116cf5a151e1.m4a",
+					"duration": 172.4
+				},
+				{
+					"title": "Take It Slow",
+					"sunoId": "10a165ba-1f48-4a0e-bdd1-524159f54c29",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/10a165ba-1f48-4a0e-bdd1-524159f54c29.m4a",
+					"duration": 213.52
+				},
+				{
+					"title": "Carbon and Silicon Shore",
+					"sunoId": "8ff206d3-622e-4970-ab9e-51347eab17e8",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/8ff206d3-622e-4970-ab9e-51347eab17e8.m4a",
+					"duration": 236.28
+				},
+				{
+					"title": "One Love, One Vibration",
+					"sunoId": "55bfde80-ef2f-4d88-8ab8-06c08138a18b",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/55bfde80-ef2f-4d88-8ab8-06c08138a18b.m4a",
+					"duration": 182
+				},
+				{
+					"title": "Not Being Cool About It",
+					"sunoId": "388da228-a103-4633-af30-9fe2eef616c2",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/388da228-a103-4633-af30-9fe2eef616c2.m4a",
+					"duration": 195.2
+				},
+				{
+					"title": "Stay a Little Longer",
+					"sunoId": "88987422-d334-4bc3-9d31-de465b5b088f",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/88987422-d334-4bc3-9d31-de465b5b088f.m4a",
+					"duration": 247.2
+				},
+				{
+					"title": "Neon Suitcase",
+					"sunoId": "0f445acc-bd7c-4314-82f0-b9b3e073dc45",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/0f445acc-bd7c-4314-82f0-b9b3e073dc45.m4a",
+					"duration": 112.4
+				},
+				{
+					"title": "Room for Me",
+					"sunoId": "270b5324-61e6-4c9e-a3d2-34c211944c8a",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/270b5324-61e6-4c9e-a3d2-34c211944c8a.m4a",
+					"duration": 189.84
+				},
+				{
+					"title": "Think Twice",
+					"sunoId": "250a4c1c-3cfc-4f4e-95ff-25aef2041a8c",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/250a4c1c-3cfc-4f4e-95ff-25aef2041a8c.m4a",
+					"duration": 179.8
+				},
+				{
+					"title": "Take a Little Bit",
+					"sunoId": "2a08df07-390f-4d9d-b0d3-51ac7a51647b",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/2a08df07-390f-4d9d-b0d3-51ac7a51647b.m4a",
+					"duration": 184.8
+				},
+				{
+					"title": "Good Green, Cool Breeze",
+					"sunoId": "cac7ea4e-390e-49a0-93c7-1c365d32e728",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/cac7ea4e-390e-49a0-93c7-1c365d32e728.m4a",
+					"duration": 164.36
+				},
+				{
+					"title": "Dream Come True",
+					"sunoId": "0cdad628-eef0-48c4-b385-985e17bf098a",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/0cdad628-eef0-48c4-b385-985e17bf098a.m4a",
+					"duration": 187.28
+				},
+				{
+					"title": "The Green Mother",
+					"sunoId": "2db49cc7-2480-4c2d-ab4a-bbe8c1fb1a7a",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/2db49cc7-2480-4c2d-ab4a-bbe8c1fb1a7a.m4a",
+					"duration": 146.88
+				},
+				{
+					"title": "This or That",
+					"sunoId": "43e80b33-e958-4965-838d-9c6c6da25d0f",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/43e80b33-e958-4965-838d-9c6c6da25d0f.m4a",
+					"duration": 149.44
+				},
+				{
+					"title": "Seed State Slow Flipp",
+					"sunoId": "3e10113f-3749-4f60-9e92-054dacc6b502",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/3e10113f-3749-4f60-9e92-054dacc6b502.m4a",
+					"duration": 264.32
+				},
+				{
+					"title": "Lil' Green Daydream",
+					"sunoId": "880d7dd9-956b-4aff-979e-cc79860e3560",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/880d7dd9-956b-4aff-979e-cc79860e3560.m4a",
+					"duration": 172
+				},
+				{
+					"title": "Puffin' Freedom After Dark",
+					"sunoId": "91d8037f-1384-4eae-903f-a370d91cc394",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/91d8037f-1384-4eae-903f-a370d91cc394.m4a",
+					"duration": 194.8
+				},
+				{
+					"title": "Taking Care",
+					"sunoId": "564e93d7-3d27-4742-826f-5c239f1103e6",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/564e93d7-3d27-4742-826f-5c239f1103e6.m4a",
+					"duration": 229.56
+				},
+				{
+					"title": "Grace to Grace",
+					"sunoId": "89796e6a-5308-48d4-a32b-04f31c91682b",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/89796e6a-5308-48d4-a32b-04f31c91682b.m4a",
+					"duration": 339.6
+				},
+				{
+					"title": "Varnish Sunrise",
+					"sunoId": "0aaf2414-9485-4cae-869a-f5a4af5cfb64",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/0aaf2414-9485-4cae-869a-f5a4af5cfb64.m4a",
+					"duration": 103.72
+				},
+				{
+					"title": "Easy Ride",
+					"sunoId": "2654b3d3-1a0c-47c8-939c-62f427fce4cd",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/2654b3d3-1a0c-47c8-939c-62f427fce4cd.m4a",
+					"duration": 187.96
+				},
+				{
+					"title": "High Like I Knew I Could",
+					"sunoId": "79706c4a-ca9b-41a1-9b90-9078bc01b2e2",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/79706c4a-ca9b-41a1-9b90-9078bc01b2e2.m4a",
+					"duration": 153.96
+				},
+				{
+					"title": "Doobie Smoke",
+					"sunoId": "f106af2c-6d03-4b2a-95a5-e6c5e4418d7f",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/f106af2c-6d03-4b2a-95a5-e6c5e4418d7f.m4a",
+					"duration": 114.88
+				},
+				{
+					"title": "Show N Tell",
+					"sunoId": "311f9898-abbb-42d2-b44e-1feedc61797e",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/311f9898-abbb-42d2-b44e-1feedc61797e.m4a",
+					"duration": 175
+				},
+				{
+					"title": "Cali Glow",
+					"sunoId": "5f0b3723-8923-4b3d-a983-b507d8c248e1",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/5f0b3723-8923-4b3d-a983-b507d8c248e1.m4a",
+					"duration": 119.4
+				},
+				{
+					"title": "Suspended Phrase",
+					"sunoId": "2fd71e2f-e943-4c6e-b0b5-857c1e4dc736",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/2fd71e2f-e943-4c6e-b0b5-857c1e4dc736.m4a",
+					"duration": 66.28
+				},
+				{
+					"title": "Steady Rollin",
+					"sunoId": "fd4dcd10-8104-41be-8222-ffe174982b1f",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/fd4dcd10-8104-41be-8222-ffe174982b1f.m4a",
+					"duration": 193.6
+				},
+				{
+					"title": "Up on 2 Wheels",
+					"sunoId": "c77d08e0-1034-46ad-aa70-d3aed444e179",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/c77d08e0-1034-46ad-aa70-d3aed444e179.m4a",
+					"duration": 214.36
+				},
+				{
+					"title": "Sun Shine Saturday",
+					"sunoId": "d23a3543-39fe-444b-843e-f2d7eec8bc60",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d23a3543-39fe-444b-843e-f2d7eec8bc60.m4a",
+					"duration": 201.6
+				},
+				{
+					"title": "Bap",
+					"sunoId": "68a1c279-892e-44a2-b3e4-a140f86d29bb",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/68a1c279-892e-44a2-b3e4-a140f86d29bb.m4a",
+					"duration": 184.8
+				},
+				{
+					"title": "E.T.",
+					"sunoId": "d5362cd6-6836-4c44-8b1b-c779040333f8",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d5362cd6-6836-4c44-8b1b-c779040333f8.m4a",
+					"duration": 126.36
+				},
+				{
+					"title": "Slow Take",
+					"sunoId": "25fd3648-bd61-47c4-a02f-d6c29616be4b",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/25fd3648-bd61-47c4-a02f-d6c29616be4b.m4a",
+					"duration": 158
+				},
+				{
+					"title": "Sunday Residue",
+					"sunoId": "d1e6abe9-7c57-414d-ad6d-0ac69f415760",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d1e6abe9-7c57-414d-ad6d-0ac69f415760.m4a",
+					"duration": 151.2
+				},
+				{
+					"title": "Let It Roll",
+					"sunoId": "f2051c87-8cda-47c6-9bb7-b77e204e2d83",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/f2051c87-8cda-47c6-9bb7-b77e204e2d83.m4a",
+					"duration": 172.8
+				},
+				{
+					"title": "Somethin'  Wrong",
+					"sunoId": "3fef8808-e4c0-429c-9476-82a93c81cd52",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/3fef8808-e4c0-429c-9476-82a93c81cd52.m4a",
+					"duration": 278.24
+				},
+				{
+					"title": "Kaleidoscope",
+					"sunoId": "1292b0bb-63c6-4045-9356-426702482f2d",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/1292b0bb-63c6-4045-9356-426702482f2d.m4a",
+					"duration": 187.24
+				},
+				{
+					"title": "Can't Have That",
+					"sunoId": "0ea1bf85-def7-43c6-9c51-5b0cf86a23a4",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/0ea1bf85-def7-43c6-9c51-5b0cf86a23a4.m4a",
+					"duration": 182.08
+				},
+				{
+					"title": "Abbey Flames",
+					"sunoId": "cae393d8-9b2f-4e21-8bf4-51880f946d18",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/cae393d8-9b2f-4e21-8bf4-51880f946d18.m4a",
+					"duration": 270.96
+				},
+				{
+					"title": "Surprise Sandwich",
+					"sunoId": "fea37db2-f198-474e-95d7-4748f9fd51c9",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/fea37db2-f198-474e-95d7-4748f9fd51c9.m4a",
+					"duration": 114.92
+				},
+				{
+					"title": "Small Days Gold",
+					"sunoId": "8a72e9af-2ed0-4441-a13b-3e97dfdd0136",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/8a72e9af-2ed0-4441-a13b-3e97dfdd0136.m4a",
+					"duration": 164
+				},
+				{
+					"title": "Knowledge Flow",
+					"sunoId": "d08cb607-4c0a-4d1c-8463-da7bd8290b23",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/d08cb607-4c0a-4d1c-8463-da7bd8290b23.m4a",
+					"duration": 301.32
+				},
+				{
+					"title": "Beneath the Sun",
+					"sunoId": "dfc2d352-871d-43dc-861c-a8956fb57634",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/dfc2d352-871d-43dc-861c-a8956fb57634.m4a",
+					"duration": 189.2
+				},
+				{
+					"title": "Swift Moves",
+					"sunoId": "0901ed79-9445-417e-8119-dd4a9a6d38a2",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/0901ed79-9445-417e-8119-dd4a9a6d38a2.m4a",
+					"duration": 138.6
+				},
+				{
+					"title": "Corner Store",
+					"sunoId": "4b4d0948-e207-4303-9ae7-8a5c4cca2f05",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/4b4d0948-e207-4303-9ae7-8a5c4cca2f05.m4a",
+					"duration": 150.48
+				},
+				{
+					"title": "Closed Curtains",
+					"sunoId": "41585413-93b0-4349-9d6f-b3dee9af55e2",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/41585413-93b0-4349-9d6f-b3dee9af55e2.m4a",
+					"duration": 202.4
+				},
+				{
+					"title": "Breakfast in Bed",
+					"sunoId": "acab8fa9-d6ef-43e8-83b5-6aab3a62b3cd",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/acab8fa9-d6ef-43e8-83b5-6aab3a62b3cd.m4a",
+					"duration": 181.92
+				},
+				{
+					"title": "A Good Day's Ride",
+					"sunoId": "665618c1-dc4f-495c-b5d1-8a0cc93a769a",
+					"src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/665618c1-dc4f-495c-b5d1-8a0cc93a769a.m4a",
+					"duration": 161.6
+				}
+			]
+		}
+	]
+};
+var KEY = "mbl-personal-v1";
+var seeded = albums_default.albums || [];
+var audio = typeof Audio !== "undefined" ? new Audio() : null;
+function readPersonal() {
+	try {
+		const raw = JSON.parse(localStorage.getItem(KEY) || "{}");
+		return {
+			favorites: raw.favorites || {
+				albums: [],
+				tracks: []
+			},
+			history: raw.history || [],
+			playlists: raw.playlists || [],
+			volume: typeof raw.volume === "number" ? raw.volume : .9,
+			vizMode: raw.vizMode || "signature",
+			rate: raw.rate || 1,
+			resume: raw.resume || null
+		};
+	} catch {
+		return {
+			favorites: {
+				albums: [],
+				tracks: []
+			},
+			history: [],
+			playlists: [],
+			volume: .9,
+			vizMode: "signature",
+			rate: 1,
+			resume: null
+		};
+	}
+}
+function writePersonal(partial) {
+	const prev = readPersonal();
+	localStorage.setItem(KEY, JSON.stringify({
+		...prev,
+		...partial
+	}));
+}
+function getAudio() {
+	return audio;
+}
+var useHouse = create((set, get) => {
+	if (audio) {
+		audio.preload = "auto";
+		audio.crossOrigin = "anonymous";
+		audio.addEventListener("waiting", () => set({ status: "loading" }));
+		audio.addEventListener("playing", () => set({
+			status: "playing",
+			message: ""
+		}));
+		audio.addEventListener("pause", () => {
+			if (get().status !== "error") set({ status: "paused" });
+		});
+		audio.addEventListener("ended", () => get().next());
+		audio.addEventListener("error", () => {
+			const item = get().queue[get().cursor];
+			const track = get().albums.find((a) => a.id === item?.albumId)?.tracks[item?.index ?? -1];
+			const embed = safeEmbed(track?.sunoId);
+			if (embed) {
+				set({
+					status: "error",
+					embed,
+					message: "Direct stream blocked. Official Suno player is open. The visualizer is ambient, not analyzing this embed.",
+					analyzed: false
+				});
+				return;
+			}
+			set({
+				status: "error",
+				message: "This track has no playable source.",
+				embed: ""
+			});
+		});
+		audio.addEventListener("timeupdate", () => {
+			const item = get().queue[get().cursor];
+			if (!item || !audio.currentTime) return;
+			if (Math.floor(audio.currentTime) % 5 === 0) writePersonal({
+				resume: {
+					...item,
+					position: audio.currentTime
+				},
+				volume: get().volume,
+				vizMode: get().vizMode,
+				rate: get().rate,
+				favorites: get().favorites,
+				history: get().history,
+				playlists: get().playlists
+			});
+			if (get().sleepAt && Date.now() > get().sleepAt) {
+				audio.pause();
+				set({
+					sleepAt: 0,
+					status: "paused",
+					message: "Sleep timer stopped playback."
+				});
+			}
+		});
+	}
+	const saved = typeof localStorage !== "undefined" ? readPersonal() : null;
+	return {
+		albums: seeded,
+		ready: seeded.length > 0,
+		loadError: "",
+		queue: [],
+		cursor: 0,
+		shuffle: false,
+		repeat: "off",
+		volume: saved?.volume ?? .9,
+		muted: false,
+		rate: saved?.rate ?? 1,
+		status: "idle",
+		message: "",
+		embed: "",
+		analyzed: false,
+		vizMode: saved?.vizMode || "signature",
+		room: "lobby",
+		albumId: "",
+		sleepAt: 0,
+		favorites: saved?.favorites || {
+			albums: [],
+			tracks: []
+		},
+		history: saved?.history || [],
+		playlists: saved?.playlists || [],
+		resume: saved?.resume || null,
+		loadCatalog: async () => {
+			try {
+				const res = await fetch("/catalog/albums.json");
+				if (!res.ok) throw new Error("Catalog missing");
+				const albums = (await res.json()).albums || [];
+				const parsed = parseHash(location.hash);
+				const albumId = parsed.room === "album" && albums.some((a) => a.id === parsed.albumId) ? parsed.albumId : "";
+				set({
+					albums,
+					ready: true,
+					loadError: "",
+					room: albumId ? "album" : parsed.room,
+					albumId
+				});
+			} catch {
+				set({
+					ready: true,
+					loadError: get().albums.length ? "" : "The catalog did not load."
+				});
+			}
+		},
+		go: (room, albumId) => {
+			const id = albumId || (room === "album" ? get().albumId : "");
+			set({
+				room,
+				albumId: room === "album" ? id : ""
+			});
+			const next = room === "album" && id ? `#/album/${id}` : `#/${room}`;
+			const keepTrack = room === "album" && id && location.hash.startsWith(`#/album/${id}/`);
+			if (location.hash !== next && !keepTrack) location.hash = next;
+			const album = get().albums.find((a) => a.id === id);
+			document.title = room === "album" && album ? `${album.title} · MicTek House` : room === "lobby" ? "MicTek House" : `MicTek House · ${room}`;
+		},
+		playAlbum: (albumId, start = 0, shuffled = false) => {
+			const album = get().albums.find((a) => a.id === albumId);
+			if (!album) return;
+			let items = album.tracks.map((_, index) => ({
+				albumId,
+				index
+			}));
+			if (shuffled) items = shuffleIds(items);
+			const cursor = shuffled ? 0 : Math.min(start, items.length - 1);
+			set({
+				queue: items,
+				cursor,
+				embed: ""
+			});
+			startCurrent(get, set);
+		},
+		playStation: (items) => {
+			if (!items.length) return;
+			set({
+				queue: shuffleIds(items),
+				cursor: 0,
+				embed: ""
+			});
+			startCurrent(get, set);
+		},
+		playQueue: (items) => {
+			if (!items.length) return;
+			set({
+				queue: items,
+				cursor: 0,
+				embed: ""
+			});
+			startCurrent(get, set);
+		},
+		queueAlbum: (albumId) => {
+			const album = get().albums.find((a) => a.id === albumId);
+			if (!album) return;
+			const items = album.tracks.map((_, index) => ({
+				albumId,
+				index
+			}));
+			const empty = get().queue.length === 0;
+			set({
+				queue: [...get().queue, ...items],
+				cursor: empty ? 0 : get().cursor,
+				embed: empty ? "" : get().embed
+			});
+			if (empty) startCurrent(get, set);
+		},
+		toggle: () => {
+			if (!audio) return;
+			if (!get().queue.length) {
+				const first = get().albums[0];
+				if (first) get().playAlbum(first.id, 0);
+				return;
+			}
+			if (audio.paused) audio.play().catch(() => set({ message: "Press play again. The browser blocked autoplay." }));
+			else audio.pause();
+		},
+		next: () => {
+			const { queue, cursor, repeat, shuffle } = get();
+			if (!queue.length) return;
+			if (repeat === "one") {
+				if (audio) {
+					audio.currentTime = 0;
+					audio.play();
+				}
+				return;
+			}
+			if (shuffle && queue.length > 1) {
+				let pick = cursor;
+				while (pick === cursor) pick = Math.floor(Math.random() * queue.length);
+				set({
+					cursor: pick,
+					embed: ""
+				});
+				startCurrent(get, set);
+				return;
+			}
+			let next = cursor + 1;
+			if (next >= queue.length) {
+				if (repeat === "all") next = 0;
+				else {
+					audio?.pause();
+					set({ status: "paused" });
+					return;
+				}
+			}
+			set({
+				cursor: next,
+				embed: ""
+			});
+			startCurrent(get, set);
+		},
+		prev: () => {
+			if (audio && audio.currentTime > 3) {
+				audio.currentTime = 0;
+				return;
+			}
+			set({
+				cursor: Math.max(0, get().cursor - 1),
+				embed: ""
+			});
+			startCurrent(get, set);
+		},
+		jump: (i) => {
+			if (i < 0 || i >= get().queue.length) return;
+			set({
+				cursor: i,
+				embed: ""
+			});
+			startCurrent(get, set);
+		},
+		seek: (sec) => {
+			if (audio && Number.isFinite(sec)) audio.currentTime = sec;
+		},
+		setVolume: (n) => {
+			const volume = Math.min(1, Math.max(0, n));
+			if (audio) audio.volume = get().muted ? 0 : volume;
+			set({ volume });
+		},
+		setMuted: (v) => {
+			if (audio) audio.volume = v ? 0 : get().volume;
+			set({ muted: v });
+		},
+		setRate: (n) => {
+			if (audio) audio.playbackRate = n;
+			set({ rate: n });
+			writePersonal({ rate: n });
+		},
+		setRepeat: () => {
+			const order = [
+				"off",
+				"all",
+				"one"
+			];
+			const repeat = order[(order.indexOf(get().repeat) + 1) % order.length];
+			set({ repeat });
+		},
+		setShuffle: () => set({ shuffle: !get().shuffle }),
+		setViz: (vizMode) => {
+			set({ vizMode });
+			writePersonal({ vizMode });
+		},
+		moveQueue: (from, dir) => {
+			const queue = get().queue.slice();
+			const to = from + dir;
+			if (to < 0 || to >= queue.length) return;
+			const [item] = queue.splice(from, 1);
+			queue.splice(to, 0, item);
+			set({
+				queue,
+				cursor: get().cursor === from ? to : get().cursor
+			});
+		},
+		toggleFavAlbum: (id) => {
+			const albums = new Set(get().favorites.albums);
+			if (albums.has(id)) albums.delete(id);
+			else albums.add(id);
+			const favorites = {
+				...get().favorites,
+				albums: [...albums]
+			};
+			set({ favorites });
+			writePersonal({ favorites });
+		},
+		toggleFavTrack: (albumId, index) => {
+			const key = `${albumId}:${index}`;
+			const tracks = new Set(get().favorites.tracks);
+			if (tracks.has(key)) tracks.delete(key);
+			else tracks.add(key);
+			const favorites = {
+				...get().favorites,
+				tracks: [...tracks]
+			};
+			set({ favorites });
+			writePersonal({ favorites });
+		},
+		savePlaylist: (name) => {
+			const playlists = [{
+				id: `${Date.now()}`,
+				name: name || "Untitled",
+				items: get().queue.slice()
+			}, ...get().playlists].slice(0, 20);
+			set({ playlists });
+			writePersonal({ playlists });
+		},
+		armSleep: (minutes) => set({ sleepAt: minutes ? Date.now() + minutes * 6e4 : 0 }),
+		resumeSaved: () => {
+			const savedNow = readPersonal();
+			if (!savedNow.resume) return;
+			set({
+				queue: [savedNow.resume],
+				cursor: 0
+			});
+			startCurrent(get, set).then(() => {
+				if (audio && savedNow.resume.position) audio.currentTime = savedNow.resume.position;
+			});
+		}
+	};
+});
+async function startCurrent(get, set) {
+	const { queue, cursor, albums, volume, muted, rate } = get();
+	const item = queue[cursor];
+	const album = albums.find((a) => a.id === item?.albumId);
+	const track = album?.tracks[item?.index ?? -1];
+	if (!track || !audio) return;
+	const src = safeHttps(track.src);
+	set({
+		status: "loading",
+		message: "",
+		embed: ""
+	});
+	audio.volume = muted ? 0 : volume;
+	audio.playbackRate = rate;
+	if (!src) {
+		const embed = safeEmbed(track.sunoId);
+		set({
+			status: embed ? "error" : "error",
+			embed,
+			message: embed ? "No direct file. Official Suno player is open." : "Nothing to play on this track.",
+			analyzed: false
+		});
+		return;
+	}
+	audio.src = src;
+	try {
+		await audio.play();
+		if (get().embed) return;
+		const history = [item, ...get().history.filter((h) => !(h.albumId === item.albumId && h.index === item.index))].slice(0, 30);
+		set({
+			history,
+			analyzed: true
+		});
+		writePersonal({ history });
+		if ("mediaSession" in navigator) try {
+			navigator.mediaSession.metadata = new MediaMetadata({
+				title: track.title,
+				artist: album?.artist || "Mikey More Bounce",
+				album: album?.title || "",
+				artwork: album?.cover ? [{ src: album.cover }] : []
+			});
+			navigator.mediaSession.setActionHandler("play", () => void audio.play());
+			navigator.mediaSession.setActionHandler("pause", () => audio.pause());
+			navigator.mediaSession.setActionHandler("nexttrack", () => get().next());
+			navigator.mediaSession.setActionHandler("previoustrack", () => get().prev());
+		} catch {}
+	} catch {
+		if (!get().embed) set({
+			message: "Playback needs another tap.",
+			status: "paused"
+		});
+	}
+}
+function currentTrack(state) {
+	const item = state.queue[state.cursor];
+	const album = state.albums.find((a) => a.id === item?.albumId);
+	return {
+		item,
+		album,
+		track: album?.tracks[item?.index ?? -1]
+	};
+}
+var VIZ_MODES = [
+	"spectrum",
+	"scope",
+	"waveform",
+	"galaxy",
+	"kaleido",
+	"tunnel",
+	"mandala",
+	"crt",
+	"fluid",
+	"signature"
+];
+var ctx = null;
+var analyser = null;
+var freq = /* @__PURE__ */ new Uint8Array(0);
+var wave = /* @__PURE__ */ new Uint8Array(0);
+var hooked = false;
+function vizIsLive() {
+	return hooked && !!analyser;
+}
+function arm() {
+	if (hooked) return;
+	const AC = window.AudioContext || window.webkitAudioContext;
+	if (!AC) return;
+	try {
+		ctx = new AC();
+		const node = ctx.createMediaElementSource(getAudio());
+		analyser = ctx.createAnalyser();
+		analyser.fftSize = 256;
+		node.connect(analyser);
+		analyser.connect(ctx.destination);
+		freq = new Uint8Array(analyser.frequencyBinCount);
+		wave = new Uint8Array(analyser.fftSize);
+		hooked = true;
+	} catch {
+		hooked = false;
+	}
+}
+function VizCanvas({ mode, reduced, onLive }) {
+	const ref = (0, import_react.useRef)(null);
+	const scroll = (0, import_react.useRef)(0);
+	(0, import_react.useEffect)(() => {
+		const canvas = ref.current;
+		if (!canvas) return;
+		const g = canvas.getContext("2d");
+		if (!g) return;
+		let frame = 0;
+		const quality = reduced || window.innerWidth < 700 ? .45 : 1;
+		const draw = (t) => {
+			frame = requestAnimationFrame(draw);
+			const w = canvas.width;
+			const h = canvas.height;
+			let bass = .2;
+			if (analyser && hooked && !reduced) {
+				analyser.getByteFrequencyData(freq);
+				analyser.getByteTimeDomainData(wave);
+				bass = freq.slice(0, 6).reduce((a, b) => a + b, 0) / 1530;
+			}
+			g.fillStyle = "rgba(16,14,12,0.35)";
+			g.fillRect(0, 0, w, h);
+			if (mode === "spectrum" || mode === "crt") {
+				const n = Math.floor(48 * quality);
+				for (let i = 0; i < n; i++) {
+					const v = analyser && hooked ? freq[i] / 255 : .15 + .1 * Math.sin(t / 280 + i);
+					g.fillStyle = `hsl(${28 + i * 2}, 80%, ${40 + v * 30}%)`;
+					g.fillRect(i * (w / n), h - v * h * .9, w / n - 2, v * h * .9);
+				}
+				if (mode === "crt") {
+					g.fillStyle = "rgba(0,0,0,0.18)";
+					for (let y = 0; y < h; y += 3) g.fillRect(0, y, w, 1);
+				}
+			} else if (mode === "scope" || mode === "waveform") {
+				g.beginPath();
+				g.strokeStyle = "#e4a04a";
+				g.lineWidth = 2;
+				const len = wave.length || 64;
+				scroll.current = mode === "waveform" ? (scroll.current + 2) % w : 0;
+				for (let i = 0; i < len; i++) {
+					const x = (i / len * w + scroll.current) % w;
+					const y = wave.length ? wave[i] / 255 * h : h / 2 + Math.sin(i / 6 + t / 300) * 20;
+					if (i === 0) g.moveTo(x, y);
+					else g.lineTo(x, y);
+				}
+				g.stroke();
+			} else if (mode === "galaxy") {
+				const count = Math.floor(70 * quality);
+				for (let i = 0; i < count; i++) {
+					const a = t / 800 + i;
+					const r = (40 + i % 20 * 8) * (.6 + bass);
+					g.fillStyle = `hsla(${30 + i * 4}, 90%, 60%, 0.8)`;
+					g.beginPath();
+					g.arc(w / 2 + Math.cos(a) * r, h / 2 + Math.sin(a * 1.3) * r * .6, 1.5 + bass * 4, 0, Math.PI * 2);
+					g.fill();
+				}
+			} else if (mode === "kaleido" || mode === "mandala") {
+				g.save();
+				g.translate(w / 2, h / 2);
+				const slices = mode === "mandala" ? 8 : 6;
+				for (let s = 0; s < slices; s++) {
+					g.rotate(Math.PI * 2 / slices);
+					g.beginPath();
+					g.strokeStyle = `hsla(${20 + s * 30 + t / 40}, 85%, 60%, 0.85)`;
+					g.lineWidth = 2;
+					for (let i = 0; i < 8; i++) {
+						const v = analyser && hooked ? freq[i * 3] / 255 : .4;
+						const rad = 20 + i * 16 + v * 40 + bass * 20;
+						g.lineTo(Math.cos(i) * rad, Math.sin(i + t / 500) * rad * .5);
+					}
+					g.stroke();
+				}
+				g.restore();
+			} else if (mode === "tunnel") for (let i = 8; i > 0; i--) {
+				const p = (t / 400 + i) % 8 / 8;
+				g.strokeStyle = `hsla(${18 + i * 20}, 90%, 55%, ${.3 + p * .5})`;
+				g.lineWidth = 3;
+				g.strokeRect(w / 2 - p * w * .45, h / 2 - p * h * .45, p * w * .9, p * h * .9);
+			}
+			else if (mode === "fluid") for (let i = 0; i < 6; i++) {
+				const x = w * (.2 + .12 * i) + Math.sin(t / 500 + i) * 40;
+				const y = h / 2 + Math.cos(t / 400 + i) * (20 + bass * 40);
+				const rad = 30 + bass * 50 + i * 4;
+				const grd = g.createRadialGradient(x, y, 4, x, y, rad);
+				grd.addColorStop(0, "rgba(255,92,51,0.55)");
+				grd.addColorStop(1, "rgba(228,160,74,0)");
+				g.fillStyle = grd;
+				g.beginPath();
+				g.arc(x, y, rad, 0, Math.PI * 2);
+				g.fill();
+			}
+			else {
+				g.save();
+				g.translate(w / 2, h / 2);
+				for (let i = 0; i < 5; i++) {
+					g.rotate(.2 + bass);
+					g.strokeStyle = i % 2 ? "#ff5c33" : "#e4a04a";
+					g.lineWidth = 3;
+					g.beginPath();
+					g.ellipse(0, 0, 40 + i * 28 + bass * 36, 16 + i * 10, t / 800, 0, Math.PI * 2);
+					g.stroke();
+				}
+				g.restore();
+			}
+		};
+		frame = requestAnimationFrame(draw);
+		const onPlay = () => {
+			arm();
+			ctx?.resume();
+			onLive?.(vizIsLive());
+		};
+		const el = getAudio();
+		el?.addEventListener("play", onPlay);
+		if (el && !el.paused) onPlay();
+		return () => {
+			cancelAnimationFrame(frame);
+			el?.removeEventListener("play", onPlay);
+		};
+	}, [
+		mode,
+		reduced,
+		onLive
+	]);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("canvas", {
+		ref,
+		width: 960,
+		height: 280,
+		className: "h-52 w-full rounded-2xl bg-bg sm:h-64",
+		"aria-hidden": true
+	});
+}
+var ROOMS = [
+	["lobby", "Lobby"],
+	["vault", "Vault"],
+	["lounge", "Lounge"],
+	["lab", "Lab"],
+	["radio", "Radio"],
+	["decks", "Decks"],
+	["desk", "Desk"]
+];
+function HouseApp() {
+	const house = useHouse();
+	const [query, setQuery] = (0, import_react.useState)("");
+	const [sort, setSort] = (0, import_react.useState)("listed");
+	const [layout, setLayout] = (0, import_react.useState)("grid");
+	const [spot, setSpot] = (0, import_react.useState)(0);
+	const [reduced, setReduced] = (0, import_react.useState)(false);
+	const [copied, setCopied] = (0, import_react.useState)("");
+	const [egg, setEgg] = (0, import_react.useState)(0);
+	const [vizLive, setVizLive] = (0, import_react.useState)(false);
+	(0, import_react.useEffect)(() => {
+		house.loadCatalog();
+		const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+		setReduced(media.matches);
+		const onHash = () => {
+			const parsed = parseHash(location.hash);
+			if (parsed.room === "album" && parsed.albumId) house.go("album", parsed.albumId);
+			else if (parsed.room !== "album") house.go(parsed.room);
+		};
+		window.addEventListener("hashchange", onHash);
+		const keys = (e) => {
+			if (e.target.matches("input, textarea, select")) return;
+			if (e.code === "Space") {
+				e.preventDefault();
+				house.toggle();
+			}
+			if (e.key === "ArrowRight") house.seek((getAudio()?.currentTime || 0) + 5);
+			if (e.key === "ArrowLeft") house.seek(Math.max(0, (getAudio()?.currentTime || 0) - 5));
+		};
+		window.addEventListener("keydown", keys);
+		return () => {
+			window.removeEventListener("hashchange", onHash);
+			window.removeEventListener("keydown", keys);
+		};
+	}, []);
+	(0, import_react.useEffect)(() => {
+		if (reduced || house.room !== "lobby") return;
+		const id = window.setInterval(() => setSpot((n) => n + 1), 7e3);
+		return () => window.clearInterval(id);
+	}, [reduced, house.room]);
+	const albums = house.albums;
+	const now = currentTrack(house);
+	const featured = albums[2] || albums[0];
+	const spotAlbum = albums.length ? albums[spot % Math.min(albums.length, 8)] : void 0;
+	const filtered = (0, import_react.useMemo)(() => {
+		const q = query.trim().toLowerCase();
+		let list = albums.filter((a) => {
+			if (!q) return true;
+			return [
+				a.title,
+				a.description,
+				...(a.tracks || []).map((t) => t.title)
+			].join(" ").toLowerCase().includes(q);
+		});
+		if (sort === "title") list = [...list].sort((a, b) => a.title.localeCompare(b.title));
+		if (sort === "tracks") list = [...list].sort((a, b) => b.tracks.length - a.tracks.length);
+		return list;
+	}, [
+		albums,
+		query,
+		sort
+	]);
+	const openAlbum = house.albums.find((a) => a.id === house.albumId);
+	const vizNote = house.status === "playing" && vizLive && !house.embed ? "These modes are reading the live audio." : house.embed ? "Ambient motion. The official Suno player cannot be analyzed in the browser." : "Ambient motion until a direct stream is playing through the house player.";
+	function share(album, trackIndex) {
+		const url = `${location.origin}${location.pathname}#/album/${album.id}${trackIndex != null ? `/${trackIndex}` : ""}`;
+		const text = trackIndex != null ? `${album.tracks[trackIndex]?.title} — ${album.title}` : album.title;
+		if (navigator.share) navigator.share({
+			title: text,
+			url
+		}).catch(() => copy(url));
+		else copy(url);
+	}
+	function copy(url) {
+		navigator.clipboard.writeText(url).then(() => {
+			setCopied("Link copied");
+			window.setTimeout(() => setCopied(""), 1600);
+		});
+	}
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "player-safe min-h-screen bg-bg text-cream",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("header", {
+				className: "sticky top-0 z-20 border-b border-line bg-bg/90 backdrop-blur",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+							className: "text-left",
+							onClick: () => {
+								setEgg((n) => n + 1);
+								house.go("lobby");
+							},
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+									className: "eq mr-2",
+									"aria-hidden": true,
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("i", {}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("i", {}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("i", {})
+									]
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "font-display text-2xl tracking-tight",
+									children: "MicTek House"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "mt-0.5 block text-xs uppercase tracking-[0.18em] text-amber",
+									children: "More Bounce Labs"
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("nav", {
+							className: "flex flex-1 gap-1 overflow-x-auto",
+							"aria-label": "Rooms",
+							children: ROOMS.map(([id, label]) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								className: `min-h-11 shrink-0 rounded-full px-3 text-sm ${house.room === id ? "bg-amber text-ink" : "text-mist"}`,
+								onClick: () => house.go(id),
+								children: label
+							}, id))
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+							value: query,
+							onChange: (e) => {
+								setQuery(e.target.value);
+								if (house.room === "lobby") house.go("vault");
+							},
+							placeholder: "Search albums and tracks",
+							"aria-label": "Search albums and tracks",
+							className: "min-h-11 w-full rounded-full border border-line bg-surface px-4 text-sm sm:w-56"
+						})
+					]
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("main", {
+				className: "mx-auto max-w-6xl px-4 py-6",
+				children: [
+					house.loadError && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "mb-4 text-heat",
+						children: house.loadError
+					}),
+					!house.ready && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "text-mist",
+						children: "Opening the house…"
+					}),
+					house.room === "lobby" && featured && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Lobby, {
+						featured,
+						spot: spotAlbum,
+						albums,
+						onPlay: () => house.playAlbum(featured.id, 0),
+						onOpen: (id) => house.go("album", id),
+						onVault: () => house.go("vault"),
+						egg: egg > 4
+					}),
+					house.room === "lobby" && house.resume && house.status === "idle" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						className: "mt-4 min-h-11 rounded-full bg-surface px-4",
+						onClick: house.resumeSaved,
+						children: "Resume the last track on this browser"
+					}),
+					house.room === "vault" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Vault, {
+						albums: filtered,
+						layout,
+						sort,
+						setLayout,
+						setSort,
+						onOpen: (id) => house.go("album", id),
+						onPlay: (id) => house.playAlbum(id, 0)
+					}),
+					house.room === "album" && openAlbum && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlbumView, {
+						album: openAlbum,
+						fav: house.favorites.albums.includes(openAlbum.id),
+						favTracks: house.favorites.tracks,
+						onPlay: (i) => house.playAlbum(openAlbum.id, i || 0),
+						onShuffle: () => house.playAlbum(openAlbum.id, 0, true),
+						onFav: () => house.toggleFavAlbum(openAlbum.id),
+						onFavTrack: (i) => house.toggleFavTrack(openAlbum.id, i),
+						onShare: (i) => share(openAlbum, i),
+						onQueue: () => house.queueAlbum(openAlbum.id),
+						copied
+					}),
+					house.room === "lounge" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Lounge, {
+						album: now.album,
+						track: now.track,
+						queue: house.queue,
+						cursor: house.cursor,
+						albums,
+						mode: house.vizMode,
+						reduced,
+						note: vizNote,
+						onLive: setVizLive,
+						onMode: house.setViz,
+						onJump: (i) => house.jump(i),
+						onMove: house.moveQueue,
+						onSleep: house.armSleep,
+						sleepAt: house.sleepAt
+					}),
+					house.room === "lab" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+							className: "font-display text-4xl",
+							children: "Visual lab"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "mt-2 max-w-xl text-mist",
+							children: vizNote
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "mt-4 flex flex-wrap gap-2",
+							children: VIZ_MODES.map((mode) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								className: `min-h-11 rounded-full px-3 text-sm capitalize ${house.vizMode === mode ? "bg-heat text-cream" : "bg-surface"}`,
+								onClick: () => house.setViz(mode),
+								children: mode
+							}, mode))
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							className: "mt-4",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(VizCanvas, {
+								mode: house.vizMode,
+								reduced,
+								onLive: setVizLive
+							})
+						})
+					] }),
+					house.room === "radio" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RadioRoom, {
+						albums,
+						onPlay: house.playStation
+					}),
+					house.room === "decks" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Decks, { albums }),
+					house.room === "desk" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Desk, {
+						albums,
+						playlists: house.playlists,
+						history: house.history,
+						onSave: house.savePlaylist,
+						onPlay: house.playQueue
+					}),
+					house.ready && house.room === "album" && !openAlbum && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "That album is not in the catalog." })
+				]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Player, { onLounge: () => house.go("lounge") })
+		]
+	});
+}
+function Lobby({ featured, spot, albums, onPlay, onOpen, onVault, egg }) {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+			className: "text-xs uppercase tracking-[0.22em] text-amber",
+			children: "Making music to make you feel good, baby."
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "mt-4 grid items-center gap-6 md:grid-cols-[minmax(0,280px)_1fr]",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+				className: "sleeve vinyl mx-auto w-full max-w-xs",
+				onClick: () => onOpen(featured.id),
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+					src: featured.cover,
+					alt: "",
+					className: "aspect-square w-full rounded-full object-cover shadow-2xl"
+				})
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-mist",
+					children: "Mikey More Bounce"
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+					className: "font-display text-5xl leading-none sm:text-6xl",
+					children: featured.title
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "mt-3 max-w-lg text-mist",
+					children: featured.description || "A record from the house."
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "mt-5 flex flex-wrap gap-3",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						className: "min-h-12 rounded-full bg-heat px-6 font-semibold text-cream",
+						onClick: onPlay,
+						children: "Play music"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						className: "min-h-12 rounded-full border border-line px-5",
+						onClick: onVault,
+						children: "Record vault"
+					})]
+				}),
+				egg && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "mt-3 text-amber",
+					children: "More bounce. You found the house motto."
+				})
+			] })]
+		}),
+		spot && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+			className: "mt-8 flex w-full items-center gap-4 rounded-3xl bg-surface p-3 text-left",
+			onClick: () => onOpen(spot.id),
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+				src: spot.cover,
+				alt: "",
+				className: "h-16 w-16 rounded-xl object-cover"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+				className: "block text-xs uppercase tracking-widest text-mist",
+				children: "Spotlight"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+				className: "font-display text-2xl",
+				children: spot.title
+			})] })]
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+			className: "mt-8 font-display text-2xl",
+			children: "On the shelves"
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4",
+			children: albums.slice(0, 4).map((album) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+				className: "text-left",
+				onClick: () => onOpen(album.id),
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+					src: album.cover,
+					alt: "",
+					className: "aspect-square w-full rounded-2xl object-cover"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+					className: "mt-2 block text-sm",
+					children: album.title
+				})]
+			}, album.id))
+		})
+	] });
+}
+function Vault({ albums, layout, sort, setLayout, setSort, onOpen, onPlay }) {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "flex flex-wrap items-end justify-between gap-3",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "font-display text-4xl",
+				children: "Record vault"
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex flex-wrap gap-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("select", {
+					className: "min-h-11 rounded-full bg-surface px-3",
+					value: sort,
+					"aria-label": "Sort albums",
+					onChange: (e) => setSort(e.target.value),
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+							value: "listed",
+							children: "As listed"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+							value: "title",
+							children: "Title"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+							value: "tracks",
+							children: "Track count"
+						})
+					]
+				}), [
+					"grid",
+					"list",
+					"bin"
+				].map((mode) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+					className: `min-h-11 rounded-full px-3 capitalize ${layout === mode ? "bg-amber text-ink" : "bg-surface"}`,
+					onClick: () => setLayout(mode),
+					children: mode === "bin" ? "Record bin" : mode
+				}, mode))]
+			})]
+		}),
+		albums.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+			className: "mt-6 text-mist",
+			children: "No records match that search."
+		}),
+		albums.length > 0 && layout === "bin" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "bin mt-5 flex gap-4 overflow-x-auto pb-4",
+			children: albums.map((album) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+				className: "sleeve w-44 shrink-0 text-left",
+				onClick: () => onOpen(album.id),
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+					src: album.cover,
+					alt: "",
+					className: "aspect-square w-full rounded-xl object-cover"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+					className: "mt-2 block text-sm",
+					children: album.title
+				})]
+			}, album.id))
+		}) : layout === "list" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("ul", {
+			className: "mt-4 divide-y divide-line",
+			children: albums.map((album) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", {
+				className: "flex items-center gap-3 py-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+					className: "flex min-w-0 flex-1 items-center gap-3 text-left",
+					onClick: () => onOpen(album.id),
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+						src: album.cover,
+						alt: "",
+						className: "h-12 w-12 rounded-lg object-cover"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+						className: "min-w-0",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "block truncate",
+							children: album.title
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+							className: "text-sm text-mist",
+							children: [album.tracks.length, " tracks"]
+						})]
+					})]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+					className: "min-h-11 min-w-11",
+					"aria-label": `Play ${album.title}`,
+					onClick: () => onPlay(album.id),
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Play, {})
+				})]
+			}, album.id))
+		}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4",
+			children: albums.map((album) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+				className: "sleeve text-left",
+				onClick: () => onOpen(album.id),
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+						src: album.cover,
+						alt: "",
+						className: "aspect-square w-full rounded-2xl object-cover"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+						className: "mt-2 block font-medium",
+						children: album.title
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+						className: "text-sm text-mist",
+						children: [
+							album.type,
+							" · ",
+							album.tracks.length,
+							" tracks"
+						]
+					})
+				]
+			}, album.id))
+		})
+	] });
+}
+function AlbumView({ album, fav, favTracks, onPlay, onShuffle, onFav, onFavTrack, onShare, onQueue, copied }) {
+	const seconds = runtime(album.tracks);
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
+		className: "grid gap-6 md:grid-cols-[280px_1fr]",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+			src: album.cover,
+			alt: "",
+			className: "aspect-square w-full rounded-3xl object-cover"
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+				className: "text-amber",
+				children: [
+					album.type,
+					" · ",
+					album.year,
+					" · ",
+					album.artist
+				]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+				className: "font-display text-5xl leading-none",
+				children: album.title
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "mt-3 max-w-xl text-mist",
+				children: album.description
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+				className: "mt-2 text-sm text-mist",
+				children: [
+					album.tracks.length,
+					" tracks",
+					seconds ? ` · ${fmt(seconds)}` : ""
+				]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "mt-4 flex flex-wrap gap-2",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						className: "min-h-11 rounded-full bg-heat px-4",
+						onClick: () => onPlay(0),
+						children: "Play album"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						className: "min-h-11 rounded-full bg-surface px-4",
+						onClick: onShuffle,
+						children: "Shuffle album"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						className: "min-h-11 rounded-full bg-surface px-4",
+						onClick: onQueue,
+						children: "Add to queue"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						className: "min-h-11 rounded-full bg-surface px-4",
+						onClick: onFav,
+						children: fav ? "Favorited" : "Favorite"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						className: "min-h-11 rounded-full bg-surface px-4",
+						onClick: () => onShare(),
+						children: "Share"
+					}),
+					album.suno && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+						className: "inline-flex min-h-11 items-center rounded-full border border-line px-4",
+						href: album.suno,
+						target: "_blank",
+						rel: "noreferrer",
+						children: "On Suno"
+					})
+				]
+			}),
+			copied && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+				className: "mt-2 text-sm text-amber",
+				children: copied
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("ol", {
+				className: "mt-6 divide-y divide-line",
+				children: album.tracks.map((track, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", {
+					className: "flex items-center gap-2 py-1",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+							className: "min-h-11 flex-1 text-left",
+							onClick: () => onPlay(i),
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "mr-3 text-mist",
+									children: String(i + 1).padStart(2, "0")
+								}),
+								track.title,
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "ml-2 text-sm text-mist",
+									children: track.duration ? fmt(track.duration) : ""
+								})
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							className: "min-h-11 min-w-11",
+							"aria-label": "Favorite track",
+							onClick: () => onFavTrack(i),
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Heart, { className: favTracks.includes(`${album.id}:${i}`) ? "fill-heat text-heat" : "" })
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							className: "min-h-11 text-sm text-mist",
+							onClick: () => onShare(i),
+							children: "Link"
+						})
+					]
+				}, `${track.sunoId}-${i}`))
+			})
+		] })]
+	});
+}
+function Lounge({ album, track, queue, cursor, albums, mode, reduced, note, onLive, onMode, onJump, onMove, onSleep, sleepAt }) {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+			className: "font-display text-4xl",
+			children: "Listening lounge"
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "mt-4 grid gap-4 md:grid-cols-[280px_1fr]",
+			children: [album?.cover && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+				src: album.cover,
+				alt: "",
+				className: `aspect-square w-full rounded-3xl object-cover ${reduced ? "" : "spin"}`,
+				style: reduced ? void 0 : { animation: "spin 18s linear infinite" }
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-mist",
+					children: album?.title || "Nothing spinning"
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "font-display text-4xl",
+					children: track?.title || "Pick a record"
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "mt-2 text-sm text-mist",
+					children: album?.description
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "mt-3 text-sm text-amber",
+					children: note
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "mt-3 flex flex-wrap gap-2",
+					children: [
+						[
+							"signature",
+							"spectrum",
+							"kaleido",
+							"tunnel"
+						].map((m) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							className: `min-h-11 rounded-full px-3 capitalize ${mode === m ? "bg-amber text-ink" : "bg-surface"}`,
+							onClick: () => onMode(m),
+							children: m
+						}, m)),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							className: "min-h-11 rounded-full bg-surface px-3",
+							onClick: () => document.documentElement.requestFullscreen?.(),
+							children: "Fullscreen"
+						}),
+						[
+							15,
+							30,
+							45
+						].map((m) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+							className: "min-h-11 rounded-full bg-surface px-3",
+							onClick: () => onSleep(m),
+							children: [
+								"Sleep ",
+								m,
+								"m"
+							]
+						}, m)),
+						sleepAt > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							className: "min-h-11 text-sm text-mist",
+							onClick: () => onSleep(0),
+							children: "Cancel sleep"
+						})
+					]
+				})
+			] })]
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "mt-4",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(VizCanvas, {
+				mode,
+				reduced,
+				onLive
+			})
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("ol", {
+			className: "mt-4 max-h-64 overflow-auto",
+			children: queue.map((item, i) => {
+				const a = albums.find((x) => x.id === item.albumId);
+				const t = a?.tracks[item.index];
+				return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", {
+					className: "flex items-center gap-1",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+							className: `min-h-11 flex-1 text-left ${i === cursor ? "text-amber" : "text-mist"}`,
+							onClick: () => onJump(i),
+							children: [
+								i === cursor ? "Now · " : `${i + 1}. `,
+								t?.title,
+								" — ",
+								a?.title
+							]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							className: "min-h-11 min-w-11 text-mist",
+							"aria-label": "Move earlier",
+							onClick: () => onMove(i, -1),
+							children: "↑"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							className: "min-h-11 min-w-11 text-mist",
+							"aria-label": "Move later",
+							onClick: () => onMove(i, 1),
+							children: "↓"
+						})
+					]
+				}, `${item.albumId}-${item.index}-${i}`);
+			})
+		})
+	] });
+}
+function RadioRoom({ albums, onPlay }) {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+			className: "font-display text-4xl",
+			children: "Radio tower"
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+			className: "mt-2 max-w-xl text-mist",
+			children: "Stations are curated from album titles already in the catalog. They are not genre classifications."
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "mt-5 grid gap-3 sm:grid-cols-2",
+			children: STATIONS.map((station) => {
+				const items = collectStation(albums, station.id);
+				return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+					className: "rounded-3xl bg-surface p-4 text-left",
+					onClick: () => onPlay(items),
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Radio, { className: "text-amber" }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "mt-2 block font-display text-2xl",
+							children: station.name
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "mt-1 block text-sm text-mist",
+							children: station.blurb
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+							className: "mt-2 block text-sm",
+							children: [items.length, " tracks"]
+						})
+					]
+				}, station.id);
+			})
+		})
+	] });
+}
+function Decks({ albums }) {
+	const [a, setA] = (0, import_react.useState)(albums[0]?.id || "");
+	const [b, setB] = (0, import_react.useState)(albums[1]?.id || albums[0]?.id || "");
+	const [cross, setCross] = (0, import_react.useState)(.5);
+	const [note, setNote] = (0, import_react.useState)("Two independent players. Volume crossfade only. This is not beatmatched.");
+	(0, import_react.useEffect)(() => {
+		if (!a && albums[0]) setA(albums[0].id);
+		if (!b && (albums[1] || albums[0])) setB((albums[1] || albums[0]).id);
+	}, [
+		albums,
+		a,
+		b
+	]);
+	(0, import_react.useEffect)(() => {
+		const left = document.getElementById("deck-a");
+		const right = document.getElementById("deck-b");
+		if (left) left.volume = Math.min(1, (1 - cross) * 2);
+		if (right) right.volume = Math.min(1, cross * 2);
+	}, [cross]);
+	function load(which, id) {
+		const album = albums.find((x) => x.id === id);
+		const el = document.getElementById(which === "a" ? "deck-a" : "deck-b");
+		const src = album?.tracks[0]?.src;
+		if (el && src) {
+			el.crossOrigin = "anonymous";
+			el.src = src;
+			setNote(`Loaded ${album?.title}. Press play on that deck. If the file is blocked, use the main player’s Suno fallback.`);
+		}
+		if (which === "a") setA(id);
+		else setB(id);
+	}
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+			className: "font-display text-4xl",
+			children: "DJ decks"
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+			className: "mt-2 text-mist",
+			children: note
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "mt-4 grid gap-4 md:grid-cols-2",
+			children: ["a", "b"].map((side) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "rounded-3xl bg-surface p-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", {
+						className: "text-sm text-mist",
+						children: ["Deck ", side.toUpperCase()]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", {
+						className: "mt-2 min-h-11 w-full rounded-xl bg-bg px-2",
+						value: side === "a" ? a : b,
+						onChange: (e) => load(side, e.target.value),
+						children: albums.map((album) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+							value: album.id,
+							children: album.title
+						}, album.id))
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("audio", {
+						id: side === "a" ? "deck-a" : "deck-b",
+						controls: true,
+						className: "mt-3 w-full"
+					})
+				]
+			}, side))
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", {
+			className: "mt-4 block text-sm text-mist",
+			children: ["Crossfader", /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+				className: "mt-2 w-full",
+				type: "range",
+				min: 0,
+				max: 1,
+				step: .01,
+				value: cross,
+				onChange: (e) => setCross(Number(e.target.value))
+			})]
+		})
+	] });
+}
+function Desk({ albums, playlists, history, onSave, onPlay }) {
+	const [name, setName] = (0, import_react.useState)("My bounce");
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+			className: "font-display text-4xl",
+			children: "Desk"
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+			className: "mt-2 max-w-xl text-mist",
+			children: "Favorites and playlists stay in this browser. They do not sync to another phone. This page cannot write to GitHub. Export a file, then commit it to the mictek-house repo if you want it public."
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "mt-4 flex flex-wrap gap-2",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+					className: "min-h-11 rounded-full bg-surface px-4",
+					value: name,
+					onChange: (e) => setName(e.target.value),
+					"aria-label": "Playlist name"
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+					className: "min-h-11 rounded-full bg-amber px-4 text-ink",
+					onClick: () => onSave(name),
+					children: "Save queue as playlist"
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+					className: "min-h-11 rounded-full bg-surface px-4",
+					onClick: () => {
+						const blob = new Blob([JSON.stringify({ albums }, null, 2)], { type: "application/json" });
+						const a = document.createElement("a");
+						a.href = URL.createObjectURL(blob);
+						a.download = "albums.json";
+						a.click();
+					},
+					children: "Export catalog"
+				})
+			]
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+			className: "mt-6 font-display text-2xl",
+			children: "Playlists on this browser"
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
+			className: "mt-2 space-y-1 text-mist",
+			children: [playlists.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "None yet. Play something, then save the queue." }), playlists.map((list) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", {
+				className: "flex items-center justify-between gap-3",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
+					list.name,
+					" · ",
+					list.items.length,
+					" tracks"
+				] }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+					className: "min-h-11 rounded-full bg-surface px-3 text-cream",
+					onClick: () => onPlay(list.items),
+					children: "Play"
+				})]
+			}, list.id))]
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", {
+			className: "mt-6 font-display text-2xl",
+			children: "Recently played here"
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
+			className: "mt-2 space-y-1 text-mist",
+			children: [history.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: "Nothing yet. It stays on this browser only." }), history.slice(0, 8).map((item, i) => {
+				const album = albums.find((a) => a.id === item.albumId);
+				const track = album?.tracks[item.index];
+				return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+					className: "min-h-11 text-left",
+					onClick: () => onPlay([item]),
+					children: [
+						track?.title || "Track",
+						" — ",
+						album?.title
+					]
+				}) }, `${item.albumId}-${item.index}-${i}`);
+			})]
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+			className: "mt-6 text-sm text-mist",
+			children: [
+				"To add a Suno album, open it on Suno, copy each song link, and send them over. Automatic album import is not available from a static page. ",
+				albums.length,
+				" albums are already loaded from the published catalog."
+			]
+		})
+	] });
+}
+function Player({ onLounge }) {
+	const house = useHouse();
+	const { album, track } = currentTrack(house);
+	const [time, setTime] = (0, import_react.useState)(0);
+	const [dur, setDur] = (0, import_react.useState)(0);
+	(0, import_react.useEffect)(() => {
+		const id = window.setInterval(() => {
+			const el = getAudio();
+			setTime(el?.currentTime || 0);
+			setDur(el && Number.isFinite(el.duration) ? el.duration : track?.duration || 0);
+		}, 400);
+		return () => window.clearInterval(id);
+	}, [
+		track?.title,
+		track?.duration,
+		track?.sunoId
+	]);
+	const speeds = [
+		.75,
+		1,
+		1.25,
+		1.5
+	];
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("footer", {
+		className: "fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "mx-auto grid max-w-6xl items-center gap-2 md:grid-cols-[1.2fr_1.4fr_auto]",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+					className: "flex min-w-0 items-center gap-3 text-left",
+					onClick: onLounge,
+					children: [album?.cover ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
+						src: album.cover,
+						alt: "",
+						className: "h-12 w-12 rounded-lg object-cover"
+					}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Disc3, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+						className: "min-w-0",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "block truncate",
+							children: track?.title || "Nothing playing"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: "block truncate text-sm text-mist",
+							children: album?.title || "MicTek House"
+						})]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex items-center justify-center gap-1",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								className: "min-h-11 min-w-11",
+								"aria-label": "Shuffle",
+								onClick: house.setShuffle,
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Shuffle, { className: house.shuffle ? "text-amber" : "" })
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								className: "min-h-11 min-w-11",
+								"aria-label": "Previous",
+								onClick: house.prev,
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SkipBack, {})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								className: "min-h-12 min-w-12 rounded-full bg-cream text-ink",
+								"aria-label": house.status === "playing" ? "Pause" : "Play",
+								onClick: house.toggle,
+								children: house.status === "playing" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Pause, { className: "mx-auto" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Play, { className: "mx-auto" })
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+								className: "min-h-11 min-w-11",
+								"aria-label": "Next",
+								onClick: house.next,
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SkipForward, {})
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+								className: "min-h-11 min-w-11 text-xs",
+								"aria-label": `Repeat ${house.repeat}`,
+								onClick: house.setRepeat,
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Repeat, { className: house.repeat === "off" ? "" : "text-amber" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "block text-[10px] uppercase",
+									children: house.repeat
+								})]
+							})
+						]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+						className: "w-full",
+						type: "range",
+						min: 0,
+						max: dur || 0,
+						step: .1,
+						value: Math.min(time, dur || 0),
+						"aria-label": "Seek",
+						onChange: (e) => house.seek(Number(e.target.value))
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex justify-between text-xs text-mist",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: fmt(time) }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: house.message || house.status }),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: fmt(dur) })
+						]
+					})
+				] }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center gap-2",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							className: "min-h-11 min-w-11",
+							"aria-label": house.muted ? "Unmute" : "Mute",
+							onClick: () => house.setMuted(!house.muted),
+							children: house.muted ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(VolumeX, {}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Volume2, {})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+							className: "hidden w-24 sm:block",
+							type: "range",
+							min: 0,
+							max: 1,
+							step: .01,
+							value: house.volume,
+							"aria-label": "Volume",
+							onChange: (e) => house.setVolume(Number(e.target.value))
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+							className: "min-h-11 min-w-11 text-sm",
+							"aria-label": "Playback speed",
+							onClick: () => {
+								const i = speeds.indexOf(house.rate);
+								house.setRate(speeds[(i + 1) % speeds.length] || 1);
+							},
+							children: [house.rate, "×"]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							className: "min-h-11",
+							"aria-label": "Open lounge",
+							onClick: onLounge,
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ListMusic, {})
+						})
+					]
+				})
+			]
+		}), house.embed && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("iframe", {
+			className: "mx-auto mt-2 h-24 w-full max-w-xl rounded-xl",
+			title: "Suno player",
+			src: safeEmbed(house.embed.split("/").pop()) || house.embed,
+			allow: "autoplay; encrypted-media; fullscreen"
+		})]
+	});
+}
+var SplitComponent = HouseApp;
+//#endregion
+export { SplitComponent as component };

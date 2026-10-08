@@ -1,0 +1,114 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Outfit:wght@400;500;600&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --color-bg: #100e0c;
+  --color-surface: #1b1612;
+  --color-raised: #261f19;
+  --color-cream: #f4efe6;
+  --color-mist: #b3a79b;
+  --color-line: #3a3128;
+  --color-amber: #e4a04a;
+  --color-heat: #ff5c33;
+  --color-ink: #1a120c;
+  --radius-card: 1.25rem;
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  html,
+  body {
+    background: var(--color-bg);
+    color: var(--color-cream);
+    font-family: var(--font-sans);
+  }
+  body {
+    min-height: 100%;
+    background:
+      radial-gradient(900px 420px at 8% -10%, rgba(228, 160, 74, 0.18), transparent 60%),
+      radial-gradient(720px 380px at 100% 0%, rgba(255, 92, 51, 0.12), transparent 55%),
+      var(--color-bg);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-amber);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin,
+  .drift,
+  .sleeve,
+  .eq i {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.sleeve {
+  transition: transform 200ms ease;
+  transform-style: preserve-3d;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .sleeve:hover {
+    transform: rotateY(-8deg) rotateX(4deg) translateY(-4px);
+  }
+}
+
+.bin {
+  scroll-snap-type: x mandatory;
+}
+.bin > * {
+  scroll-snap-align: start;
+}
+
+.vinyl {
+  border-radius: 999px;
+  box-shadow:
+    0 0 0 10px #1a120c,
+    0 0 0 12px #3a3128,
+    0 28px 60px rgba(0, 0, 0, 0.45);
+}
+
+.eq {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+}
+.eq i {
+  display: block;
+  width: 3px;
+  height: 40%;
+  background: var(--color-amber);
+  animation: bounce 0.7s ease-in-out infinite alternate;
+}
+.eq i:nth-child(2) {
+  height: 80%;
+  animation-delay: 0.15s;
+  background: var(--color-heat);
+}
+.eq i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes bounce {
+  to {
+    height: 100%;
+  }
+}
+
+.player-safe {
+  padding-bottom: calc(9rem + env(safe-area-inset-bottom));
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

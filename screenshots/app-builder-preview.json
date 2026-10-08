@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "MicTek House",
+      "hasCanvas": false,
+      "bodyTextLen": 522,
+      "bodyTextHash": "67a34099315ca52d5247e4de66d1f196336670df51f9375572098202058f411b",
+      "bodyTextPrefix": "MicTek House MORE BOUNCE LABS Lobby Vault Lounge Lab Radio Decks",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "MicTek House",
+      "hasCanvas": false,
+      "bodyTextLen": 522,
+      "bodyTextHash": "67a34099315ca52d5247e4de66d1f196336670df51f9375572098202058f411b",
+      "bodyTextPrefix": "MicTek House MORE BOUNCE LABS Lobby Vault Lounge Lab Radio Decks",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}
