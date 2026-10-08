@@ -133,3 +133,77 @@
     padding-bottom: calc(20rem + env(safe-area-inset-bottom));
   }
 }
+
+
+/* MBL Music Timeline: low-cost, audio-independent era atmospheres. */
+.timeline-cosmos {
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse 75% 120% at 86% 40%, var(--timeline-halo, #e4a04a) 0%, transparent 72%),
+    radial-gradient(ellipse 80% 110% at 7% 92%, rgba(99, 61, 151, 0.3), transparent 70%),
+    linear-gradient(125deg, #1b1612 0%, #100e0c 76%);
+}
+.timeline-cosmos::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #100e0c;
+  opacity: 0.66;
+  pointer-events: none;
+}
+.timeline-orbit {
+  position: absolute;
+  z-index: 0;
+  width: 25rem;
+  height: 25rem;
+  right: -5rem;
+  top: -6rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: timeline-revolve 42s linear infinite;
+}
+.timeline-orbit-one::after {
+  content: "";
+  position: absolute;
+  width: 0.65rem;
+  height: 0.65rem;
+  left: 12%;
+  top: 14%;
+  border-radius: 50%;
+  background: var(--color-amber);
+  box-shadow: 0 0 1.2rem var(--color-amber);
+}
+.timeline-orbit-two {
+  width: 18rem;
+  height: 18rem;
+  right: -1.5rem;
+  top: -2.5rem;
+  border-color: rgba(255, 255, 255, 0.08);
+  animation-direction: reverse;
+  animation-duration: 60s;
+}
+.timeline-era-banner {
+  background:
+    linear-gradient(110deg, var(--timeline-halo, #e4a04a) -200%, transparent 55%),
+    var(--color-surface);
+}
+.timeline-spine {
+  background: linear-gradient(var(--color-amber), var(--color-line), transparent);
+}
+.timeline-dot {
+  background: var(--timeline-halo, var(--color-amber));
+  box-shadow: 0 0 0 4px var(--color-bg), 0 0 0 5px var(--color-line);
+}
+.timeline-floating-sleeve {
+  backface-visibility: hidden;
+  transition: box-shadow 250ms ease;
+}
+@keyframes timeline-revolve {
+  to { transform: rotate(360deg); }
+}
+.timeline-cosmos-still .timeline-orbit { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .timeline-orbit { animation: none !important; }
+}
