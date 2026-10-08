@@ -39,6 +39,7 @@ export function buildRadioProgram(albums, stationId, maximum = 48) {
   for (let songIndex = 0; songIndex < 200 && items.length < maximum; songIndex++) {
     let found = false;
     for (const album of rows) {
+      if (!album) continue;
       const track = album.tracks?.[songIndex];
       if (!track) continue;
       items.push({ albumId: album.id, index: songIndex, title: track.title || "", albumTitle: album.title || "" });
