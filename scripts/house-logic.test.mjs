@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
-import { collectStation, fmt, parseHash, runtime, safeEmbed, safeHttps } from "./house-logic.mjs";
+import { collectStation, fmt, parseHash, reorderQueue, runtime, safeEmbed, safeHttps } from "./house-logic.mjs";
 
 test("catalog baseline stays 19 albums and 344 tracks", () => {
   const data = JSON.parse(readFileSync("public/catalog/albums.json", "utf8"));
@@ -43,4 +43,33 @@ test("hash routes stay on known rooms", () => {
   assert.deepEqual(parseHash("#/album/trunk-funk/3"), { room: "album", albumId: "trunk-funk", track: "3" });
   assert.equal(parseHash("#/nope").room, "lobby");
   assert.equal(parseHash("").room, "lobby");
+});
+
+
+test("queue reordering preserves the playing item in both directions", () => {
+  const queue = ["a", "b", "c", "d"];
+  const forward = reorderQueue(queue, 1, 1, 1);
+  assert.deepEqual(forward, { queue: ["a", "c", "b", "d"], cursor: 2 });
+  assert.equal(forward.queue[forward.cursor], "b");
+
+  const acrossFromBefore = reorderQueue(queue, 2, 1, 1);
+  assert.deepEqual(acrossFromBefore, { queue: ["a", "c", "b", "d"], cursor: 1 });
+  assert.equal(acrossFromBefore.queue[acrossFromBefore.cursor], "c");
+
+  const acrossFromAfter = reorderQueue(queue, 1, 2, -1);
+  assert.deepEqual(acrossFromAfter, { queue: ["a", "c", "b", "d"], cursor: 2 });
+  assert.equal(acrossFromAfter.queue[acrossFromAfter.cursor], "b");
+
+  const backward = reorderQueue(queue, 2, 2, -1);
+  assert.deepEqual(backward, { queue: ["a", "c", "b", "d"], cursor: 1 });
+  assert.equal(backward.queue[backward.cursor], "c");
+  assert.deepEqual(queue, ["a", "b", "c", "d"], "original queue remains unchanged");
+});
+
+test("queue reordering rejects invalid indices without modifying playback", () => {
+  const queue = ["a", "b"];
+  assert.deepEqual(reorderQueue(queue, 0, -1, 1), { queue, cursor: 0 });
+  assert.deepEqual(reorderQueue(queue, 0, 0, -1), { queue, cursor: 0 });
+  assert.deepEqual(reorderQueue(queue, 1, 1, 1), { queue, cursor: 1 });
+  assert.deepEqual(reorderQueue(queue, 0, 0, 0), { queue, cursor: 0 });
 });
