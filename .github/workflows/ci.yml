@@ -24,7 +24,7 @@ jobs:
       - name: TypeScript
         run: npm run typecheck
       - name: Music house regression tests
-        run: node --test scripts/house-logic.test.mjs scripts/dj-bot-core.test.mjs
+        run: node --experimental-strip-types --test scripts/house-logic.test.mjs scripts/dj-bot-core.test.mjs scripts/infinity-bridge.test.mjs
       - name: Production build
         run: npm run build
       - name: GitHub Pages static build
