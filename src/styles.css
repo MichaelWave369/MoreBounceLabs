@@ -521,3 +521,10 @@
   }
   .mbl-field-desk-panel { background: rgba(23, 13, 11, .94); }
 }
+
+
+/* In Lab, the official Suno iframe stays mounted and visible below the WebGL
+   canvas, avoiding a 200px fixed dock obscuring the visual experience. */
+.player-safe-embed-lab {
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+}
