@@ -282,3 +282,24 @@ The established **mbl-infinitylens-v1** cross-origin message bridge still contro
 The previous built-in `VizCanvas` is still available inside **Listening Lounge**. This PR does **not** remove legacy modes from Lounge or change the music player, timeline, Radio, Backspin, catalogs, or InfinityLens project's own repository.
 
 CI has a new static test checking Lab contains only InfinityLens, and the Chromium suite now uses an isolated, network-free InfinityLens iframe stub to test handshake, mode selection, absence of legacy Lab canvas/mode buttons, and iframe teardown on navigation. The synthetic stub does not certify live remote InfinityLens network behavior; test the deployed page after merge.
+
+## PR #18: Update Albums, Suno and SoundCloud
+
+Under **Vault → Update albums**, the artist can prepare a new public release for the catalog without editing source code. The public website is hosted on static GitHub Pages, which cannot commit to GitHub. A listener does not obtain repository credentials or album-editing powers.
+
+**Owner workflow:**
+1. In MBL Vault, click **Update albums** and choose SoundCloud or Suno.
+2. Paste the public album link and release year.
+   - **SoundCloud:** enter the accurate track count. The official SoundCloud [oEmbed API](https://developers.soundcloud.com/docs/oembed) supplies the existing public album title, artist attribution and artwork during the update job.
+   - **Suno:** enter the album name, public Suno artwork URL, and one song per line formatted `Song title | Suno song UUID` (or `Song title | https://suno.com/song/UUID`). No undocumented Suno API or direct audio source is assumed; published tracks play through official Suno embeds.
+3. Click **Prepare update on GitHub**. The site opens an already filled release issue. **Sign in as MichaelWave369 and submit the issue.**
+4. `.github/workflows/update-albums.yml` accepts ONLY release issues actually submitted by the repository owner. It validates the album provider, artist URL, title/artwork and song IDs, avoids duplicate imports and prepares a catalog PR. **Review its diff and merge only when GitHub CI is green.** The ordinary GitHub Pages deploy then makes the release available in Vault and Timeline.
+5. **Check published catalog** confirms the currently deployed Suno catalog size. SoundCloud is currently compiled into the deployed JS bundle; counts reflect the version of the site you loaded. Reload after a new Pages deployment to see updates.
+
+If the update workflow cannot create pull requests, the repository owner may need to enable **Settings → Actions → General → Workflow permissions → Allow GitHub Actions to create and approve pull requests**. The workflow's issue comment links the validation log when an import is rejected.
+
+**No credentials are stored in the public app.** GitHub performs owner authentication. Submitted URLs are restricted to `soundcloud.com/microneesia/sets/…` and `suno.com/album/<UUID>`. A SoundCloud oEmbed author mismatch is rejected. The importer does not scrape or download music or invoke arbitrary commands from release data.
+
+**Catalog growth:** The previous fixed-size tests have been changed to preserve at least the original 19 Suno albums/344 songs and 18 SoundCloud albums/200 album-track placements while allowing new approved releases. Baseline albums, protected original catalog IDs, and current playable links are not removed or edited. An imported SoundCloud album uses official SoundCloud iframe playback; an imported Suno album uses official embeds for each listed song. Individual music streams remain subject to provider playback and autoplay restrictions.
+
+This is **reviewed update-by-link**, not automatic monitoring of your entire SoundCloud or Suno account. Automatically discovering every future release would require a separately authorized provider data feed/API, which this free static site does not have.
