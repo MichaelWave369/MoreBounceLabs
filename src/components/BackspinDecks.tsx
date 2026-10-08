@@ -96,8 +96,9 @@ export function BackspinDecks() {
 
   function command(id: string, label: string): boolean {
     const control = documentOfBooth()?.getElementById(id);
-    if (!(control instanceof HTMLElement) || (control instanceof HTMLButtonElement && control.disabled)
-      || (control instanceof HTMLInputElement && control.disabled)) {
+    // Elements belong to the iframe's JS realm: parent instanceof checks fail.
+    const element = control as (HTMLElement & { disabled?: boolean }) | null;
+    if (!element || typeof element.click !== "function" || element.disabled) {
       setNotice(`${label} is not available yet. Start Dual Audio and load your own track first.`);
       return false;
     }
@@ -108,12 +109,14 @@ export function BackspinDecks() {
 
   function changeRange(id: string, value: number) {
     const control = documentOfBooth()?.getElementById(id);
-    if (!(control instanceof HTMLInputElement) || control.disabled) {
+    if (!control || control.tagName !== "INPUT" || (control as HTMLInputElement).disabled) {
       setNotice("Start Dual Audio before using the battle mixer.");
       return;
     }
-    control.value = String(value);
-    control.dispatchEvent(new Event("input", { bubbles: true }));
+    const input = control as HTMLInputElement;
+    input.value = String(value);
+    const EventClass = input.ownerDocument.defaultView?.Event ?? Event;
+    input.dispatchEvent(new EventClass("input", { bubbles: true }));
   }
 
   function crossfade(value: number) {
