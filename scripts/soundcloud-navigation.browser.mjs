@@ -150,11 +150,27 @@ async function main() {
     await page.getByRole("heading", { name: "Backspin '96 · The Vinyl World" }).waitFor({ state: "visible" });
     const rig = page.locator('iframe[title="Original Backspin 96 DJ engine and advanced controls"]');
     await rig.waitFor({ state: "attached", timeout: 15000 });
-    await page.waitForFunction(() => {
-      const frame = document.querySelector('iframe[title="Original Backspin 96 DJ engine and advanced controls"]');
-      try { return frame?.contentWindow?.__MBL_BACKSPIN?.version === 1; }
-      catch { return false; }
-    }, undefined, { timeout: 20000 });
+    try {
+      await page.waitForFunction(() => {
+        const frame = document.querySelector('iframe[title="Original Backspin 96 DJ engine and advanced controls"]');
+        try { return frame?.contentWindow?.__MBL_BACKSPIN?.version === 1; }
+        catch { return false; }
+      }, undefined, { timeout: 12000 });
+    } catch (error) {
+      const detail = await rig.evaluate((frame) => {
+        try {
+          return {
+            src: frame.getAttribute("src"),
+            frameUrl: frame.contentWindow?.location.href,
+            readyState: frame.contentDocument?.readyState,
+            audioStartPresent: Boolean(frame.contentDocument?.getElementById("startAudio")),
+            adapterPresent: Boolean(frame.contentWindow?.__MBL_BACKSPIN),
+          };
+        } catch (e) { return { inaccessible: String(e) }; }
+      });
+      throw new Error("Backspin iframe adapter not ready: " + JSON.stringify(detail)
+        + "; browser exceptions: " + errors.join(" | ") + "; " + String(error));
+    }
     const bridge = await rig.evaluate((frame) => {
       const controller = frame.contentWindow.__MBL_BACKSPIN;
       return controller.snapshot();
