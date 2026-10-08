@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://michaelwave369.github.io/MoreBounceLabs/agent/mix-schema-v1.json",
+  "title": "MoreBounceLabs Mix Exchange v1",
+  "description": "A portable proposed listening-set document, never permission to start audio or operate Backspin.",
+  "type": "object",
+  "required": [
+    "format",
+    "name",
+    "creator",
+    "description",
+    "tracks"
+  ],
+  "properties": {
+    "format": {
+      "const": "mbl-mix-v1"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "creator": {
+      "type": "object",
+      "required": [
+        "type",
+        "name"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "agent",
+            "human"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
+      }
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 800,
+      "description": "Required summary of mood and energy arc; no file or script URLs."
+    },
+    "tracks": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 40,
+      "items": {
+        "type": "object",
+        "required": [
+          "albumId",
+          "index",
+          "transition"
+        ],
+        "properties": {
+          "albumId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "description": "Exact, case-sensitive id from the published catalog."
+          },
+          "index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 200,
+            "description": "Zero-based song index in catalog album."
+          },
+          "transition": {
+            "enum": [
+              "cut",
+              "fade",
+              "blend"
+            ],
+            "description": "Suggested feel only; does not execute an audio crossfade."
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 240,
+            "description": "Plain text only, no file/script URL schemes."
+          },
+          "albumTitle": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "artist": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "trackTitle": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "bpm": {
+            "type": "number",
+            "minimum": 30,
+            "maximum": 300,
+            "description": "Optional proposal/estimate, not guaranteed measured metadata."
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 30
+          },
+          "energy": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Optional subjective energy, 0 quiet to 1 intense."
+          },
+          "startAtSec": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 86400,
+            "description": "Optional suggestion, never auto-seeks Suno."
+          }
+        }
+      }
+    }
+  }
+}
