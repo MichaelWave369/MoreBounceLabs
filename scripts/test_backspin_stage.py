@@ -28,6 +28,7 @@ class StageBackspinTests(unittest.TestCase):
         payloads = {name: "/* fixture */" for name in stage.REQUIRED}
         payloads["index.html"] = '<link href="./styles.css"><script src="./app.js"></script>'
         payloads["LICENSE"] = "MIT License"
+        payloads["app.js"] = "const system = new BackspinMixerSystem();"
         payloads.update(extra or {})
         with zipfile.ZipFile(stage.SOURCE, "w", compression=zipfile.ZIP_DEFLATED) as archive:
             for name, data in payloads.items():
@@ -53,7 +54,7 @@ class StageBackspinTests(unittest.TestCase):
         self.assertIn("setJogRatio(", staged_app)
         with zipfile.ZipFile(stage.SOURCE) as archive:
             original = archive.read(self.base + "/app.js").decode("utf-8")
-        self.assertEqual(original, "/* fixture */")
+        self.assertEqual(original, "const system = new BackspinMixerSystem();")
         self.assertNotIn("window.__MBL_BACKSPIN", original)
         self.assertFalse((stage.DEST / "docs").exists())
 
