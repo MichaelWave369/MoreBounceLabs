@@ -138,6 +138,11 @@ async function main() {
     // Prevent accidental duplicate imports without touching public audio.
     await page.getByRole("button", { name: "Update albums" }).click();
     await page.getByRole("heading", { name: "Bring your next release home" }).waitFor({ state: "visible" });
+    await page.getByRole("button", { name: "Auto new album ↗" }).waitFor({ state: "visible" });
+    await page.getByRole("textbox", { name: "New album URL" }).fill("https://soundcloud.com/microneesia/sets/reflections");
+    await page.getByRole("button", { name: "Auto new album ↗" }).click();
+    await page.getByRole("alert").getByText("Already in the MBL catalog", { exact: false }).waitFor({ state: "visible" });
+    await page.getByRole("button", { name: "Manual details", exact: false }).click();
     await page.getByRole("textbox", { name: "Public album link" })
       .fill("https://soundcloud.com/microneesia/sets/reflections");
     await page.getByRole("spinbutton", { name: "Number of songs on this SoundCloud album" }).fill("9");
@@ -154,12 +159,29 @@ async function main() {
     await checkPage(page);
     assert.equal(await page.locator('iframe[title^="SoundCloud playlist:"]').count(), 0);
 
+    // Original illustrated radio station buttons are now real, distinct
+    // catalog-backed playlists. No SoundCloud/Suno audio is triggered without
+    // explicit interaction with the official external player.
+    await nav.getByRole("button", { name: "Radio" }).click();
+    await page.getByRole("heading", { name: "Radio Control Room" }).waitFor({ state: "visible" });
+    await page.getByRole("button", { name: /Solar Bounce FM · 104\.3/ }).waitFor({ state: "visible" });
+    await page.getByRole("button", { name: /Night Trucker · 92\.6/ }).click();
+    await page.getByRole("heading", { name: "Night Trucker", exact: true }).waitFor({ state: "visible" });
+    await page.getByRole("button", { name: "Select AM station band" }).click();
+    await page.getByRole("heading", { name: "Deep Desert AM", exact: true }).waitFor({ state: "visible" });
+    await page.getByText("On this frequency", { exact: false }).waitFor({ state: "visible" });
+    await checkPage(page);
+
     await nav.getByRole("button", { name: "Vault" }).click();
     await page.getByRole("button", { name: /Reflections/ }).first().click();
     await page.locator('iframe[title^="SoundCloud playlist:"]').waitFor({ state: "visible" });
     await page.waitForTimeout(250);
     await nav.getByRole("button", { name: "Lobby" }).click();
-    await page.getByRole("heading", { name: /The Azure Inheritance|MoreBounceLabs/i }).first().waitFor({ state: "visible" });
+    await page.getByText("Mikey More Bounce · Rotating album spotlight").waitFor({ state: "visible" });
+    const spotlightBefore = await page.locator("main h1").first().textContent();
+    await page.getByRole("button", { name: "Next album spotlight ↻" }).click();
+    const spotlightAfter = await page.locator("main h1").first().textContent();
+    assert.notEqual(spotlightBefore, spotlightAfter, "Lobby spotlight must change featured album in the hero");
     await checkPage(page);
     assert.equal(await page.locator('iframe[title^="SoundCloud playlist:"]').count(), 0);
 
