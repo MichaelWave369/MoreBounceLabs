@@ -87,6 +87,12 @@ async function main() {
       ` });
     });
     await page.route("https://w.soundcloud.com/player/**", async (route) => {
+      if (new URL(route.request().url()).pathname === "/player/api.js") {
+        // Playwright gives the most recently registered route precedence.
+        // Leave the official widget API script to the exact mock above.
+        await route.fallback();
+        return;
+      }
       await route.fulfill({ status: 200, contentType: "text/html", body: "<!doctype html><html><body><button>Play</button><p>Mock SoundCloud player</p></body></html>" });
     });
 
