@@ -417,3 +417,20 @@ The annotated 10-song energy mix is stored as a **normalized semantic fixture** 
 **Radio:** Five programmed virtual stations now correspond 1:1 with five preserved physical button hotspots on the original radio artwork. Every station has a real, distinct playlist composed of the artist's known song IDs in a curated round-robin from multiple real albums, not a vague album-title regex or a fake streaming link. **Solar Bounce FM (104.3 FM)**, **Night Trucker (92.6 FM)**, **Porch Static (98.1 FM)**, **Deep Desert AM (88.4 AM)**, and **Orbit Lounge (107.7 SAT)** are internally consistent with AM/FM/SAT band tuning, scan/next/preset/power, and clickable artwork. On-page station preview shows the first six real tracks and known total size; each station loads up to 48 catalog songs through the official Suno player. **These are curated MBL streaming playlists, not terrestrial live radio stations**, and Suno still controls its actual playback and autoplay rules. Motion controls remain ambient.
 
 Regression tests verify no immediately repeated hero, all five distinct known-song program definitions, AM/FM/SAT band-to-preset consistency, secure SoundCloud auto import, Suno safe hold, and built UI availability.
+
+## PR #25: Mr. FL's Desk QA final polish
+
+Independent browser tests using the agent-created **Golden Hour to Funk Peak and Back** set confirmed the existing read-only mix API, schema and playback approval gate. R25 addresses four specific remaining friction points without changing any original music, rooms, or artwork:
+
+1. **Duplicate saved chips:** saving a set again with the same creator type, case-insensitive creator name and case-insensitive mix name **overwrites that browser-local saved mix**. Older duplicate entries collapse when loading browser storage. Different creators may keep separate sets with the same title; saved mixes stay local to the user's browser.
+2. **Readable export names:** filled/prefixed track titles like `4. Tunnel Bloom` and `6. Signal Orchard` export as `Tunnel Bloom` and `Signal Orchard`, while stable albumId/zero-based index, official catalog originals and DJ energy notes remain unchanged. Truly historic/mismatched titles remain intact and continue to carry advisory `catalogWarnings[]`.
+3. **Agent error context:** the safe in-browser validator now emits `{code:"albumId_whitespace",trackIndex:<zero-based>,albumId:<exact raw ID>,message}` rather than a generic issue for silently trimmed IDs. The playback gate remains human-only. Other malformed input still returns the existing `invalid_mix` code.
+4. **1280x800 Desk:** when switching into Mix Studio, the Desk title header compacts and the import textarea + **Review imported JSON** button appear immediately after the short Studio intro, before the long review, saved chips, and the collapsed author controls. The original photographic workbench stays intact in Desk workbench mode.
+
+**Agent discovery (project-scoped):**
+- `https://michaelwave369.github.io/MoreBounceLabs/agent/` (public static HTML index)
+- `https://michaelwave369.github.io/MoreBounceLabs/.well-known/mbl-agent.json` (static manifest pointer)
+- Existing `/MoreBounceLabs/llms.txt`, `/agent/mix-manifest-v1.json`, `/agent/mix-schema-v1.json` remain available.
+- No WebMCP or `navigator.modelContext` write/autoplay tooling is registered; agents retain only validated, explicit read-only inspection.
+
+Regression tests cover the annotated Golden Hour set, duplicate-save overwrite semantics, compact import order, canonical track-title display/export, typed whitespace validation, public Pages agent discovery, and a real Chromium double-save and above-fold UI check.
