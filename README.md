@@ -63,3 +63,18 @@ The build currently uses **TanStack Start + Nitro with a Vercel preset** (see `v
 Song URLs like `#/album/trunk-funk/3` now select and highlight the fourth song (the existing URL convention is **zero-based**) with a **Play this song** action. These links do not autoplay, because browsers often block media without a direct tap. Invalid or out-of-bounds indexes show a friendly message, leaving the rest of the album usable. Album-only links still open normally.
 
 Hash routing is compatible with simple static navigation but does not create individually server-rendered track previews for social-media crawlers.
+
+## GitHub Pages (static React build)
+
+This repo includes a separate static build so GitHub Pages does not need TanStack Start, Nitro, Vercel, PGLite, or a server.
+
+- **Expected public URL after deployment:** https://michaelwave369.github.io/MoreBounceLabs/
+- **Run locally:** `npm install` then `npm run build:pages`
+- **Verify:** `npm run verify:pages`
+- **Output folder:** `dist-pages/`
+- **CI:** Pull requests verify both the existing server-oriented build and the static Pages build.
+- **Publish:** Merge the Pages deployment PR to `main`. GitHub Actions runs `.github/workflows/pages.yml`, uploads the static build and deploys it with `actions/deploy-pages`.
+
+**Important GitHub setting:** Under **Settings → Pages → Build and deployment**, choose **Source: GitHub Actions**. If Pages has never been enabled, this one-time repository setting may be required before the deploy job succeeds. No repository secrets or paid hosting are needed.
+
+This is a **second deployment target**. The original `mictek-house` GitHub Pages site remains unchanged, and this build does not attempt to host a server-side auth/database backend. Hash routes like `#/album/trunk-funk/3` remain on the same static `index.html` path and are safe to refresh. The catalog request uses Vite's base URL, so it resolves to `/MoreBounceLabs/catalog/albums.json` on Pages, not the domain root. It is still subject to Suno/media-host playback rules and browser restrictions.

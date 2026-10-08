@@ -186,7 +186,7 @@ export const useHouse = create<EngineState>((set, get) => {
 
     loadCatalog: async () => {
       try {
-        const res = await fetch("/catalog/albums.json");
+        const res = await fetch(`${import.meta.env.BASE_URL}catalog/albums.json`);
         if (!res.ok) throw new Error("Catalog missing");
         const data = await res.json();
         const albums = (data.albums || []) as Album[];
