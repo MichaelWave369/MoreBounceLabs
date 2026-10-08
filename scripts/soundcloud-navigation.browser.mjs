@@ -151,6 +151,16 @@ async function main() {
     // its iframe, and that poster mode can open the original advanced rig.
     await nav.getByRole("button", { name: "Decks" }).click();
     await page.getByRole("heading", { name: "Backspin '96 · The Vinyl World" }).waitFor({ state: "visible" });
+    // Regression for the real user-reported bug: a filename mismatch between
+    // uploaded artwork and the URL in the component silently showed a
+    // placeholder. Browser must actually decode the original image.
+    await page.locator("img.backspin-poster-art").waitFor({ state: "visible" });
+    await page.waitForFunction(() => {
+      const art = document.querySelector("img.backspin-poster-art");
+      return art?.complete && art.naturalWidth === 1055 && art.naturalHeight === 1491;
+    }, undefined, { timeout: 10000 });
+    assert.equal(await page.getByText("The original poster artwork is being staged.").count(), 0,
+      "Backspin must display the poster, never the missing-art placeholder");
     const rig = page.locator('iframe[title="Original Backspin 96 DJ engine and advanced controls"]');
     await rig.waitFor({ state: "attached", timeout: 15000 });
     try {
