@@ -350,3 +350,28 @@ Example agent-created mix (use real album IDs from the publicly exported catalog
 **Remaining field-test items:** The original Backspin `404` lacks an exact URL; CI cannot justify inventing a fix. Original `Full Booth` versus `Booth/Lab/Safe Flat` names depend on the pinned Backspin build, so this rung does not claim that an absent mode is available. Timeline initial-load profiling requires actual network/browser timing and is not asserted fixed.
 
 Regression tests cover mix manifest safety, unicode sharing, missing catalog references, import rejection, and wrapper fixes. A browser test confirms the actual Desk Mix Studio refuses to play invalid proposed tracks.
+
+## PR #21: Mr. FL's Agent Mix QA follow-up
+
+An independent agent successfully prepared, reviewed, saved, exported and opened a shared 10-song set named **"Golden Hour to Funk Peak and Back"**. Mr. FL then filed eight reproducible usability issues, which this rung corrects without changing the Backspin DJ engine or any original artwork.
+
+**Validator and UI fixes:**
+- Required missing description now reports **"Description is missing"** distinctly from a too-long description.
+- Unknown `albumId` or out-of-range song references produce an **UNPLAYABLE MIX** with per-track errors `{code, trackIndex, albumId, message}` and a **Can't play** badge. Playback, Save, JSON export, and Share are disabled until all catalog references resolve.
+- Script/file URL schemes including `file://`, `javascript:`, `data:`, and `vbscript:` are rejected from free-text notes/descriptions; string content is never executed.
+- Invalid track indexes, transition values, song data and metadata name the **exact set position and album ID**.
+- Numbered song titles no longer get an extra ordinal prefix in the visual mix review.
+- Mix title, artist/agent name and creator type start blank/human; they no longer pre-attribute a set to Mr. FL.
+- Valid subsequent imports clear previous rejection messages and old preview state.
+- The validated mix review is moved above the long creator/import editor; composition controls are collapsed when not in use for 1280×800 desktops.
+
+**Agent contract, published directly on GitHub Pages:**
+- `https://michaelwave369.github.io/MoreBounceLabs/agent/mix-manifest-v1.json`
+- `https://michaelwave369.github.io/MoreBounceLabs/agent/mix-schema-v1.json`
+- Canonical public catalog: `https://michaelwave369.github.io/MoreBounceLabs/catalog/albums.json`
+
+The **v1 JSON format remains backward-compatible**. Optional `albumTitle`, `artist`, and `trackTitle` fields make exports readable even if someone renames a record; stable `albumId` and zero-based `index` remain authoritative. Optional `bpm`, `key`, `energy` (0–1), and `startAtSec` fields can express planning hints. They are NOT claims of analyzed or measured audio, and never authorize seeking, automated mixing or autoplay. Unknown catalog records produce errors; outdated readable titles produce warnings.
+
+The JSON Schema and manifest are an opt-in public contract for AI agents, not a permission grant or a remote execution endpoint. Agents can prepare mix plans; a person must still approve actual playback. We deliberately did **not** add an unauthenticated live deck-control API or invent unavailable BPM/duration metadata. Machine-readable validation structure is available in `validateMix(...).errors` and `.warnings` locally, with tests for known and unknown references.
+
+Remaining issues from the broader field pass: Backspin's Safe Flat fallback behavior and missing top-bar modes require auditing the pinned rig build separately; Suno's cross-origin iframe still does not expose reliable programmatic autoplay to MBL.
