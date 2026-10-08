@@ -42,7 +42,7 @@ test("reject malicious, malformed or excessive shared JSON safely", () => {
   const mix = newMixFromQueue(items, "Valid", "FL", "agent", catalog);
   assert.throws(() => validateMix({ ...mix, tracks: [] }, catalog), /1–40/);
   assert.throws(() => validateMix({ ...mix, tracks: Array(41).fill(mix.tracks[0]) }, catalog), /1–40/);
-  assert.throws(() => validateMix({ ...mix, tracks: [{ ...mix.tracks[0], transition: "<script>" }] }, catalog), /Transition/);
+  assert.throws(() => validateMix({ ...mix, tracks: [{ ...mix.tracks[0], transition: "<script>" }] }, catalog), /transition/i);
   assert.throws(() => validateMix({ ...mix, creator: { type: "administrator", name: "bad" } }, catalog), /Creator type/);
   assert.throws(() => validateMix({ ...mix, tracks: [{ ...mix.tracks[0], index: -1 }] }, catalog), /index/);
   assert.throws(() => decodeMix("!unsafe!", catalog), /Invalid mix share/);
@@ -56,7 +56,7 @@ test("Desk exposes mix import/export and preserves the human playback gate", () 
   const ui = readFileSync("src/components/AgentMixStudio.tsx", "utf8");
   assert.match(desk, /<AgentMixStudio albums=\{albums\} onPlay=\{onPlay\}/);
   assert.match(ui, /Mix Exchange v1/);
-  assert.match(ui, /review\.missing\.length === 0/);
+  assert.match(ui, /Boolean\(review\?\.ok\)/);
   assert.match(ui, /onPlay\(queueMix\(selected, albums\)\)/);
   assert.match(ui, /Play approved mix/);
   assert.doesNotMatch(ui, /eval\(|executeScript|fetch\(.*suno|apiKey|client_secret/);
