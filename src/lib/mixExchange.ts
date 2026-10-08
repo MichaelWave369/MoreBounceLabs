@@ -34,7 +34,7 @@ export function validateMix(raw: unknown, catalog: readonly CatalogAlbum[]): Mix
   if (!v.creator || typeof v.creator !== "object" || Array.isArray(v.creator)) throw new Error("Creator required.");
   const c = v.creator as Record<string, unknown>;
   if (c.type !== "agent" && c.type !== "human") throw new Error("Creator type must be agent or human.");
-  const creator = { type: c.type, name: str(c.name, 80, "Creator name") };
+  const creator: ExchangeMix["creator"] = { type: c.type as "agent" | "human", name: str(c.name, 80, "Creator name") };
   if (typeof v.description !== "string" || v.description.length > 800) throw new Error("Description too long.");
   if (!Array.isArray(v.tracks) || v.tracks.length < 1 || v.tracks.length > MAX_TRACKS)
     throw new Error("Mix requires 1–40 catalog tracks.");
