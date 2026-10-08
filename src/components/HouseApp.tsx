@@ -19,10 +19,12 @@ import { VIZ_MODES, VizCanvas } from "@/components/VizCanvas";
 import { InfinityLensStage } from "@/components/InfinityLensStage";
 import { BackspinDecks } from "@/components/BackspinDecks";
 import { SoundCloudShelf } from "@/components/SoundCloudShelf";
+import { MusicTimeline } from "@/components/MusicTimeline";
 
 const ROOMS = [
   ["lobby", "Lobby"],
   ["vault", "Vault"],
+  ["timeline", "Timeline"],
   ["lounge", "Lounge"],
   ["lab", "Lab"],
   ["radio", "Radio"],
@@ -205,6 +207,18 @@ export function HouseApp() {
             query={query}
             selectedSoundCloud={selectedSoundCloud}
             onSelectSoundCloud={selectSoundCloud}
+          />
+        )}
+        {house.room === "timeline" && (
+          <MusicTimeline
+            sunoAlbums={albums}
+            query={query}
+            reduced={reduced}
+            onOpenSuno={(id) => house.go("album", id)}
+            onOpenSoundCloud={(id) => {
+              house.go("vault");
+              selectSoundCloud(id);
+            }}
           />
         )}
         {house.room === "album" && openAlbum && (
