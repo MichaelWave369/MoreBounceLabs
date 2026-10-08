@@ -13,7 +13,7 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
-import { collectStation, fmt, parseHash, runtime, safeEmbed, safeHttps, STATIONS } from "../../scripts/house-logic.mjs";
+import { collectStation, fmt, parseHash, runtime, safeEmbed, safeHttps, sharedTrackIndex, STATIONS } from "../../scripts/house-logic.mjs";
 import { currentTrack, getAudio, useHouse, type Album } from "@/lib/engine";
 import { VIZ_MODES, VizCanvas } from "@/components/VizCanvas";
 
@@ -37,6 +37,7 @@ export function HouseApp() {
   const [copied, setCopied] = useState("");
   const [egg, setEgg] = useState(0);
   const [vizLive, setVizLive] = useState(false);
+  const [sharedTrack, setSharedTrack] = useState("");
 
   useEffect(() => {
     void house.loadCatalog();
@@ -44,10 +45,12 @@ export function HouseApp() {
     setReduced(media.matches);
     const onHash = () => {
       const parsed = parseHash(location.hash);
+      setSharedTrack(parsed.room === "album" ? parsed.track : "");
       if (parsed.room === "album" && parsed.albumId) house.go("album", parsed.albumId);
       else if (parsed.room !== "album") house.go(parsed.room);
     };
     window.addEventListener("hashchange", onHash);
+    onHash();
     const keys = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
       if (target.matches("input, textarea, select")) return;
@@ -90,6 +93,8 @@ export function HouseApp() {
   }, [albums, query, sort]);
 
   const openAlbum = house.albums.find((a) => a.id === house.albumId);
+  const selectedTrackIndex = openAlbum ? sharedTrackIndex(sharedTrack, openAlbum.tracks.length) : null;
+  const invalidSharedTrack = sharedTrack !== "" && selectedTrackIndex === null;
   const hearing = house.status === "playing" && vizLive && !house.embed;
   const vizNote = hearing
     ? "These modes are reading the live audio."
@@ -188,6 +193,8 @@ export function HouseApp() {
         {house.room === "album" && openAlbum && (
           <AlbumView
             album={openAlbum}
+            selectedTrackIndex={selectedTrackIndex}
+            invalidSharedTrack={invalidSharedTrack}
             fav={house.favorites.albums.includes(openAlbum.id)}
             favTracks={house.favorites.tracks}
             onPlay={(i) => house.playAlbum(openAlbum.id, i || 0)}
@@ -397,6 +404,8 @@ function Vault({
 
 function AlbumView({
   album,
+  selectedTrackIndex,
+  invalidSharedTrack,
   fav,
   favTracks,
   onPlay,
@@ -408,6 +417,8 @@ function AlbumView({
   copied,
 }: {
   album: Album;
+  selectedTrackIndex: number | null;
+  invalidSharedTrack: boolean;
   fav: boolean;
   favTracks: string[];
   onPlay: (i?: number) => void;
@@ -455,9 +466,30 @@ function AlbumView({
           )}
         </div>
         {copied && <p className="mt-2 text-sm text-amber">{copied}</p>}
+        {selectedTrackIndex !== null && (
+          <div role="status" className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber/60 bg-raised p-4">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wider text-amber">Shared song · Track {selectedTrackIndex + 1}</p>
+              <p className="font-display text-xl">{album.tracks[selectedTrackIndex]?.title}</p>
+              <p className="mt-1 text-sm text-mist">Ready to play when you are. Your browser won't start music without your tap.</p>
+            </div>
+            <button className="min-h-11 rounded-full bg-heat px-5 font-semibold" onClick={() => onPlay(selectedTrackIndex)}>
+              Play this song
+            </button>
+          </div>
+        )}
+        {invalidSharedTrack && (
+          <p role="status" className="mt-5 rounded-2xl border border-line bg-surface p-3 text-sm text-mist">
+            That song link doesn't match a track on this album. You can still play the album below.
+          </p>
+        )}
         <ol className="mt-6 divide-y divide-line">
           {album.tracks.map((track, i) => (
-            <li key={`${track.sunoId}-${i}`} className="flex items-center gap-2 py-1">
+            <li
+              key={`${track.sunoId}-${i}`}
+              aria-current={selectedTrackIndex === i ? "location" : undefined}
+              className={`flex items-center gap-2 py-1 ${selectedTrackIndex === i ? "rounded-xl border border-amber/60 bg-raised px-2" : ""}`}
+            >
               <button className="min-h-11 flex-1 text-left" onClick={() => onPlay(i)}>
                 <span className="mr-3 text-mist">{String(i + 1).padStart(2, "0")}</span>
                 {track.title}

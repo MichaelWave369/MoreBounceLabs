@@ -57,3 +57,9 @@ The build currently uses **TanStack Start + Nitro with a Vercel preset** (see `v
 3. Improve media error handling and playback recovery with source-level integration tests.
 4. Add track deep-link behavior and accessible mobile player testing.
 5. Expand the DJ deck only after its audio-source limitations are understood.
+
+## Shareable song links
+
+Song URLs like `#/album/trunk-funk/3` now select and highlight the fourth song (the existing URL convention is **zero-based**) with a **Play this song** action. These links do not autoplay, because browsers often block media without a direct tap. Invalid or out-of-bounds indexes show a friendly message, leaving the rest of the album usable. Album-only links still open normally.
+
+Hash routing is compatible with simple static navigation but does not create individually server-rendered track previews for social-media crawlers.

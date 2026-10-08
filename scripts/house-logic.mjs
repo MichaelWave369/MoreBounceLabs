@@ -139,6 +139,19 @@ export function reorderQueue(queue, cursor, from, dir) {
 }
 
 /**
+ * Resolve a share URL's zero-based track index (the original format).
+ * Never autoplay based on a URL alone.
+ * @param {string} raw
+ * @param {number} count
+ * @returns {number | null}
+ */
+export function sharedTrackIndex(raw, count) {
+  if (!/^(0|[1-9][0-9]*)$/.test(String(raw ?? ""))) return null;
+  const index = Number(raw);
+  return Number.isSafeInteger(index) && Number.isInteger(count) && index >= 0 && index < count ? index : null;
+}
+
+/**
  * @template T
  * @param {T[]} list
  * @returns {T[]}
