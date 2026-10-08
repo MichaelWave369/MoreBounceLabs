@@ -19,7 +19,8 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-      - run: npm ci
+      - name: Install dependencies (Grok-export lockfile repair)
+        run: npm install --no-audit --no-fund
       - name: TypeScript
         run: npm run typecheck
       - name: Unit tests
