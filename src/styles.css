@@ -351,3 +351,140 @@
 @media (prefers-reduced-motion: reduce) {
   .mbl-radio-fx-layer *, .mbl-radio-hotspot { animation: none !important; transition: none !important; }
 }
+
+
+/* Backspin '96 poster booth: untouched 1055×1491 art + true DJ hit surfaces. */
+.backspin-poster-wrap {
+  position: relative;
+  width: min(100%, 1055px);
+  aspect-ratio: 1055 / 1491;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid rgba(237, 91, 194, .35);
+  border-radius: 1.1rem;
+  background: #080710;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .55), 0 0 32px rgba(228, 49, 159, .09);
+}
+.backspin-poster-art {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+.backspin-poster-clickmap {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+.backspin-poster-hotspot {
+  position: absolute;
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 1rem;
+  background: transparent;
+  color: #ffffff;
+  touch-action: none;
+  transition: box-shadow 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+.backspin-poster-hotspot:hover, .backspin-poster-hotspot:focus-visible {
+  outline: 2px solid rgba(255, 115, 215, .85);
+  outline-offset: -1px;
+  background: rgba(227, 72, 197, .12);
+  box-shadow: inset 0 0 30px rgba(246, 73, 195, .16), 0 0 12px rgba(246, 73, 195, .32);
+}
+.backspin-poster-hotspot-label {
+  display: inline-block;
+  position: absolute;
+  inset-inline: 4%;
+  bottom: 10%;
+  padding: .22rem .15rem;
+  border: 1px solid rgba(241, 84, 206, .35);
+  border-radius: .35rem;
+  background: rgba(8, 6, 12, .82);
+  color: #f5b1e7;
+  font-size: clamp(.38rem, .65vw, .7rem);
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-align: center;
+  text-shadow: 0 0 8px #8f136f;
+  pointer-events: none;
+}
+.backspin-poster-platter {
+  border-radius: 50%;
+  cursor: grab;
+}
+.backspin-poster-platter:active { cursor: grabbing; }
+.backspin-poster-platter-light {
+  display: block;
+  position: absolute;
+  inset: 1%;
+  border-radius: 50%;
+  border: 2px solid rgba(247, 65, 189, 0);
+  pointer-events: none;
+}
+.backspin-poster-platter.is-playing .backspin-poster-platter-light {
+  border-color: rgba(247, 65, 189, .6);
+  box-shadow: 0 0 28px rgba(247, 65, 189, .35), inset 0 0 22px rgba(247, 65, 189, .17);
+  animation: backspin-platter-glow 1.2s ease-in-out infinite alternate;
+}
+.backspin-poster-xfade {
+  position: absolute;
+  border-radius: .6rem;
+  background: rgba(8, 5, 14, .82);
+  border: 1px solid rgba(237, 81, 196, .52);
+  padding: .12rem .45rem;
+  display: flex;
+  flex-direction: column;
+  gap: .12rem;
+  align-items: stretch;
+  justify-content: center;
+  color: #fbc3f0;
+}
+.backspin-poster-xfade-name {
+  font-size: clamp(.38rem, .65vw, .72rem);
+  font-weight: 700;
+  letter-spacing: .1em;
+  white-space: nowrap;
+  text-align: center;
+}
+.backspin-poster-xfade input {
+  min-height: 13px;
+  width: 100%;
+  accent-color: #ec4899;
+  cursor: ew-resize;
+}
+.backspin-inactive-iframe {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border: 0;
+  clip-path: inset(50%);
+}
+.backspin-performance-rail button:focus-visible,
+.backspin-poster-clickmap button:focus-visible {
+  outline: 2px solid #76f2fa;
+  outline-offset: 3px;
+}
+@keyframes backspin-platter-glow {
+  to { box-shadow: 0 0 35px rgba(247, 65, 189, .72), inset 0 0 20px rgba(247, 65, 189, .24); }
+}
+@media (max-width: 760px) {
+  /* Mobile hit targets on tiny scaled poster would be too small.
+     Full-size equivalent buttons remain in the live control rail below. */
+  .backspin-poster-clickmap { display: none; }
+  .backspin-poster-wrap { border-radius: .65rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .backspin-poster-hotspot,
+  .backspin-poster-platter-light {
+    animation: none !important;
+    transition: none !important;
+  }
+}
