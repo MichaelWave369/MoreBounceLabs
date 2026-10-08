@@ -134,6 +134,17 @@ async function main() {
     await page.goto(base + "#/vault", { waitUntil: "domcontentloaded" });
     await checkPage(page);
     const nav = page.getByRole("navigation", { name: "Rooms" });
+    // The owner release-update panel must exist on the actual Pages UI.
+    // Prevent accidental duplicate imports without touching public audio.
+    await page.getByRole("button", { name: "Update albums" }).click();
+    await page.getByRole("heading", { name: "Bring your next release home" }).waitFor({ state: "visible" });
+    await page.getByRole("textbox", { name: "Public album link" })
+      .fill("https://soundcloud.com/microneesia/sets/reflections");
+    await page.getByRole("spinbutton", { name: "Number of songs on this SoundCloud album" }).fill("9");
+    await page.getByRole("button", { name: "Prepare update on GitHub" }).click();
+    await page.getByRole("alert").getByText("already in the MBL catalog", { exact: false })
+      .waitFor({ state: "visible" });
+    await page.getByRole("button", { name: "Close album updater" }).click();
     await page.getByRole("button", { name: /Dimensional Shift/ }).first().click();
     await page.locator('iframe[title^="SoundCloud playlist:"]').waitFor({ state: "visible" });
     // Allow widget READY bindings to register before navigating away.

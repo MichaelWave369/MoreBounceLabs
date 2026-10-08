@@ -14,8 +14,8 @@ assert.match(html, /\/MoreBounceLabs\/assets\//, "JS and CSS links must use the 
 assert.doesNotMatch(html, /src=["']\/assets\//, "No root-relative JS paths");
 assert.ok(existsSync(join(root, "catalog/albums.json")), "Catalog must be copied to Pages");
 const data = JSON.parse(readFileSync(join(root, "catalog/albums.json"), "utf8"));
-assert.equal(data.albums?.length, 19, "All 19 albums must be preserved");
-assert.equal(data.albums.reduce((n, a) => n + a.tracks.length, 0), 344, "All 344 songs must be preserved");
+assert.ok(data.albums?.length >= 19, "The original 19 Suno albums must be preserved");
+assert.ok(data.albums.reduce((n, a) => n + a.tracks.length, 0) >= 344, "The original 344 songs must be preserved");
 const assets = readdirSync(join(root, "assets"));
 assert.ok(assets.some((name) => name.endsWith(".js")), "Bundled JS must exist");
 assert.ok(assets.some((name) => name.endsWith(".css")), "Bundled CSS must exist");
@@ -29,6 +29,7 @@ for (const utility of [".max-w-6xl", ".grid", ".flex", ".rounded-3xl", ".bg-heat
 const js = assets.filter((name) => name.endsWith(".js")).map((name) => readFileSync(join(root, "assets", name), "utf8")).join("\n");
 assert.ok(js.includes("catalog/albums.json"), "Built app must request its catalog");
 assert.ok(js.includes("MoreBounceLabs"), "Bundled UI should use the new site identity");
+assert.ok(js.includes("Update albums"), "Vault must expose the owner album update control");
 assert.ok(js.includes("Sounds From the Mothership"), "SoundCloud archive releases must appear in the built Vault");
 assert.ok(js.includes("Boga Beatz V.1"), "Oldest Boga Beatz archive must appear in the built Vault");
 assert.ok(js.includes("Reflections"), "The 2022 Reflections release must appear in the built Vault");
@@ -72,4 +73,4 @@ assert.ok(js.includes("cosmic-drift"), "Guest scene controls must appear in MBL 
 assert.ok(js.includes("https://michaelwave369.github.io/infinitylens369/"), "Guest stage should point to the maintained original");
 assert.ok(!js.includes("MicTek House"), "Legacy site name must not remain in the player UI");
 assert.ok(js.includes("/MoreBounceLabs/"), "Built app must know project base");
-console.log("PASS GitHub Pages static build: index, hashed assets, Tailwind layout utilities, scoped URLs, 19 albums, 344 tracks.");
+console.log("PASS GitHub Pages static build: index, hashed assets, Tailwind layout, scoped URLs, at least 19 Suno albums and 344 original tracks.");

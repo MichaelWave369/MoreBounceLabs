@@ -1,0 +1,68 @@
+name: Prepare MBL album update
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  owner-release:
+    name: Validate artist release and open review PR
+    if: ${{ github.event.issue.user.login == github.repository_owner && startsWith(github.event.issue.body, '## MBL album update request') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate owned release and prepare catalog entry
+        env:
+          MBL_ISSUE_BODY: ${{ github.event.issue.body }}
+        run: node scripts/import-release.mjs
+
+      - name: Create review branch and album import pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          RUN_ID: ${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add public/catalog/albums.json src/data/soundcloud-albums.json
+          if git diff --cached --quiet; then
+            gh issue comment "$ISSUE_NUMBER" --body "This release is already present in the MBL catalogs. No duplicate was added."
+            exit 0
+          fi
+          branch="catalog/release-issue-${ISSUE_NUMBER}-${RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git commit -m "catalog: prepare release from owner request #${ISSUE_NUMBER}"
+          git push -u origin "$branch"
+          url=$(gh pr create --head "$branch" --base main \
+            --title "catalog: import artist release from issue #${ISSUE_NUMBER}" \
+            --body "Artist-submitted MBL album catalog addition from #${ISSUE_NUMBER}. Review the provider link, artwork, track metadata and CI before merging. No direct audio URLs or credentials are imported. GitHub Pages deploys after merge. Closes #${ISSUE_NUMBER}.")
+          # PRs opened with GITHUB_TOKEN do not automatically trigger normal
+          # pull_request workflows. Explicitly dispatch the existing CI on
+          # the just-created branch so the candidate gets actual green checks.
+          gh workflow run ci.yml --ref "$branch"
+          gh issue comment "$ISSUE_NUMBER" --body "Your new release is ready for review: $url. A CI run was requested on its branch. Merge only after checks pass."
+
+      - name: Troubleshooting on validation failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh issue comment "$ISSUE_NUMBER" --body "MBL couldn't prepare this release yet. Check the [validation log]($RUN_URL). Verify your public link, song count, and any Suno song IDs; no catalog was changed. Creating PRs from GitHub Actions may also require enabling **Allow GitHub Actions to create and approve pull requests** in repository Actions settings."

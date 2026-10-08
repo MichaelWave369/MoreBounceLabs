@@ -3,19 +3,19 @@ import test from "node:test";
 import { readFileSync } from "node:fs";
 import { collectStation, fmt, parseHash, playbackSource, reorderQueue, runtime, safeEmbed, safeHttps, sharedTrackIndex } from "./house-logic.mjs";
 
-test("catalog baseline stays 19 albums and 344 tracks", () => {
+test("catalog preserves all original albums and supports owner-approved additions", () => {
   const data = JSON.parse(readFileSync("public/catalog/albums.json", "utf8"));
-  assert.equal(data.albums.length, 19);
+  assert.ok(data.albums.length >= 19);
   const tracks = data.albums.flatMap((a) => a.tracks);
-  assert.equal(tracks.length, 344);
-  assert.equal(new Set(data.albums.map((a) => a.id)).size, 19);
+  assert.ok(tracks.length >= 344);
+  assert.equal(new Set(data.albums.map((a) => a.id)).size, data.albums.length);
   for (const album of data.albums) {
     assert.ok(album.title);
     assert.ok(album.cover);
     for (const track of album.tracks) {
       assert.ok(track.title);
       assert.ok(track.sunoId);
-      assert.ok(track.src.startsWith("https://"));
+      if (track.src) assert.ok(track.src.startsWith("https://")); // New Suno songs may be embed-only.
     }
   }
 });
@@ -25,7 +25,7 @@ test("stations only use album titles and do not invent empty sets for known shel
   const funk = collectStation(data.albums, "funk");
   assert.ok(funk.some((t) => t.albumTitle.includes("Trunk Funk")));
   assert.ok(funk.some((t) => t.albumTitle.includes("Bap Science")));
-  assert.equal(collectStation(data.albums, "all").length, 344);
+  assert.equal(collectStation(data.albums, "all").length, data.albums.reduce((sum, a) => sum + a.tracks.length, 0));
   const hiphopish = collectStation(data.albums, "funk").every((t) => /funk|bap/i.test(t.albumTitle));
   assert.equal(hiphopish, true);
 });
@@ -115,6 +115,6 @@ test("artist-controlled HTTPS files use native audio, malformed sources remain u
 test("all existing Suno catalog tracks resolve to a single official embed", () => {
   const data = JSON.parse(readFileSync("public/catalog/albums.json", "utf8"));
   const tracks = data.albums.flatMap((a) => a.tracks);
-  assert.equal(tracks.length, 344);
+  assert.ok(tracks.length >= 344);
   assert.ok(tracks.every((t) => playbackSource(t).kind === "embed"));
 });

@@ -10,21 +10,23 @@ const soundcloudCatalog = JSON.parse(readFileSync("src/data/soundcloud-albums.js
 const entries = buildTimeline(sunoCatalog, soundcloudCatalog);
 
 test("the timeline combines all 19 Suno and 18 SoundCloud releases without inventing records", () => {
-  assert.equal(sunoCatalog.length, 19);
-  assert.equal(soundcloudCatalog.length, 18);
-  assert.equal(entries.length, 37);
-  assert.equal(entries.filter((e) => e.provider === "suno").length, 19);
-  assert.equal(entries.filter((e) => e.provider === "soundcloud").length, 18);
-  assert.equal(entries.reduce((n, entry) => n + entry.tracks, 0), 544);
-  assert.equal(new Set(entries.map((entry) => `${entry.provider}:${entry.id}`)).size, 37);
+  assert.ok(sunoCatalog.length >= 19);
+  assert.ok(soundcloudCatalog.length >= 18);
+  assert.equal(entries.length, sunoCatalog.length + soundcloudCatalog.length);
+  assert.equal(entries.filter((e) => e.provider === "suno").length, sunoCatalog.length);
+  assert.equal(entries.filter((e) => e.provider === "soundcloud").length, soundcloudCatalog.length);
+  assert.ok(entries.reduce((n, entry) => n + entry.tracks, 0) >= 544);
+  assert.equal(new Set(entries.map((entry) => `${entry.provider}:${entry.id}`)).size, entries.length);
   assert.ok(entries.every((entry) => entry.title && entry.cover && entry.tracks > 0));
 });
 
 test("verified release years, not synthetic month/day dates, define chronological chapters", () => {
-  assert.deepEqual(timelineYears(entries), [2026, 2025, 2024, 2023, 2022]);
-  assert.deepEqual(groupTimeline(entries).map(({year,entries})=>[year,entries.length]), [
-    [2026,21], [2025,1], [2024,3], [2023,11], [2022,1],
-  ]);
+  for (const year of [2026, 2025, 2024, 2023, 2022]) {
+    assert.ok(timelineYears(entries).includes(year), `Original year ${year} must remain`);
+  }
+  const chapters = new Map(groupTimeline(entries).map(({year,entries})=>[year,entries.length]));
+  for (const [year, minimum] of [[2026,21], [2025,1], [2024,3], [2023,11], [2022,1]])
+    assert.ok((chapters.get(year) || 0) >= minimum, `Missing original releases from ${year}`);
   for (const year of timelineYears(entries)) assert.ok(TIMELINE_ERAS[year], `Missing visual era ${year}`);
   for (let i=1; i<entries.length; i++) {
     assert.ok(entries[i-1].year >= entries[i].year);
@@ -36,7 +38,7 @@ test("verified release years, not synthetic month/day dates, define chronologica
 test("source filters, year filters and text search work without mutating albums", () => {
   const inputCount = entries.length;
   assert.equal(filterTimeline(entries, {provider:"soundcloud",year:2023,query:"boga beatz"}).length, 9);
-  assert.equal(filterTimeline(entries, {provider:"suno",year:2026,query:""}).length, 19);
+  assert.ok(filterTimeline(entries, {provider:"suno",year:2026,query:""}).length >= 19);
   assert.equal(filterTimeline(entries, {provider:"soundcloud",year:2022,query:"reflections"}).length, 1);
   assert.equal(filterTimeline(entries, {provider:"suno",year:2022,query:""}).length, 0);
   assert.equal(filterTimeline(entries, {provider:"all",year:"all",query:"NoSuchAlbum1234"}).length, 0);
