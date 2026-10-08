@@ -56,7 +56,7 @@ test("Desk exposes mix import/export and preserves the human playback gate", () 
   const ui = readFileSync("src/components/AgentMixStudio.tsx", "utf8");
   assert.match(desk, /<AgentMixStudio albums=\{albums\} onPlay=\{onPlay\}/);
   assert.match(ui, /Mix Exchange v1/);
-  assert.match(ui, /review\.missing\.length === 0/);
+  assert.match(ui, /Boolean\(review\?\.ok\)/);
   assert.match(ui, /onPlay\(queueMix\(selected, albums\)\)/);
   assert.match(ui, /Play approved mix/);
   assert.doesNotMatch(ui, /eval\(|executeScript|fetch\(.*suno|apiKey|client_secret/);
