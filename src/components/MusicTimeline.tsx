@@ -64,7 +64,7 @@ export function MusicTimeline({
             <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
               <span><strong className="text-amber">{allEntries.length}</strong> releases</span>
               <span><strong className="text-amber">{years.length}</strong> years represented</span>
-              <span><strong className="text-amber">{totalTracks}</strong> track placements</span>
+              <span><strong className="text-amber">{totalTracks}</strong> verified track placements</span>
             </div>
             <p className="mt-3 text-xs text-mist">
               Chronology is by release year. Precise day/month ordering is not asserted.
@@ -156,7 +156,7 @@ export function MusicTimeline({
                           {album.provider === "suno" ? "Suno release" : "SoundCloud archive"}
                         </span>
                         <strong className="mt-1 font-display text-lg leading-tight">{album.title}</strong>
-                        <span className="mt-2 text-xs text-mist">{album.artist} · {album.tracks} tracks</span>
+                        <span className="mt-2 text-xs text-mist">{album.artist} · {album.tracks > 0 ? album.tracks + " tracks" : "Track count pending"}</span>
                         <span className="mt-auto inline-flex items-center gap-1 pt-3 text-xs font-medium text-cream">
                           {album.provider === "suno" ? "Open album" : "Listen in Vault"}
                           <ArrowUpRight size={14} aria-hidden="true" />
