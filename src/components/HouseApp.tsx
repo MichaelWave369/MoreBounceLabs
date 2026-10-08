@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { fmt, parseHash, runtime, safeEmbed, sharedTrackIndex } from "../../scripts/house-logic.mjs";
 import { currentTrack, getAudio, useHouse, type Album } from "@/lib/engine";
-import { VIZ_MODES, VizCanvas } from "@/components/VizCanvas";
+import { VizCanvas } from "@/components/VizCanvas";
 import { InfinityLensStage } from "@/components/InfinityLensStage";
 import { BackspinDecks } from "@/components/BackspinDecks";
 import { SoundCloudShelf } from "@/components/SoundCloudShelf";
@@ -182,7 +182,7 @@ export function HouseApp() {
         </div>
       </header>
 
-      <main className={`mx-auto px-4 py-6 ${house.room === "decks" || house.room === "radio" ? "max-w-[1760px]" : "max-w-6xl"}`}>
+      <main className={`mx-auto px-4 py-6 ${house.room === "decks" || house.room === "radio" || house.room === "lab" ? "max-w-[1760px]" : "max-w-6xl"}`}>
         {house.loadError && <p className="mb-4 text-heat">{house.loadError}</p>}
         {!house.ready && <p className="text-mist">Opening the house…</p>}
         {house.room === "lobby" && featured && (
@@ -263,27 +263,7 @@ export function HouseApp() {
             spinning={house.status === "playing" && !house.embed}
           />
         )}
-        {house.room === "lab" && (
-          <section>
-            <h1 className="font-display text-4xl">Visual lab</h1>
-            <p className="mt-2 max-w-xl text-mist">{vizNote}</p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {VIZ_MODES.map((mode) => (
-                <button
-                  key={mode}
-                  className={`min-h-11 rounded-full px-3 text-sm capitalize ${house.vizMode === mode ? "bg-heat text-cream" : "bg-surface"}`}
-                  onClick={() => house.setViz(mode)}
-                >
-                  {mode}
-                </button>
-              ))}
-            </div>
-            <div className="mt-4">
-              <VizCanvas mode={house.vizMode} reduced={reduced} onLive={setVizLive} />
-            </div>
-            <InfinityLensStage reduced={reduced} />
-          </section>
-        )}
+        {house.room === "lab" && <InfinityLensStage reduced={reduced} />}
         {house.room === "radio" && <RadioConsole albums={albums} onPlay={house.playStation} reduced={reduced} />}
         {house.room === "decks" && <BackspinDecks />}
         {house.room === "desk" && (

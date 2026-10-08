@@ -65,6 +65,7 @@ if (backspinStaged) {
 } else {
   assert.ok(!existsSync(join(root, "backspin96/mbl-stage.json")), "Cannot advertise an unverified Backspin booth");
 }
+assert.ok(js.includes("Infinity Lab"), "Lab must have the dedicated InfinityLens-only heading");
 assert.ok(js.includes("InfinityLens369"), "Visual Lab should contain InfinityLens guest stage");
 assert.ok(js.includes("mbl-infinitylens-v1"), "Visual Lab should include the versioned visual bridge");
 assert.ok(js.includes("cosmic-drift"), "Guest scene controls must appear in MBL build");
