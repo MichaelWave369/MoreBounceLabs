@@ -219,6 +219,15 @@ export function RadioConsole({ albums, onPlay, reduced }: {
           </button>
           <button className="min-h-11 rounded-full border border-line px-4" type="button" onClick={() => scan(1)}>Scan next</button>
         </div>
+        <div className="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label="Radio bands">
+          <span className="mr-2 text-xs font-bold uppercase tracking-widest text-mist">Band</span>
+          {(["AM", "FM", "SAT", "ALL"] as Band[]).map((value) => (
+            <button key={value} type="button" onClick={() => setFrequencyBand(value)} aria-pressed={band === value}
+              className={`min-h-10 rounded-full border px-4 text-xs ${band === value ? "border-amber bg-amber/20 text-cream" : "border-line text-mist"}`}>
+              {value} band
+            </button>
+          ))}
+        </div>
         <div className="mt-4 flex flex-wrap items-center gap-2">
           {STATION_PRESETS.map((preset, index) => (
             <button key={preset.id} type="button" aria-pressed={index === stationIndex}
