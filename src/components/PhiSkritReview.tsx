@@ -5,7 +5,7 @@ import {
   type PhiSkritReview as Review,
 } from "@/lib/phiskritCompositionReview";
 
-/** Isolated review lane: no useHouse, mixExchange, queue or Backspin calls. */
+/** Passive review lane, deliberately independent of shared audio and DJ runtime. */
 export function PhiSkritReview() {
   const [review, setReview] = useState<Review | null>(null);
   const [filename, setFilename] = useState("");
