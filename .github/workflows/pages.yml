@@ -32,6 +32,8 @@ jobs:
         run: npm run typecheck
       - name: Music catalog and routing tests
         run: node --test scripts/house-logic.test.mjs
+      - name: PhiSkrit composition review boundary tests
+        run: node --experimental-strip-types --test scripts/phiskrit-composition-review.test.mjs
       - name: Validate and stage Backspin '96 source pack (when provided)
         run: python3 scripts/stage-backspin96.py
       - name: Build GitHub Pages static app

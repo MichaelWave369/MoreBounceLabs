@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ArrowDown, ArrowUp, Clock3, Download, ListMusic, Save } from "lucide-react";
 import { currentTrack, useHouse, type Album } from "@/lib/engine";
 import { AgentMixStudio } from "@/components/AgentMixStudio";
+import { PhiSkritReview } from "@/components/PhiSkritReview";
 import { cleanCatalogTrackNumber } from "@/lib/displayTrackTitle";
 
 type QueueItem = { albumId: string; index: number };
@@ -18,7 +19,7 @@ export function FieldDesk({ albums, playlists, history, onSave, onPlay }: {
   const house = useHouse();
   const [name, setName] = useState("My bounce");
   const [artFailed, setArtFailed] = useState(false);
-  const [workspace, setWorkspace] = useState<"desk" | "mix">(() => new URLSearchParams(window.location.search).has("mix") ? "mix" : "desk");
+  const [workspace, setWorkspace] = useState<"desk" | "mix" | "phiskrit">(() => new URLSearchParams(window.location.search).has("mix") ? "mix" : "desk");
   const { album, track } = currentTrack(house);
 
   function exportCatalog() {
@@ -57,6 +58,8 @@ export function FieldDesk({ albums, playlists, history, onSave, onPlay }: {
           <div className="mt-3 flex flex-wrap gap-2">
             <button type="button" onClick={() => setWorkspace("mix")} aria-pressed={workspace === "mix"}
               className={`min-h-11 rounded-xl border px-4 text-sm ${workspace === "mix" ? "border-fuchsia-300 bg-fuchsia-700/70" : "border-fuchsia-300/50"}`}>Open Agent Mix Studio</button>
+            <button type="button" onClick={() => setWorkspace("phiskrit")} aria-pressed={workspace === "phiskrit"}
+              className={`min-h-11 rounded-xl border px-4 text-sm ${workspace === "phiskrit" ? "border-amber bg-amber/20" : "border-white/20"}`}>PhiSkrit Review</button>
             <button type="button" onClick={() => setWorkspace("desk")} aria-pressed={workspace === "desk"}
               className={`min-h-11 rounded-xl border px-4 text-sm ${workspace === "desk" ? "border-amber bg-amber/20" : "border-white/20"}`}>Desk workbench</button>
           </div>
@@ -68,6 +71,10 @@ export function FieldDesk({ albums, playlists, history, onSave, onPlay }: {
         {workspace === "mix" ? (
           <div className="mt-4" id="agent-mix-workspace">
             <AgentMixStudio albums={albums} onPlay={onPlay} />
+          </div>
+        ) : workspace === "phiskrit" ? (
+          <div className="mt-4" id="phiskrit-preview-workspace">
+            <PhiSkritReview />
           </div>
         ) : (
           <>

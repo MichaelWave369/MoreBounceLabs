@@ -2,6 +2,12 @@
 
 A local-first music experience by **Mikey More Bounce**, with an album vault, listening lounge, visual lab, radio stations, two DJ decks, browser-local favorites and playlists, and a persistent player.
 
+## PhiSkrit composition review (Desk)
+
+More Bounce Labs now includes a **read-only PhiSkrit Review** workspace inside the Desk. It accepts the versioned `phiskrit.rhythm.composition.v1` JSON exported by PhiSkrit's Composer, reconstructs the complete timeline independently, and shows validated clips, notes, tempo and durations. Nothing uploads or autoplays, and it cannot modify the DJ queue or album catalog.
+
+The existing **Agent Mix Studio** remains separate: `mbl-mix-v1` requires actual catalog album/track identities and is **not** a music-note interchange format. PhiSkrit patterns never become fabricated MBL track references. For validation and the trust model see [PhiSkrit Composition Review v1](docs/PHISKRIT_COMPOSITION_REVIEW_V1.md).
+
 ## Catalog integrity
 
 The committed catalog lives at `public/catalog/albums.json`: **19 albums and 344 tracks** at the October 2026 import baseline. Its existing titles, Suno IDs, source references, artwork, and album ordering must be preserved unless the artist explicitly edits the catalog. The baseline is enforced by `scripts/house-logic.test.mjs`.
