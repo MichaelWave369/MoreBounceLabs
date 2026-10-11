@@ -69,7 +69,12 @@ test("reject modified ticks, metadata, schema, tempo, and invented catalog ident
   assert.throws(() => validatePhiSkritComposition({ ...sample, interpretation: "VERIFIED_ANCIENT_PROOF" }), /did not match/);
   assert.throws(() => validatePhiSkritComposition({ ...sample, source: "someone-else" }), /did not match/);
   assert.throws(() => validatePhiSkritComposition({ ...sample, schema: "mbl-mix-v1" }), /Only phiskrit/);
-  assert.throws(() => validatePhiSkritComposition({ ...sample, bpm: 199 }), /did not match/);
+  // BPM is a legitimate primary input. Its change does not alter tick positions
+  // but must recalculate the rendered duration. A packet has no authenticity seal.
+  const retimed = validatePhiSkritComposition({ ...sample, bpm: 199 });
+  assert.equal(retimed.composition.bpm, 199);
+  assert.equal(retimed.totalBeats, 14);
+  assert.equal(retimed.durationSeconds, 14 * 60 / 199);
   assert.throws(() => validatePhiSkritComposition({ ...sample, albumId: "fake" }), /did not match/);
 });
 
