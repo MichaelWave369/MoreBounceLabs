@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState, type ChangeEvent } from "react";
 import { BarChart3, Download, FileUp, ShieldCheck } from "lucide-react";
+import { BackspinSetCompare } from "./BackspinSetCompare";
 import {
   clockSetReview,
   filterSetReview,
@@ -239,6 +240,8 @@ export function BackspinSetReview({
           ) : <p className="text-sm text-mist">No matching events. Record a set or review a saved JSON file.</p>}
         </div>
         <p className="mt-3 text-xs text-mist" role="status">{feedback || summary.caveat}</p>
+        <BackspinSetCompare leftEntries={entries}
+          leftLabel={source === "imported" && imported ? "Imported R6 set" : "Current set"} />
       </div>
     </section>
   );
