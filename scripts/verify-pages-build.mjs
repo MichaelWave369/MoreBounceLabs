@@ -89,6 +89,10 @@ assert.ok(js.includes("Backspin '96 · The Vinyl World"), "The retro Backspin pe
 assert.ok(js.includes("Preflight Soundcheck"), "Standalone BackSpin must include the read-only DJ soundcheck panel");
 assert.ok(js.includes("Deck A is audible"), "Manual hardware soundcheck must be bundled");
 assert.ok(js.includes("software signals"), "Soundcheck must distinguish observed signals from manual tests");
+assert.ok(js.includes("Set Ledger"), "Standalone BackSpin must include its private set timeline");
+assert.ok(js.includes("Start set ledger"), "Set Ledger must require explicit user initiation");
+assert.ok(js.includes("Export JSON"), "Set Ledger must offer local file export");
+assert.ok(js.includes("OBSERVED"), "Set Ledger must label inferred adapter changes");
 const backspinManifest = join(root, "backspin96/mbl-stage.json");
 if (existsSync(backspinManifest)) {
   const manifest = JSON.parse(readFileSync(backspinManifest, "utf8"));

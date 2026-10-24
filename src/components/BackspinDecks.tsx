@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as R
 import { Disc3, Headphones, Maximize2, Pause, Play, RotateCcw, ShieldAlert } from "lucide-react";
 import { hasMixInProgress, isOriginalRigVisible, normalizeWorkspace, WORKSPACE_MODES } from "../../scripts/backspin-workspace.mjs";
 import { BackspinPreflight } from "./BackspinPreflight";
+import { BackspinSetLedger } from "./BackspinSetLedger";
 
 const BASE = import.meta.env.BASE_URL;
 const BOOTH_URL = `${BASE}backspin96/`;
@@ -260,6 +261,7 @@ export function BackspinDecks({ standalone = false }: { standalone?: boolean } =
       {standalone && (
         <BackspinPreflight key={resetKey} manifestStatus={status} bridgeReady={bridgeReady} snapshot={snapshot} />
       )}
+      {standalone && <BackspinSetLedger key={resetKey} snapshot={snapshot} />}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber">{standalone ? "Backspin96 · Standalone DJ Booth" : "MoreBounceLabs · DJ Performance"}</p>
