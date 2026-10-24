@@ -86,6 +86,9 @@ assert.ok(js.includes("Backspin"), "The Decks room must contain Backspin integra
 assert.ok(js.includes("backspin96-decks-art.png"), "The Decks UI must request the checked-in original poster filename");
 assert.ok(existsSync(join(root, "backspin96-decks-art.png")), "The actual Backspin poster must be copied to the Pages output");
 assert.ok(js.includes("Backspin '96 · The Vinyl World"), "The retro Backspin performance mode must be present");
+assert.ok(js.includes("Preflight Soundcheck"), "Standalone BackSpin must include the read-only DJ soundcheck panel");
+assert.ok(js.includes("Deck A is audible"), "Manual hardware soundcheck must be bundled");
+assert.ok(js.includes("software signals"), "Soundcheck must distinguish observed signals from manual tests");
 const backspinManifest = join(root, "backspin96/mbl-stage.json");
 if (existsSync(backspinManifest)) {
   const manifest = JSON.parse(readFileSync(backspinManifest, "utf8"));

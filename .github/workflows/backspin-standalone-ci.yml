@@ -11,6 +11,9 @@ on:
       - "src/styles.css"
       - "src/pages-backspin.tsx"
       - "src/components/BackspinDecks.tsx"
+      - "src/components/BackspinPreflight.tsx"
+      - "scripts/backspin-preflight*"
+      - "scripts/backspin-workspace*"
       - "vite.pages.config.ts"
       - "scripts/verify-pages-build.mjs"
       - ".github/workflows/backspin-standalone-ci.yml"
@@ -33,6 +36,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Typecheck
         run: npm run typecheck
+      - name: Preflight and workspace unit tests
+        run: node --test scripts/backspin-preflight.test.mjs scripts/backspin-workspace.test.mjs
       - name: Stage pinned Backspin engine
         run: python3 scripts/stage-backspin96.py
       - name: Build both public entry points
