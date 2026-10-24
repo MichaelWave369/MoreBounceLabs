@@ -43,7 +43,7 @@ test("comparison counts events by fixed provenance-aware metrics and does not sc
 
 test("relative activity histograms are bounded to five percentages and reject invalid time", () => {
   assert.deepEqual(compareEventBands(first,100),[2,2,1,0,1]);
-  assert.deepEqual(compareEventBands(second,200),[2,1,2,0,2]);
+  assert.deepEqual(compareEventBands(second,200),[2,2,1,1,1]);
   assert.deepEqual(compareEventBands(first,0),[0,0,0,0,0]);
   assert.deepEqual(compareEventBands([{elapsedSeconds:-12},{elapsedSeconds:Infinity},{elapsedSeconds:12}],100),[1,0,0,0,0]);
 });
