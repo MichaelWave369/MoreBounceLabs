@@ -54,7 +54,9 @@ test("export carries provenance, no audio bytes or device identifiers",()=>{
 
 test("ledger reads snapshot only and does not rekey, remount or control the DJ engine",()=>{
  const ledger=readFileSync(new URL("../src/components/BackspinSetLedger.tsx",import.meta.url),"utf8");
- assert.doesNotMatch(ledger,/(getUserMedia|MediaRecorder|\.play\(|\.click\(|fetch\(|localStorage|indexedDB|postMessage|setInterval)/);
+ assert.doesNotMatch(ledger,/(getUserMedia|MediaRecorder|\.play\(|fetch\(|localStorage|indexedDB|postMessage|setInterval|contentWindow|contentDocument)/);
+ assert.match(ledger,/anchor\.download/);
+ assert.match(ledger,/anchor\.click\(\)/); // explicit local JSON download only
  const app=readFileSync(new URL("../src/components/BackspinDecks.tsx",import.meta.url),"utf8");
  assert.match(app,/<BackspinSetLedger key=\{resetKey\}/);
  assert.match(app,/key=\{resetKey\}/);
