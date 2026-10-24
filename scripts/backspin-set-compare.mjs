@@ -6,7 +6,11 @@
  */
 import { summarizeSetReview, clockSetReview } from "./backspin-set-review.mjs";
 
-/** @typedef {import("./backspin-set-review.mjs").ReviewEvent} ReviewEvent */
+/** @typedef {{
+ *  id: number, at: string, elapsedSeconds: number,
+ *  source: "OBSERVED" | "MANUAL", kind: string, detail: string,
+ *  deck?: "A" | "B"
+ * }} ReviewEvent */
 
 /** @type {readonly {id: string, label: string, interpret: string}[]} */
 export const SET_COMPARE_METRICS = Object.freeze([
