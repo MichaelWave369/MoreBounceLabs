@@ -15,6 +15,8 @@ on:
       - "src/components/BackspinSetLedger.tsx"
       - "scripts/backspin-set-ledger*"
       - "src/components/BackspinSetReview.tsx"
+      - "src/components/BackspinSetCompare.tsx"
+      - "scripts/backspin-set-compare*"
       - "scripts/backspin-set-review*"
       - "scripts/backspin-preflight*"
       - "scripts/backspin-workspace*"
@@ -41,7 +43,7 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
       - name: Preflight and workspace unit tests
-        run: node --test scripts/backspin-preflight.test.mjs scripts/backspin-workspace.test.mjs scripts/backspin-set-ledger.test.mjs scripts/backspin-set-review.test.mjs
+        run: node --test scripts/backspin-preflight.test.mjs scripts/backspin-workspace.test.mjs scripts/backspin-set-ledger.test.mjs scripts/backspin-set-review.test.mjs scripts/backspin-set-compare.test.mjs
       - name: Stage pinned Backspin engine
         run: python3 scripts/stage-backspin96.py
       - name: Build both public entry points
