@@ -38,7 +38,7 @@ export function BackspinDecks({ standalone = false }: { standalone?: boolean } =
   const [bridgeReady, setBridgeReady] = useState(false);
   const [posterReady, setPosterReady] = useState(true);
   const [expanded, setExpanded] = useState(false);
-  const [workspace, setWorkspace] = useState(() => {
+  const [workspace, setWorkspace] = useState<"vinyl" | "console" | "studio">(() => {
     try {
       return typeof window === "undefined" ? "vinyl" : normalizeWorkspace(window.localStorage.getItem("backspin96-workspace-v1"));
     } catch {
