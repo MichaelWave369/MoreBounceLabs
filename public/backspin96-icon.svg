@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="BackSpin96 DJ turntable">
+  <defs>
+    <radialGradient id="bg"><stop stop-color="#27132f"/><stop offset="1" stop-color="#0c0a1a"/></radialGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#40e3f3"/><stop offset=".45" stop-color="#f84bb1"/><stop offset="1" stop-color="#f7b45d"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="210" fill="#110d20" stroke="url(#rim)" stroke-width="11"/>
+  <circle cx="256" cy="256" r="188" fill="none" stroke="#40e3f3" stroke-width="4" opacity=".8"/>
+  <circle cx="256" cy="256" r="168" fill="#231632" stroke="#e66ac1" stroke-width="5"/>
+  <circle cx="256" cy="256" r="154" fill="#100f1e"/>
+  <g fill="none" stroke="#df83c6" opacity=".45"><circle cx="256" cy="256" r="135"/><circle cx="256" cy="256" r="114"/><circle cx="256" cy="256" r="94"/></g>
+  <circle cx="256" cy="256" r="88" fill="#ec9f47"/>
+  <circle cx="256" cy="256" r="40" fill="#100d1e"/>
+  <circle cx="256" cy="256" r="10" fill="#4fe1f2"/>
+  <path d="M150 377h212" stroke="#43e4ee" stroke-linecap="round" stroke-width="16"/>
+  <path d="M277 353v47" stroke="#f8a84d" stroke-linecap="round" stroke-width="16"/>
+</svg>

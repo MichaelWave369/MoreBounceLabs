@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - "pages/backspin.html"
+      - "public/backspin96*"
+      - "scripts/build-backspin-offline-index.mjs"
+      - "package.json"
+      - "src/styles.css"
       - "src/pages-backspin.tsx"
       - "src/components/BackspinDecks.tsx"
       - "vite.pages.config.ts"

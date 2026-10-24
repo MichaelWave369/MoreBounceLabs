@@ -11,7 +11,7 @@
     "build": "node scripts/with-app-env.mjs vite build && npm run db:migrate",
     "db:migrate": "node scripts/migrate.mjs",
     "build:dev": "node scripts/with-app-env.mjs vite build --mode development",
-    "build:pages": "vite build --config vite.pages.config.ts",
+    "build:pages": "vite build --config vite.pages.config.ts && node scripts/build-backspin-offline-index.mjs",
     "backspin:stage": "python3 scripts/stage-backspin96.py",
     "verify:pages": "node scripts/verify-pages-build.mjs",
     "dj:lab": "node scripts/dj-bot-lab.mjs --tracks=10",

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import { inflateSync } from "node:zlib";
 
 const root = "dist-pages";
 const base = "/MoreBounceLabs/";
@@ -12,6 +13,35 @@ const boothPage = readFileSync(backspinStandaloneHtml, "utf8");
 assert.match(boothPage, /Backspin96/, "Standalone DJ entry must carry Backspin96 branding");
 assert.match(boothPage, /\/MoreBounceLabs\/assets\//, "Standalone DJ scripts and CSS must use the Pages base");
 assert.match(boothPage, /<div id="root"><\/div>/, "Standalone DJ entry needs its own React mount");
+assert.match(boothPage, /backspin96\.webmanifest/, "Standalone DJ entry must advertise a dedicated manifest");
+assert.match(boothPage, /backspin96-icon/, "Standalone DJ entry must use its own icon");
+const pwaManifest = JSON.parse(readFileSync(join(root, "backspin96.webmanifest"), "utf8"));
+assert.equal(pwaManifest.start_url, base + "backspin.html", "BackSpin96 must install at its dedicated entry URL");
+assert.equal(pwaManifest.scope, base, "BackSpin96 service worker and runtime must remain inside project scope");
+assert.equal(pwaManifest.display, "standalone", "BackSpin96 should have a dedicated app window");
+for (const size of [192, 512]) {
+  const icon = readFileSync(join(root, "backspin96-icon-" + size + ".png"));
+  assert.equal(icon.subarray(1, 4).toString("ascii"), "PNG", "App icon must be a PNG");
+  assert.equal(icon.readUInt32BE(16), size, "App icon must have correct width");
+  assert.equal(icon.readUInt32BE(20), size, "App icon must have correct height");
+  const idatSize = icon.readUInt32BE(33);
+  assert.equal(icon.subarray(37, 41).toString("ascii"), "IDAT", "App icon should contain a readable IDAT chunk");
+  const rawPixels = inflateSync(icon.subarray(41, 41 + idatSize));
+  assert.equal(rawPixels.length, size * (1 + size * 4), "App icon PNG payload must decompress correctly");
+}
+assert.ok(existsSync(join(root, "backspin96-icon.svg")), "Scalable icon must ship");
+const worker = readFileSync(join(root, "backspin96-sw.js"), "utf8");
+assert.match(worker, /BACKSPIN_OFFLINE_PREPARE/, "Worker must support explicit offline preparation");
+assert.match(worker, /url\.origin === self\.location\.origin/, "Worker must enforce same-origin scope");
+const inventory = JSON.parse(readFileSync(join(root, "backspin96-offline-index.json"), "utf8"));
+assert.equal(inventory.format, "backspin96-offline-v1", "Offline list must use the expected schema");
+assert.ok(inventory.files.includes(base + "backspin.html"), "Offline list must include the install entry");
+assert.ok(inventory.files.includes(base + "backspin96-decks-art.png"), "Offline list must include the poster");
+assert.ok(inventory.files.includes(base + "backspin96-icon-512.png"), "Offline list must include its icons");
+assert.ok(inventory.files.every((name) => name.startsWith(base) &&
+  !name.includes("..") && existsSync(join(root, name.slice(base.length)))),
+"Offline list must reference only existing scoped assets");
+
 const html = readFileSync(htmlFile, "utf8");
 assert.match(html, /<div id="root"><\/div>/, "React mount must exist");
 assert.match(html, /MoreBounceLabs/, "MoreBounceLabs identity should survive export");

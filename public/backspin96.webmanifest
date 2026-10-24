@@ -1,0 +1,32 @@
+{
+  "name": "BackSpin96 | DJ Booth",
+  "short_name": "BackSpin96",
+  "description": "Dedicated two-deck DJ performance booth from MoreBounceLabs. Local audio, scratching and a real crossfader.",
+  "id": "/MoreBounceLabs/backspin.html",
+  "start_url": "/MoreBounceLabs/backspin.html",
+  "scope": "/MoreBounceLabs/",
+  "display": "standalone",
+  "background_color": "#100e0c",
+  "theme_color": "#100e0c",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/MoreBounceLabs/backspin96-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/MoreBounceLabs/backspin96-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/MoreBounceLabs/backspin96-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

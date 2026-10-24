@@ -10,6 +10,7 @@
  */
 @source "./components";
 @source "./pages-main.tsx";
+@source "./pages-backspin.tsx";
 @source "./routes";
 
 @theme {
