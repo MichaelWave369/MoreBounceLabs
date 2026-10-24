@@ -3,6 +3,7 @@ import { Disc3, Headphones, Maximize2, Pause, Play, RotateCcw, ShieldAlert } fro
 
 const BASE = import.meta.env.BASE_URL;
 const BOOTH_URL = `${BASE}backspin96/`;
+const STANDALONE_URL = `${BASE}backspin.html`;
 const MANIFEST_URL = `${BOOTH_URL}mbl-stage.json`;
 const POSTER_URL = `${BASE}backspin96-decks-art.png`;
 type Deck = "A" | "B";
@@ -31,7 +32,7 @@ const pos = (left: number, top: number, width: number, height: number): CSSPrope
 });
 const clamp = (value: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, value));
 
-export function BackspinDecks() {
+export function BackspinDecks({ standalone = false }: { standalone?: boolean } = {}) {
   const [status, setStatus] = useState<BoothStatus>("checking");
   const [bridgeReady, setBridgeReady] = useState(false);
   const [posterReady, setPosterReady] = useState(true);
@@ -202,11 +203,17 @@ export function BackspinDecks() {
     <section aria-label="Backspin 96 image DJ booth" className="backspin-stage pb-8">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber">MoreBounceLabs · DJ Performance</p>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber">{standalone ? "Backspin96 · Standalone DJ Booth" : "MoreBounceLabs · DJ Performance"}</p>
           <h1 className="font-display text-3xl">Backspin '96 · The Vinyl World</h1>
           <p className="mt-1 text-sm text-mist">Two real audio decks beneath your original 90s warehouse artwork.</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          {!standalone && (
+            <a href={STANDALONE_URL} target="_blank" rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center rounded-full border border-fuchsia-400/60 bg-fuchsia-500/15 px-4 text-sm font-semibold text-fuchsia-100">
+              Launch standalone DJ booth ↗
+            </a>
+          )}
           <a href={BOOTH_URL} target="_blank" rel="noopener noreferrer"
             className="inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-4 text-sm">Open original booth ↗</a>
           <button type="button" className="min-h-11 rounded-full border border-line bg-surface px-4 text-sm"

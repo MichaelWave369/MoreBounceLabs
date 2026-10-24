@@ -20,6 +20,12 @@ export default defineConfig({
   },
   plugins: [tailwindcss(), react()],
   build: {
+    rollupOptions: {
+      input: {
+        main: fileURLToPath(new URL("./pages/index.html", import.meta.url)),
+        backspin: fileURLToPath(new URL("./pages/backspin.html", import.meta.url)),
+      },
+    },
     outDir: "../dist-pages",
     emptyOutDir: true,
     target: "es2022",
