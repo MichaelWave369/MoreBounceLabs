@@ -199,7 +199,7 @@ export function BackspinSetReview({
               return (
                 <span key={event.id}
                   className={`absolute bottom-2 top-2 w-[3px] rounded-full ${event.source === "MANUAL" ? "bg-fuchsia-400" : "bg-cyan-300/70"}`}
-                  style={{left: `calc(12px + (100% - 24px) * ${fraction})`}}
+                  style={{left: `${(fraction * 96 + 2).toFixed(2)}%`}}
                   title={clockSetReview(event.elapsedSeconds) + " · " + event.source + " · " + event.detail}
                   aria-hidden="true" />
               );
