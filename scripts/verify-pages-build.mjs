@@ -11,8 +11,8 @@ assert.ok(existsSync(backspinStandaloneHtml), "Standalone Backspin96 entry must 
 const boothPage = readFileSync(backspinStandaloneHtml, "utf8");
 assert.match(boothPage, /Backspin96/, "Standalone DJ entry must carry Backspin96 branding");
 assert.match(boothPage, /\/MoreBounceLabs\/assets\//, "Standalone DJ scripts and CSS must use the Pages base");
-assert.match(boothPage, /<div id="root"><\\/div>/, "Standalone DJ entry needs its own React mount");
-assert.match(boothPage, /backspin96\\.webmanifest/, "Standalone DJ entry must advertise a dedicated manifest");
+assert.match(boothPage, /<div id="root"><\/div>/, "Standalone DJ entry needs its own React mount");
+assert.match(boothPage, /backspin96\.webmanifest/, "Standalone DJ entry must advertise a dedicated manifest");
 assert.match(boothPage, /backspin96-icon/, "Standalone DJ entry must use its own icon");
 const pwaManifest = JSON.parse(readFileSync(join(root, "backspin96.webmanifest"), "utf8"));
 assert.equal(pwaManifest.start_url, base + "backspin.html", "BackSpin96 must install at its dedicated entry URL");
@@ -27,7 +27,7 @@ for (const size of [192, 512]) {
 assert.ok(existsSync(join(root, "backspin96-icon.svg")), "Scalable icon must ship");
 const worker = readFileSync(join(root, "backspin96-sw.js"), "utf8");
 assert.match(worker, /BACKSPIN_OFFLINE_PREPARE/, "Worker must support explicit offline preparation");
-assert.match(worker, /url\\.origin === self\\.location\\.origin/, "Worker must enforce same-origin scope");
+assert.match(worker, /url\.origin === self\.location\.origin/, "Worker must enforce same-origin scope");
 const inventory = JSON.parse(readFileSync(join(root, "backspin96-offline-index.json"), "utf8"));
 assert.equal(inventory.format, "backspin96-offline-v1", "Offline list must use the expected schema");
 assert.ok(inventory.files.includes(base + "backspin.html"), "Offline list must include the install entry");
