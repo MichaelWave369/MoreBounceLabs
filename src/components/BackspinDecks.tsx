@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { Disc3, Headphones, Maximize2, Pause, Play, RotateCcw, ShieldAlert } from "lucide-react";
 import { hasMixInProgress, isOriginalRigVisible, normalizeWorkspace, WORKSPACE_MODES } from "../../scripts/backspin-workspace.mjs";
+import { BackspinPreflight } from "./BackspinPreflight";
 
 const BASE = import.meta.env.BASE_URL;
 const BOOTH_URL = `${BASE}backspin96/`;
@@ -255,6 +256,9 @@ export function BackspinDecks({ standalone = false }: { standalone?: boolean } =
             <span className="rounded-lg border border-line px-3 py-2">Deck B: {snapshot.B.playing ? "Playing" : snapshot.B.loaded ? "Loaded" : "Empty"}</span>
           </div>
         </div>
+      )}
+      {standalone && (
+        <BackspinPreflight key={resetKey} manifestStatus={status} bridgeReady={bridgeReady} snapshot={snapshot} />
       )}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
