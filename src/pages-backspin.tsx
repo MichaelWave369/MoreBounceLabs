@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BackspinDecks } from "./components/BackspinDecks";
 import { AppErrorBoundary } from "./components/AppErrorBoundary";
@@ -26,6 +26,11 @@ function StandaloneBooth() {
   const [offlineState, setOfflineState] = useState<OfflineState>("idle");
   const [progress, setProgress] = useState("");
   const [offlineMessage, setOfflineMessage] = useState("");
+  const wakeLockRef = useRef<WakeLockSentinel | null>(null);
+  const wakeRequestedRef = useRef(false);
+  const [wakeActive, setWakeActive] = useState(false);
+  const [wakeMessage, setWakeMessage] = useState("");
+  const wakeSupported = "wakeLock" in navigator;
 
   useEffect(() => {
     const media = window.matchMedia("(display-mode: standalone)");
@@ -65,6 +70,60 @@ function StandaloneBooth() {
       window.removeEventListener("appinstalled", onInstalled);
       window.removeEventListener("online", onOnline);
       window.removeEventListener("offline", onOffline);
+    };
+  }, []);
+
+  async function requestScreenWakeLock() {
+    if (!("wakeLock" in navigator) || document.visibilityState !== "visible") return;
+    try {
+      const sentinel = await navigator.wakeLock.request("screen");
+      // A release may race an asynchronous permission decision.
+      if (!wakeRequestedRef.current) {
+        await sentinel.release();
+        return;
+      }
+      wakeLockRef.current = sentinel;
+      setWakeActive(true);
+      setWakeMessage("Screen wake lock active. The browser can still release it.");
+      sentinel.addEventListener("release", () => {
+        if (wakeLockRef.current === sentinel) {
+          wakeLockRef.current = null;
+          setWakeActive(false);
+          if (wakeRequestedRef.current) setWakeMessage("Wake lock released. Retrying when the booth is visible.");
+        }
+      });
+    } catch {
+      setWakeActive(false);
+      setWakeMessage("Browser blocked screen wake lock. Check battery and power settings.");
+    }
+  }
+
+  async function toggleScreenWakeLock() {
+    if (wakeRequestedRef.current) {
+      wakeRequestedRef.current = false;
+      const sentinel = wakeLockRef.current;
+      wakeLockRef.current = null;
+      setWakeActive(false);
+      setWakeMessage("Screen wake lock turned off.");
+      await sentinel?.release().catch(() => {});
+    } else {
+      wakeRequestedRef.current = true;
+      await requestScreenWakeLock();
+    }
+  }
+
+  useEffect(() => {
+    const onVisibility = () => {
+      if (document.visibilityState === "visible" && wakeRequestedRef.current && !wakeLockRef.current) {
+        void requestScreenWakeLock();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      wakeRequestedRef.current = false;
+      void wakeLockRef.current?.release().catch(() => {});
+      wakeLockRef.current = null;
     };
   }, []);
 
@@ -150,6 +209,12 @@ function StandaloneBooth() {
               {online ? " Online" : " Offline: saved resources only"}
             </p>
           </div>
+          <button type="button" disabled={!wakeSupported} onClick={() => void toggleScreenWakeLock()}
+            aria-pressed={wakeActive}
+            title={wakeSupported ? "Keep the screen on while performing" : "Screen wake lock unsupported in this browser"}
+            className="min-h-11 rounded-xl border border-amber/50 bg-[#2b2118] px-4 text-sm text-cream disabled:cursor-not-allowed disabled:opacity-50">
+            {wakeActive ? "Screen awake · On" : "Keep screen awake"}
+          </button>
           <button type="button" disabled={!workerReady || !online || offlineState === "preparing"}
             onClick={() => void prepareOffline()}
             className="min-h-11 rounded-xl border border-cyan-400/50 bg-cyan-950/30 px-4 text-sm text-cyan-100 disabled:cursor-not-allowed disabled:opacity-50">
@@ -158,6 +223,7 @@ function StandaloneBooth() {
           <p role="status" aria-live="polite" className="w-full text-xs text-mist">
             {offlineMessage || workerError ||
               "Offline preparation saves the app and DJ engine, not your music. Test without internet before a live set."}
+            {wakeMessage && <span className="mt-1 block">{wakeMessage}</span>}
           </p>
         </div>
         <BackspinDecks standalone />
