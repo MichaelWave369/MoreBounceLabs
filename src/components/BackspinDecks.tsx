@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { Disc3, Headphones, Maximize2, Pause, Play, RotateCcw, ShieldAlert } from "lucide-react";
+import { hasMixInProgress, isOriginalRigVisible, normalizeWorkspace, WORKSPACE_MODES } from "../../scripts/backspin-workspace.mjs";
 
 const BASE = import.meta.env.BASE_URL;
 const BOOTH_URL = `${BASE}backspin96/`;
@@ -37,6 +38,13 @@ export function BackspinDecks({ standalone = false }: { standalone?: boolean } =
   const [bridgeReady, setBridgeReady] = useState(false);
   const [posterReady, setPosterReady] = useState(true);
   const [expanded, setExpanded] = useState(false);
+  const [workspace, setWorkspace] = useState<"vinyl" | "console" | "studio">(() => {
+    try {
+      return typeof window === "undefined" ? "vinyl" : normalizeWorkspace(window.localStorage.getItem("backspin96-workspace-v1"));
+    } catch {
+      return "vinyl";
+    }
+  });
   const [resetKey, setResetKey] = useState(0);
   const [notice, setNotice] = useState("");
   const [performanceNotice, setPerformanceNotice] = useState("");
@@ -46,6 +54,24 @@ export function BackspinDecks({ standalone = false }: { standalone?: boolean } =
   const gestures = useRef<Record<Deck, ScratchGesture | null>>({ A: null, B: null });
   const ignoreClick = useRef<Record<Deck, boolean>>({ A: false, B: false });
   const updatedValue = useRef(0);
+  const showOriginalRig = isOriginalRigVisible(standalone, workspace, expanded);
+  const activeMix = hasMixInProgress(snapshot);
+
+  useEffect(() => {
+    if (!standalone) return;
+    try { localStorage.setItem("backspin96-workspace-v1", workspace); } catch { /* storage can be unavailable */ }
+  }, [standalone, workspace]);
+
+  useEffect(() => {
+    if (!standalone || !activeMix) return;
+    // Browser controls the native confirmation. Do not promise it always displays.
+    const protectSession = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", protectSession);
+    return () => window.removeEventListener("beforeunload", protectSession);
+  }, [standalone, activeMix]);
 
   useEffect(() => {
     let cancelled = false;
@@ -180,6 +206,7 @@ export function BackspinDecks({ standalone = false }: { standalone?: boolean } =
     command(deck.toLowerCase() + "-play", "Deck " + deck + " Play/Pause");
   }
   function reloadBooth() {
+    if (activeMix && !window.confirm("Reload BackSpin96? Loaded tracks, cue points and unsaved performance state may be lost.")) return;
     setSnapshot(EMPTY); setBridgeReady(false); setPerformanceNotice("");
     setResetKey((n) => n + 1);
     setNotice("Original booth reloaded. Save/export recordings first, as unsaved mixer state was reset.");
@@ -189,7 +216,8 @@ export function BackspinDecks({ standalone = false }: { standalone?: boolean } =
       setNotice("Fullscreen is unavailable here. Try the standalone booth.");
       return;
     }
-    setExpanded(true);
+    if (standalone) setWorkspace("studio");
+    else setExpanded(true);
     void iframe.current.requestFullscreen().catch(() => setNotice("Browser blocked fullscreen. Open the standalone booth instead."));
   }
   const ctl = (id: string, label: string, style: CSSProperties, content?: string) => (
@@ -201,6 +229,33 @@ export function BackspinDecks({ standalone = false }: { standalone?: boolean } =
 
   return (
     <section aria-label="Backspin 96 image DJ booth" className="backspin-stage pb-8">
+      {standalone && (
+        <div className="mb-5 rounded-2xl border border-fuchsia-500/35 bg-[#120e1d] px-4 py-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-fuchsia-300">Performance workspace</p>
+              <p className="mt-1 text-sm text-mist">Switch the view freely. Your original BackSpin audio engine stays mounted.</p>
+            </div>
+            <div role="group" aria-label="DJ workspace layout" className="flex flex-wrap gap-2">
+              {WORKSPACE_MODES.map((mode) => (
+                <button type="button" key={mode} aria-pressed={workspace === mode}
+                  onClick={() => setWorkspace(mode)}
+                  className={`min-h-11 rounded-xl px-4 text-sm font-semibold ${workspace === mode
+                    ? "bg-fuchsia-500 text-white"
+                    : "border border-line bg-surface text-mist"}`}>
+                  {mode === "vinyl" ? "Vinyl Stage" : mode === "console" ? "Mix Console" : "Full Studio"}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4" aria-live="polite">
+            <span className="rounded-lg border border-line px-3 py-2">Engine: {status === "ready" && bridgeReady ? "Connected" : status === "missing" ? "Unavailable" : "Starting"}</span>
+            <span className="rounded-lg border border-line px-3 py-2">Audio: {snapshot.ready ? "Started" : "Waiting for click"}</span>
+            <span className="rounded-lg border border-line px-3 py-2">Deck A: {snapshot.A.playing ? "Playing" : snapshot.A.loaded ? "Loaded" : "Empty"}</span>
+            <span className="rounded-lg border border-line px-3 py-2">Deck B: {snapshot.B.playing ? "Playing" : snapshot.B.loaded ? "Loaded" : "Empty"}</span>
+          </div>
+        </div>
+      )}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber">{standalone ? "Backspin96 · Standalone DJ Booth" : "MoreBounceLabs · DJ Performance"}</p>
@@ -217,14 +272,15 @@ export function BackspinDecks({ standalone = false }: { standalone?: boolean } =
           <a href={BOOTH_URL} target="_blank" rel="noopener noreferrer"
             className="inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-4 text-sm">Open original booth ↗</a>
           <button type="button" className="min-h-11 rounded-full border border-line bg-surface px-4 text-sm"
-            onClick={() => setExpanded((open) => !open)} aria-expanded={expanded} aria-controls="backspin-advanced">
-            {expanded ? "Hide advanced rig" : "Advanced rig & crates"}
+            onClick={() => standalone ? setWorkspace((current) => current === "studio" ? "console" : "studio") : setExpanded((open) => !open)}
+            aria-expanded={showOriginalRig} aria-controls="backspin-advanced">
+            {showOriginalRig ? "Hide advanced rig" : "Advanced rig & crates"}
           </button>
           <button type="button" onClick={fullscreen} className="min-h-11 rounded-full border border-line bg-surface px-3 text-sm"
             title="Fullscreen original booth" aria-label="Fullscreen original booth"><Maximize2 size={17} /></button>
         </div>
       </div>
-      <div className="backspin-poster-wrap mx-auto" aria-label="Interactive original Parallax Backspin 96 poster with overlay controls">
+      <div className={`backspin-poster-wrap mx-auto ${standalone && workspace !== "vinyl" ? "hidden" : ""}`} aria-hidden={standalone && workspace !== "vinyl"} aria-label="Interactive original Parallax Backspin 96 poster with overlay controls">
         {posterReady ? (
           <img src={POSTER_URL} alt="Original PARALLAX BACKSPIN '96 retro DJ poster with neon rave typography, vinyl turntables, CRT and a classic battle mixer"
             onError={() => setPosterReady(false)}
@@ -270,7 +326,7 @@ export function BackspinDecks({ standalone = false }: { standalone?: boolean } =
         )}
       </div>
 
-      <div className="backspin-performance-rail mx-auto mt-5 max-w-[1055px] rounded-3xl border border-fuchsia-500/35 bg-[#100b19] p-4 shadow-2xl sm:p-5">
+      <div className={`backspin-performance-rail mx-auto mt-5 ${standalone && workspace !== "vinyl" ? "max-w-[1500px]" : "max-w-[1055px]"} rounded-3xl border border-fuchsia-500/35 bg-[#100b19] p-4 shadow-2xl sm:p-5`}>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-fuchsia-300">Human-led · Backspin engine</p>
@@ -348,7 +404,7 @@ export function BackspinDecks({ standalone = false }: { standalone?: boolean } =
             ? <p className="mt-1" role="status">Backspin reported: {performanceNotice}. Its automatic visual fallback prioritizes DJ audio stability.</p>
             : <p className="mt-1">On slower graphics hardware, Backspin may switch to Safe Flat or Clean CRT to protect audio. Your mix can keep playing.</p>}
           <p className="mt-1 text-cyan-100/75">Open Advanced rig to inspect the active mode. Automatic protection is handled by the original Backspin runtime.</p>
-          <button type="button" className="mt-2 min-h-9 rounded-lg border border-cyan-400/40 px-3" onClick={() => setExpanded(true)}>Show original rig controls</button>
+          <button type="button" className="mt-2 min-h-9 rounded-lg border border-cyan-400/40 px-3" onClick={() => standalone ? setWorkspace("studio") : setExpanded(true)}>Show original rig controls</button>
         </div>
         <p className="mt-2 text-xs text-mist">Backspin mixes local files you load or its included demo material. Vault tracks from Suno/SoundCloud cannot be imported directly from cross-origin players.</p>
         <p role="status" aria-live="polite" className="mt-3 text-xs text-mist">
@@ -357,7 +413,7 @@ export function BackspinDecks({ standalone = false }: { standalone?: boolean } =
       </div>
 
       <div className="mx-auto mt-5 max-w-[1200px]">
-        <div id="backspin-advanced" className={expanded ? "block" : "backspin-advanced-collapsed"}>
+        <div id="backspin-advanced" className={showOriginalRig ? "block" : "backspin-advanced-collapsed"}>
           <h2 className="mb-3 font-display text-2xl">Original performance rig & Smart Crates</h2>
           <p className="mb-3 text-sm text-mist">All original controls remain available here, including waveform, BPM, loops, MIDI, recording, crates and the full scratch surfaces.</p>
         </div>
@@ -371,10 +427,10 @@ export function BackspinDecks({ standalone = false }: { standalone?: boolean } =
             allow="autoplay; fullscreen"
             allowFullScreen
             referrerPolicy="same-origin"
-            aria-hidden={!expanded}
-            tabIndex={expanded ? 0 : -1}
+            aria-hidden={!showOriginalRig}
+            tabIndex={showOriginalRig ? 0 : -1}
             onLoad={() => { setBridgeReady(false); setNotice("Backspin engine loaded. Press Start dual audio to enable sound."); }}
-            className={expanded
+            className={showOriginalRig
               ? "block h-[780px] w-full rounded-2xl border border-fuchsia-500/35 bg-black sm:h-[1050px] xl:h-[1180px]"
               : "backspin-inactive-iframe"}
           />
