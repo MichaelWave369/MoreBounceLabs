@@ -3,6 +3,7 @@
  * Deliberately independent of audio state and side effects.
  * @typedef {"vinyl" | "console" | "studio"} WorkspaceMode
  */
+/** @type {readonly WorkspaceMode[]} */
 export const WORKSPACE_MODES = Object.freeze(["vinyl", "console", "studio"]);
 /** @param {unknown} value
  * @returns {WorkspaceMode}
