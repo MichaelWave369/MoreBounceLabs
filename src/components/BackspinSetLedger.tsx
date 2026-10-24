@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { BookOpen, Download, Flag, RotateCcw, ShieldAlert } from "lucide-react";
+import { BackspinSetReview } from "./BackspinSetReview";
 import {
   appendLedgerEvents,
   detectSetChanges,
@@ -237,6 +238,7 @@ export function BackspinSetLedger({ snapshot }: { snapshot: Snapshot }) {
           </p>
         </div>
       )}
+      <BackspinSetReview liveEntries={entries} liveStartedAt={startIso.current} liveTracksIncluded={includeTitles} />
     </section>
   );
 }
