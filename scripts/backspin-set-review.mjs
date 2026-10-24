@@ -3,6 +3,11 @@
  * Pure validation and summaries; never controls the DJ engine or sends data.
  * A Set Ledger is self-reported browser-state history, not a recording.
  */
+/** @typedef {{
+ * id: number, at: string, elapsedSeconds: number,
+ * source: "OBSERVED" | "MANUAL", kind: string, detail: string,
+ * deck?: "A" | "B"
+ * }} ReviewEvent */
 export const SET_REVIEW_FORMAT = "backspin96-set-ledger-v1";
 export const SET_REVIEW_MAX_BYTES = 512 * 1024;
 export const SET_REVIEW_MAX_EVENTS = 1000;
@@ -49,7 +54,8 @@ export function parseSetLedgerForReview(text) {
     throw new Error("Ledger must contain an entries array of at most 1,000 events.");
   }
   const ids = new Set();
-  const entries = data.entries.map((entry, index) => {
+  const rawEntries = /** @type {any[]} */ (data.entries);
+  const entries = rawEntries.map((entry, index) => {
     if (!isObject(entry) || !Number.isSafeInteger(entry.id) || entry.id <= 0 || ids.has(entry.id)) {
       throw new Error("Invalid or duplicate event ID at row " + (index + 1) + ".");
     }
@@ -90,7 +96,7 @@ export function parseSetLedgerForReview(text) {
   };
 }
 
-/** @param {any[]} entries */
+/** @param {ReviewEvent[]} entries */
 export function summarizeSetReview(entries) {
   const kinds = Object.create(null);
   const decks = {A: {loads: 0, plays: 0}, B: {loads: 0, plays: 0}};
@@ -137,7 +143,7 @@ function csvField(value) {
 
 /**
  * Export the reviewed ledger as CSV on an explicit browser download action.
- * @param {any[]} entries
+ * @param {ReviewEvent[]} entries
  */
 export function setReviewCsv(entries) {
   const rows = [["Elapsed", "Timestamp (UTC)", "Source (declared)", "Kind", "Deck", "Detail"]];
@@ -154,7 +160,7 @@ export function setReviewCsv(entries) {
   return rows.map((row) => row.map(csvField).join(",")).join("\r\n") + "\r\n";
 }
 
-/** @param {any[]} entries
+/** @param {ReviewEvent[]} entries
  *  @param {"all"|"observed"|"manual"|"transitions"|"loads"} filter
  */
 export function filterSetReview(entries, filter) {
