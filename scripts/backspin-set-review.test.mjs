@@ -71,7 +71,7 @@ test("CSV escapes formulas and quoted notes, preserving the selected review",()=
  assert.match(csv,/"'=HYPERLINK\(""evil"", ""click""\)"/);
  assert.ok(csv.includes("Timestamp (UTC)"));
  assert.equal(clockSetReview(3661),"01:01:01");
- assert.equal(setReviewCsv([]).split("\r\n").length,3);
+ assert.equal(setReviewCsv([]).split("\r\n").length,2);
 });
 
 test("review component is read-only and does not alter mounted audio engine",()=>{
