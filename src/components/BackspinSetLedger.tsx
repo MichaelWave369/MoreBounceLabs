@@ -76,18 +76,17 @@ export function BackspinSetLedger({ snapshot }: { snapshot: Snapshot }) {
     }
     endIso.current = null;
     previous.current = snapshot;
-    setEntries((current) => appendLedgerEvents(current, [
-      stamped("MANUAL", "monitoring-started", current.length ? "Set Ledger monitoring resumed by operator." : "Set Ledger monitoring started by operator."),
-    ]));
+    const startEntry = stamped("MANUAL", "monitoring-started",
+      entries.length ? "Set Ledger monitoring resumed by operator." : "Set Ledger monitoring started by operator.");
+    setEntries((current) => appendLedgerEvents(current, [startEntry]));
     setRecording(true);
     setFeedback("Monitoring snapshots only. Recording actual audio is not enabled.");
   }
 
   function stop() {
     if (!recording) return;
-    setEntries((current) => appendLedgerEvents(current, [
-      stamped("MANUAL", "monitoring-stopped", "Set Ledger monitoring stopped by operator."),
-    ]));
+    const stopEntry = stamped("MANUAL", "monitoring-stopped", "Set Ledger monitoring stopped by operator.");
+    setEntries((current) => appendLedgerEvents(current, [stopEntry]));
     setRecording(false);
     previous.current = null;
     endIso.current = new Date().toISOString();
@@ -103,9 +102,8 @@ export function BackspinSetLedger({ snapshot }: { snapshot: Snapshot }) {
     }
     const label = kind === "transition" ? "Transition marker" :
       kind === "highlight" ? "Performance highlight" : "Operator note";
-    setEntries((current) => appendLedgerEvents(current, [
-      stamped("MANUAL", kind, clean ? label + ": " + clean : label),
-    ]));
+    const marker = stamped("MANUAL", kind, clean ? label + ": " + clean : label);
+    setEntries((current) => appendLedgerEvents(current, [marker]));
     setNote("");
     setFeedback("Manual marker added.");
   }
