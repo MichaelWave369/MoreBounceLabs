@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import { inflateSync } from "node:zlib";
 
 const root = "dist-pages";
 const base = "/MoreBounceLabs/";
@@ -23,6 +24,10 @@ for (const size of [192, 512]) {
   assert.equal(icon.subarray(1, 4).toString("ascii"), "PNG", "App icon must be a PNG");
   assert.equal(icon.readUInt32BE(16), size, "App icon must have correct width");
   assert.equal(icon.readUInt32BE(20), size, "App icon must have correct height");
+  const idatSize = icon.readUInt32BE(33);
+  assert.equal(icon.subarray(37, 41).toString("ascii"), "IDAT", "App icon should contain a readable IDAT chunk");
+  const rawPixels = inflateSync(icon.subarray(41, 41 + idatSize));
+  assert.equal(rawPixels.length, size * (1 + size * 4), "App icon PNG payload must decompress correctly");
 }
 assert.ok(existsSync(join(root, "backspin96-icon.svg")), "Scalable icon must ship");
 const worker = readFileSync(join(root, "backspin96-sw.js"), "utf8");
