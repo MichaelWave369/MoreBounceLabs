@@ -97,6 +97,9 @@ assert.ok(js.includes("Set Review"), "BackSpin96 must ship offline Set Review");
 assert.ok(js.includes("Review saved JSON"), "Review must support user-selected local imports");
 assert.ok(js.includes("Export filtered CSV"), "Review must support local CSV exports");
 assert.ok(js.includes("Latest 150 selected marks shown"), "Review must show bounded visual event timeline");
+assert.ok(js.includes("Set Compare"), "BackSpin96 should include R7 Set Compare");
+assert.ok(js.includes("Load Set B JSON"), "R7 must use local R5 JSON import");
+assert.ok(js.includes("Export comparison CSV"), "R7 must include a private summary export");
 const backspinManifest = join(root, "backspin96/mbl-stage.json");
 if (existsSync(backspinManifest)) {
   const manifest = JSON.parse(readFileSync(backspinManifest, "utf8"));
