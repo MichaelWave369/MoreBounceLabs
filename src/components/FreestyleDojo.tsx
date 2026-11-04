@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { AudioLines, BookOpen, Download, Mic, Pause, Play, RotateCcw, Trash2 } from "lucide-react";
 import { useHouse } from "@/lib/engine";
+import { BarReviewSampler } from "@/components/BarReviewSampler";
 import { dojoBeat, dojoBpm, dojoPlan, DOJO_BARS, multisyllablePatterns, safeClipName } from "../../scripts/freestyle-dojo.mjs";
 import {
   deleteDojoClip, listDojoClips, MAX_CLIPS_PER_PAGE, MAX_RECORD_SECONDS,
@@ -439,6 +440,8 @@ export function FreestyleDojo({ page }: { page?: LyricPage }) {
           </ol>
         )}
       </section>
+
+      <BarReviewSampler key={page?.id || "no-page"} page={page} />
 
       <section className="rounded-2xl border border-line bg-surface p-4 sm:p-6" aria-label="Saved freestyle recordings">
         <div className="flex flex-wrap items-center justify-between gap-3">
