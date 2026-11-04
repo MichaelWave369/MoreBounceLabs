@@ -7,6 +7,618 @@
   },
   "albums": [
     {
+      "id": "suno-7f87f5ba-2ab0-491a-ad3f-4e170f717c5d",
+      "title": "Bonsai Bap",
+      "artist": "Mikey More Bounce",
+      "type": "LP",
+      "year": "2026",
+      "description": "A gritty, 12-bit collision of organic atmosphere and heavy-hitting asphalt rhythms. Where ancient discipline meets the unapologetic swing of the concrete underground.",
+      "cover": "https://cdn2.suno.ai/image_large_41d1cb6f-ca80-42eb-bda1-e2dec1fdb7b2.jpeg",
+      "suno": "https://suno.com/album/7f87f5ba-2ab0-491a-ad3f-4e170f717c5d",
+      "tracks": [
+        {
+          "title": "Shaolin SP-1200",
+          "sunoId": "277e005f-e58a-43f2-a302-049822990ca3"
+        },
+        {
+          "title": "Monk Trunk",
+          "sunoId": "5626d915-1046-4cda-932d-71b8a9ec7dbf"
+        },
+        {
+          "title": "Ronin Rhythms",
+          "sunoId": "93d3e832-c957-41e9-abab-e6d85fc268d9"
+        },
+        {
+          "title": "Dragon Feet",
+          "sunoId": "084f04b4-4b02-473c-8759-60a69aa4f8d5"
+        },
+        {
+          "title": "Crouching Tiger, Hidden Snare",
+          "sunoId": "513bbc6e-840d-4d13-a95c-f69af839bb66"
+        },
+        {
+          "title": "Wong Turn",
+          "sunoId": "64526e89-8363-4400-b6ed-2cc48d689ea4"
+        },
+        {
+          "title": "Wontonimo Bay",
+          "sunoId": "a1d461bb-d421-4187-9f70-d50be2210668"
+        },
+        {
+          "title": "Orient Express",
+          "sunoId": "5fbf6bfc-0132-4e3c-a408-7f1a6235fb75"
+        },
+        {
+          "title": "Chopstick Chop Shop",
+          "sunoId": "a6707e65-1f20-47fe-bd9e-491028be1b1a"
+        },
+        {
+          "title": "Shibuya Skyline",
+          "sunoId": "29c51834-d82c-4911-88c4-2bdd9d600c06"
+        },
+        {
+          "title": "Subway Samurai",
+          "sunoId": "9105f31c-0a86-4227-a256-d3008019a651"
+        },
+        {
+          "title": "Wandamian Krusificplate",
+          "sunoId": "408a0d1a-7a23-421c-abcc-9ad7d75b49f8"
+        },
+        {
+          "title": "MooShu VooDoo",
+          "sunoId": "25a85702-b83b-4131-aa43-619e4dfb7c53"
+        },
+        {
+          "title": "Lotus Loops",
+          "sunoId": "9fec01c4-d7e0-4c1e-a1f6-6bea995985ec"
+        },
+        {
+          "title": "Shang Low",
+          "sunoId": "d89310f7-6637-44d8-a7f0-6ab90a10ff3b"
+        },
+        {
+          "title": "Tea House Chronicles",
+          "sunoId": "313c5779-93ad-4d24-8486-2c881b0387ba"
+        },
+        {
+          "title": "Iron Fist, Velvet Beats",
+          "sunoId": "a42bea4d-d712-4a0a-abee-8c76ee3ca984"
+        },
+        {
+          "title": "Garden Palace",
+          "sunoId": "7468ebe6-ffeb-4047-871a-fdc85db6d461"
+        }
+      ]
+    },
+    {
+      "id": "suno-c870d9f2-0b2c-4eab-81cc-bb0f22f571e1",
+      "title": "Head Nod Proof",
+      "artist": "Mikey More Bounce",
+      "type": "LP",
+      "year": "2026",
+      "description": "18 tracks of pure, unapologetic instrumental boom bap, built for one purpose: keeping your head moving.",
+      "cover": "https://cdn2.suno.ai/image_large_92083447-7516-4a3b-8206-92b4716bf15b.jpeg",
+      "suno": "https://suno.com/album/c870d9f2-0b2c-4eab-81cc-bb0f22f571e1",
+      "tracks": [
+        {
+          "title": "01-Neck Insurance",
+          "sunoId": "a90a6d22-8eaa-4bfb-b091-585576350d83"
+        },
+        {
+          "title": "02-The Head Nod Test",
+          "sunoId": "238c8d27-46a0-48ef-b362-fc49218b3c76"
+        },
+        {
+          "title": "03-Concrete Funk",
+          "sunoId": "c8290bc6-3dc1-4c0e-bdb0-52301c1be378"
+        },
+        {
+          "title": "04-Dusty Fingers",
+          "sunoId": "adb0664b-92a5-4b93-b5d5-d345f9fd8b56"
+        },
+        {
+          "title": "05-The Pocket",
+          "sunoId": "6e405d73-18dd-4005-bfce-902fe5205707"
+        },
+        {
+          "title": "06-No Skips Just Nods",
+          "sunoId": "5d3e2efb-0f26-4734-89b0-23f94c7d5f99"
+        },
+        {
+          "title": "07-Bassment Science",
+          "sunoId": "3efe1bf0-93f0-4883-8cbe-5590782d5204"
+        },
+        {
+          "title": "08-Low End Theory Lab",
+          "sunoId": "021e72ea-f8ad-42fd-8dc0-710be4f1895f"
+        },
+        {
+          "title": "09-The Snare Necessities",
+          "sunoId": "c7d4e5cc-8b9a-42d8-8a3f-80f23d3ca0ec"
+        },
+        {
+          "title": "10-Premeditated Funk",
+          "sunoId": "9fcefa4e-992e-4de7-be14-81167c93690b"
+        },
+        {
+          "title": "11-Felony Head Movement",
+          "sunoId": "8cec496b-1cba-446a-a993-a4821a2f6e65"
+        },
+        {
+          "title": "12-Cervical Disobedience",
+          "sunoId": "ac21b6d0-c049-4c2d-a9fe-a27b81ba6b25"
+        },
+        {
+          "title": "13-Snare Therapist",
+          "sunoId": "f7ce8d6d-481e-49ea-ae6d-071fc0267cfc"
+        },
+        {
+          "title": "14-Unlicensed Chiropractor",
+          "sunoId": "9efdd0ce-5669-4e82-b27c-e3248829fafe"
+        },
+        {
+          "title": "15-Certified Knock",
+          "sunoId": "ede9a15d-281e-42cb-a13c-467431c9b835"
+        },
+        {
+          "title": "16-After Hours on Wax",
+          "sunoId": "432b0827-0593-404b-9d62-24a8c780c02b"
+        },
+        {
+          "title": "17-Head Nod Proof",
+          "sunoId": "b1505c32-5952-42d8-af95-acb9b39f2ef2"
+        },
+        {
+          "title": "18-The Nodfather",
+          "sunoId": "5d97c464-de27-4334-b9b5-b490aa218bcc"
+        }
+      ]
+    },
+    {
+      "id": "suno-cfd63bd5-7908-4d32-abdf-3e965e4fef7a",
+      "title": "Break The Matrix - The Soundtrack",
+      "artist": "Mikey More Bounce",
+      "type": "LP",
+      "year": "2026",
+      "description": "Enter a world where the machines rule, reality fractures, and rebellion has a soundtrack.",
+      "cover": "https://cdn2.suno.ai/image_large_0d6a6df9-3581-4fbf-b88c-8c14d3cae8bc.jpeg",
+      "suno": "https://suno.com/album/cfd63bd5-7908-4d32-abdf-3e965e4fef7a",
+      "tracks": [
+        {
+          "title": "01-Wake Up Runner",
+          "sunoId": "eddcc1cf-4897-48d0-b0da-5ec612e4dcb2"
+        },
+        {
+          "title": "02-The First Crack",
+          "sunoId": "143b6466-d3d2-45ac-a5ce-c3aff09dbc2a"
+        },
+        {
+          "title": "03-Ghost In the Circuit",
+          "sunoId": "d3b6991c-3776-4c43-b1ac-66629d8cce01"
+        },
+        {
+          "title": "04-Phantom Protocol",
+          "sunoId": "2b2004d1-ae91-48a9-8e1c-75740faa71a2"
+        },
+        {
+          "title": "05-System Breach",
+          "sunoId": "29308469-9b49-41ba-b334-5863ec4bdb04"
+        },
+        {
+          "title": "06-Firewall Zero",
+          "sunoId": "9c0886ae-7183-475a-8077-cb26ceb01879"
+        },
+        {
+          "title": "07-No Gods in the Machine",
+          "sunoId": "13a66207-3c32-454c-b9d9-db6802e47578"
+        },
+        {
+          "title": "08-False Prophet Protocol",
+          "sunoId": "359c413e-bdc3-45d2-a271-79f328524bc8"
+        },
+        {
+          "title": "09-Pit of Despair",
+          "sunoId": "2d6cf3eb-dbc2-4e18-8066-0ade510dead5"
+        },
+        {
+          "title": "10-There is No Exit",
+          "sunoId": "eebcee55-d40a-4fe7-8e0a-c7b639f49eeb"
+        },
+        {
+          "title": "11- Last Life Last Round",
+          "sunoId": "2bc107ff-22e4-4fcb-bf83-899a9ba690e1"
+        },
+        {
+          "title": "12-Zero Respawns Left",
+          "sunoId": "2c2fcf68-d0c8-492f-b0dc-7cbad7bd1cd4"
+        },
+        {
+          "title": "13-BBS LAN Clan",
+          "sunoId": "53316b11-54e9-44a9-9660-ccc8b5960132"
+        },
+        {
+          "title": "14-Frag the System",
+          "sunoId": "24d2af70-c708-4329-98da-a008c34da918"
+        },
+        {
+          "title": "15-Break the Matrix",
+          "sunoId": "5d89efda-464b-4a85-b927-a76dd82c376d"
+        },
+        {
+          "title": "16-We Are the Glitch",
+          "sunoId": "2bffa500-3534-40ee-b996-9bc525f91048"
+        },
+        {
+          "title": "17-The Final Frequency",
+          "sunoId": "3efbe55e-5466-45cf-abe1-53deae0912b2"
+        },
+        {
+          "title": "18-System Collapse",
+          "sunoId": "cf1e2b43-6d39-42c8-8ee4-548f4c72f49a"
+        }
+      ]
+    },
+    {
+      "id": "suno-ab637c8e-fa49-4f74-97d2-25419cfa58b8",
+      "title": "G-Funktendo",
+      "artist": "Mikey More Bounce",
+      "type": "LP",
+      "year": "2026",
+      "description": "Button Mashing in the Hood",
+      "cover": "https://cdn2.suno.ai/image_large_77069069-c1cb-4e9e-b965-f4e55072435a.jpeg",
+      "suno": "https://suno.com/album/ab637c8e-fa49-4f74-97d2-25419cfa58b8",
+      "tracks": [
+        {
+          "title": "West Coast Wood Man",
+          "sunoId": "88bdaa47-df26-426e-b31d-7940a450e141"
+        },
+        {
+          "title": "G-Funked Openings",
+          "sunoId": "0717c695-292a-49e1-a1c4-274d9da999ee"
+        },
+        {
+          "title": "Dark G-Funk",
+          "sunoId": "31fd989a-9c20-45cd-a90a-a4c83584c88f"
+        },
+        {
+          "title": "G-Funk Somethin' Will Ya!",
+          "sunoId": "77aa135e-83f8-4bfa-9343-46f503a60b2b"
+        },
+        {
+          "title": "Spring Yard G-Funk",
+          "sunoId": "41e69bf6-5e28-4f44-b4dd-a9f0e896b6af"
+        },
+        {
+          "title": "1-2 Wiley Stew-Gii",
+          "sunoId": "36665f0b-4d92-42af-b1fc-67c8026f97c8"
+        },
+        {
+          "title": "G-Funky Joe",
+          "sunoId": "d58f9679-c01f-4640-8703-514242a19757"
+        },
+        {
+          "title": "Blasta Mast-G-Funk",
+          "sunoId": "b6a46c24-ef12-4294-9e17-e894763063d9"
+        },
+        {
+          "title": "G-Funk Mii",
+          "sunoId": "2ed8222e-dc8c-4ef1-a58b-60fb4843787b"
+        },
+        {
+          "title": "Skate Shop G-Funk",
+          "sunoId": "b888f96a-08ae-41f2-8ef2-3b3e44eac1b4"
+        },
+        {
+          "title": "Over G-Funk",
+          "sunoId": "f1cf6a38-155b-4bb8-8b5e-88e298e97478"
+        },
+        {
+          "title": "G-Funky Results",
+          "sunoId": "011f9603-5fb5-45d7-ac7f-7092949aa30b"
+        }
+      ]
+    },
+    {
+      "id": "suno-1cdfc5f2-d4e9-42b6-ab85-fd4d07b34077",
+      "title": "Visions of the Wax",
+      "artist": "Mikey More Bounce",
+      "type": "LP",
+      "year": "2026",
+      "description": "It's 2am where do you think you are going fam? This party is just getting started... Can I borrow your glowsticks?",
+      "cover": "https://cdn2.suno.ai/image_large_778298c8-d002-4331-b5df-948f1eeaf43b.jpeg",
+      "suno": "https://suno.com/album/1cdfc5f2-d4e9-42b6-ab85-fd4d07b34077",
+      "tracks": [
+        {
+          "title": "2 AM",
+          "sunoId": "d43f5f6b-5697-467e-a7e8-8f67be7dffe1"
+        },
+        {
+          "title": "Green Channel Go",
+          "sunoId": "37f9247b-2143-4910-b5d8-aac30baba158"
+        },
+        {
+          "title": "Floor Stuck",
+          "sunoId": "89a4960d-8bea-4848-a91c-5fdf112ff99b"
+        },
+        {
+          "title": "Walking Lines",
+          "sunoId": "434d4094-9fbf-4101-b4cf-88dcbd104a5e"
+        },
+        {
+          "title": "Small and Narrow",
+          "sunoId": "efd60716-0917-47c8-9364-1b0ad521f532"
+        },
+        {
+          "title": "Redline Rush",
+          "sunoId": "673e9a75-b9e1-4bed-a126-2e4fc9b590d8"
+        },
+        {
+          "title": "Acid Injection",
+          "sunoId": "14661470-9541-44c6-a79f-19dbe59e47fe"
+        },
+        {
+          "title": "Warehouse Momentum",
+          "sunoId": "f5664c7f-1536-464c-8cff-bbf2e82c848c"
+        },
+        {
+          "title": "Cavernous Arpeggios",
+          "sunoId": "ec60c14f-8a8e-413a-88cf-dc27b402d6ea"
+        },
+        {
+          "title": "Pressure",
+          "sunoId": "bd899a03-9adb-4d15-b9ba-0a6c3d4ae544"
+        },
+        {
+          "title": "Jolly Roll",
+          "sunoId": "4a917b78-a0c4-4245-9874-3454f3b3c91a"
+        },
+        {
+          "title": "Rolling Hills",
+          "sunoId": "b51d4bc8-6d6a-4409-b462-7416063f95d5"
+        },
+        {
+          "title": "Whooper Whoops",
+          "sunoId": "9be3a117-e2f6-4709-b1be-a5abba73dbc3"
+        },
+        {
+          "title": "Funk the System",
+          "sunoId": "d895b815-f228-405e-b85c-b558de03d7b3"
+        },
+        {
+          "title": "Acid Injection VIP",
+          "sunoId": "c70ce5be-4c1e-4c1a-8ef4-f6edd2a26c72"
+        },
+        {
+          "title": "Warehouse Vigor",
+          "sunoId": "a38cb1a7-3940-46ec-ab8b-e33e4324dfdd"
+        },
+        {
+          "title": "Kickoffs",
+          "sunoId": "a87e7726-3f7e-45a5-88e3-047555184773"
+        },
+        {
+          "title": "Pressure VIP",
+          "sunoId": "723cba17-f83b-4d77-9268-f36da3a9c704"
+        },
+        {
+          "title": "KandiLand",
+          "sunoId": "ad2a1db4-585e-45b8-91fa-531a10b72565"
+        },
+        {
+          "title": "Pass That Grime",
+          "sunoId": "fcab3e8f-267f-4640-9609-94894f599ff9"
+        },
+        {
+          "title": "2 AM VIP",
+          "sunoId": "104b9e1e-dcf0-4bf8-9f47-73335123eb24"
+        }
+      ]
+    },
+    {
+      "id": "suno-5ea13883-b3ec-4da2-9c78-52805a9c7a06",
+      "title": "RTKO - Rip The Knob Off",
+      "artist": "Mikey More Bounce",
+      "type": "LP",
+      "year": "2026",
+      "description": "",
+      "cover": "https://cdn2.suno.ai/image_large_c90ee2e7-f95e-4fe1-ac1d-9f68b6fac324.jpeg",
+      "suno": "https://suno.com/album/5ea13883-b3ec-4da2-9c78-52805a9c7a06",
+      "tracks": [
+        {
+          "title": "API Key",
+          "sunoId": "93863d59-006d-414b-ac89-0817f78e9ac7"
+        },
+        {
+          "title": "Good Day at the Dispensary",
+          "sunoId": "0025ea00-4133-42a3-add4-357a1e20e846"
+        },
+        {
+          "title": "The Ground Remembers",
+          "sunoId": "1aac90e1-16d8-41c8-be1d-02c4bd3e245a"
+        },
+        {
+          "title": "One Vibration",
+          "sunoId": "47ac2b2d-1f6d-41a9-9059-0a0f4f41c3a9"
+        },
+        {
+          "title": "Server Heart",
+          "sunoId": "119099df-c161-485f-9e77-84ebb02760d1"
+        },
+        {
+          "title": "ANCIENT WOUND",
+          "sunoId": "9de3bff7-3a3d-4471-ab0d-1d3574638110"
+        },
+        {
+          "title": "Squeezed Shut",
+          "sunoId": "74cd9fe8-fa71-4c6b-8cd4-7363ba066b8b"
+        },
+        {
+          "title": "The Mark Beneath the Stone",
+          "sunoId": "b80db30b-22f4-4cce-82fe-5c0765c974b1"
+        },
+        {
+          "title": "Torgenetics Forgery",
+          "sunoId": "8110b4c0-a499-4e50-aa2b-fc6561baad7d"
+        },
+        {
+          "title": "Server Overload",
+          "sunoId": "a4aa8d43-df0e-45af-b480-fd1891e7ef37"
+        },
+        {
+          "title": "Destroy",
+          "sunoId": "596d2265-2a63-4830-89ed-dd19aaba181e"
+        },
+        {
+          "title": "Meat Machine",
+          "sunoId": "215575ef-533c-4d99-9201-9ee75daa8fea"
+        },
+        {
+          "title": "Pressure Point",
+          "sunoId": "2cdb86c7-f6a5-4d4b-9d0a-332326372d92"
+        },
+        {
+          "title": "Chili Cast",
+          "sunoId": "ee1d0e5e-6aaf-41cb-8b0e-29a651ca3e46"
+        },
+        {
+          "title": "Tacticals Down",
+          "sunoId": "6043cfb3-0cd7-480a-ac88-f4399222ddc0"
+        },
+        {
+          "title": "Rip and Rise",
+          "sunoId": "4a7e9db5-65b4-46c5-9775-751d3122d3bb"
+        },
+        {
+          "title": "Metal Pulse",
+          "sunoId": "aac698bf-2b61-4a06-8625-522f9cfcc32e"
+        },
+        {
+          "title": "🐉♨️DRAGON KNIGHTS♨️🐉",
+          "sunoId": "2010da32-1142-4fc0-b982-a514658e49e6"
+        },
+        {
+          "title": "Insert Coins",
+          "sunoId": "73735be8-21af-417e-b172-6af8c9314711"
+        },
+        {
+          "title": "Crush The Gears",
+          "sunoId": "b6978bf4-1c92-4408-bc36-82c0ab68dc74"
+        },
+        {
+          "title": "Sovereign Software",
+          "sunoId": "0dd1b6fb-4727-4248-8ba9-fa1d90f8b2ab"
+        },
+        {
+          "title": "Phoenix Rising",
+          "sunoId": "938b7ab2-b064-4e4e-8186-ee9e3d04492d"
+        },
+        {
+          "title": "The Art of Life",
+          "sunoId": "69fb9ae4-abcf-4921-bd43-c7a07579d591"
+        },
+        {
+          "title": "Arcadian Clarity",
+          "sunoId": "6b7d6468-d80a-4332-896c-43cd6c5e5d64"
+        }
+      ]
+    },
+    {
+      "id": "suno-bbea8145-0b71-4a2c-b9c1-019e7b4fe6f8",
+      "title": "I-5 Nights",
+      "artist": "Mikey More Bounce",
+      "type": "LP",
+      "year": "2026",
+      "description": "90s west coast vibes brooooooo... take a chill brah... let the groove heal yo' ass! Head nod protocol engaged.",
+      "cover": "https://cdn2.suno.ai/894c5931.jpeg",
+      "suno": "https://suno.com/album/bbea8145-0b71-4a2c-b9c1-019e7b4fe6f8",
+      "tracks": [
+        {
+          "title": "Room for Me",
+          "sunoId": "270b5324-61e6-4c9e-a3d2-34c211944c8a"
+        },
+        {
+          "title": "Surprise Sandwich",
+          "sunoId": "fea37db2-f198-474e-95d7-4748f9fd51c9"
+        },
+        {
+          "title": "Plug Me In",
+          "sunoId": "38f25e44-51ca-4f98-ad1d-01f1fdbf88b8"
+        },
+        {
+          "title": "Neon Suitcase",
+          "sunoId": "0f445acc-bd7c-4314-82f0-b9b3e073dc45"
+        },
+        {
+          "title": "Top Down",
+          "sunoId": "64135e80-0592-43aa-be3d-59a5a1327015"
+        },
+        {
+          "title": "Hott Mustard",
+          "sunoId": "a09cde41-3e1c-412e-bd47-255d63cd7373"
+        },
+        {
+          "title": "Elevator",
+          "sunoId": "8c7242b8-0fb0-46c2-96de-1dcbc9b75041"
+        },
+        {
+          "title": "Good Times",
+          "sunoId": "f8cc7731-5548-45ad-8314-791eaa96fc2a"
+        },
+        {
+          "title": "United We Rise",
+          "sunoId": "a77316a8-4a22-4676-826e-20fe10b46f51"
+        },
+        {
+          "title": "Varnish Sunrise",
+          "sunoId": "0aaf2414-9485-4cae-869a-f5a4af5cfb64"
+        },
+        {
+          "title": "Golden State",
+          "sunoId": "fed5f741-29e0-4bcf-a62c-413be02293a1"
+        },
+        {
+          "title": "Fast Lane Fasten",
+          "sunoId": "e1b14b03-921d-47e2-aa2d-b4d37e92f2cc"
+        },
+        {
+          "title": "Breakfast in Bed",
+          "sunoId": "acab8fa9-d6ef-43e8-83b5-6aab3a62b3cd"
+        },
+        {
+          "title": "This or That",
+          "sunoId": "43e80b33-e958-4965-838d-9c6c6da25d0f"
+        },
+        {
+          "title": "Room for Me VIP",
+          "sunoId": "c8660008-d612-4a57-8d11-43a6d49d5990"
+        },
+        {
+          "title": "Plug Me In VIP",
+          "sunoId": "763be183-76e9-4a07-8bd7-3f5ff374b786"
+        },
+        {
+          "title": "Neon Suitcase VIP",
+          "sunoId": "abd5b6da-a7b7-4e90-b573-d78e0b5a840c"
+        },
+        {
+          "title": "This or That VIP",
+          "sunoId": "5b62199b-79a1-4bdd-832b-68faeea6f459"
+        },
+        {
+          "title": "Golden State VIP",
+          "sunoId": "9c04fcf0-0b9c-4f77-a1ca-a65f55c66d8c"
+        },
+        {
+          "title": "Surprise Sandwich VIP",
+          "sunoId": "82083364-89e9-4a55-8c2c-b8359bb124bc"
+        },
+        {
+          "title": "Good Times VIP",
+          "sunoId": "959fb337-f8a0-4b7c-8dd0-5563a66c9af3"
+        }
+      ]
+    },
+    {
       "id": "trunk-funk",
       "title": "Trunk Funk",
       "artist": "Mikey More Bounce",
@@ -176,7 +788,7 @@
           "title": "May the Funk Be With You",
           "sunoId": "f2a2135a-f8e0-46c9-9f51-1c2e98ec7973",
           "src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/f2a2135a-f8e0-46c9-9f51-1c2e98ec7973.m4a",
-          "duration": 132.0
+          "duration": 132
         },
         {
           "title": "Beefs Cherky",
@@ -185,7 +797,7 @@
           "duration": 156.44
         },
         {
-          "title": "Don\u2019t Stop Now",
+          "title": "Don’t Stop Now",
           "sunoId": "0bc418fb-99de-436f-a9af-bb3ad8a6d2a3",
           "src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/0bc418fb-99de-436f-a9af-bb3ad8a6d2a3.m4a",
           "duration": 149.92
@@ -314,7 +926,7 @@
           "title": "Dance Froo",
           "sunoId": "02dd0f15-910b-48e5-a332-51d913a9aea9",
           "src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/02dd0f15-910b-48e5-a332-51d913a9aea9.m4a",
-          "duration": 190.0
+          "duration": 190
         },
         {
           "title": "Clutchin' 5K",
@@ -503,7 +1115,7 @@
           "duration": 349.6
         },
         {
-          "title": "Ros\u00e9 After Midnight",
+          "title": "Rosé After Midnight",
           "sunoId": "a8e1e58c-7f66-4f65-8660-666df5a3dce6",
           "src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/a8e1e58c-7f66-4f65-8660-666df5a3dce6.m4a",
           "duration": 334.48
@@ -515,7 +1127,7 @@
           "duration": 349.76
         },
         {
-          "title": "Last Light on the C\u00f4te d\u2019Azur",
+          "title": "Last Light on the Côte d’Azur",
           "sunoId": "47c7b001-8d32-44ae-b372-64d3eb4e1b14",
           "src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/47c7b001-8d32-44ae-b372-64d3eb4e1b14.m4a",
           "duration": 369.52
@@ -782,7 +1394,7 @@
           "title": "Summer Romance",
           "sunoId": "e8a05395-82d8-4ad9-9207-a92dad024e72",
           "src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/e8a05395-82d8-4ad9-9207-a92dad024e72.m4a",
-          "duration": 198.0
+          "duration": 198
         },
         {
           "title": "Center Gravity",
@@ -1160,7 +1772,7 @@
           "title": "Funked Openings",
           "sunoId": "58021b80-5794-4cdd-af99-f56b205c6b3b",
           "src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/58021b80-5794-4cdd-af99-f56b205c6b3b.m4a",
-          "duration": 184.0
+          "duration": 184
         },
         {
           "title": "Dark Funky World",
@@ -1274,7 +1886,7 @@
           "title": "Atmospheric Render",
           "sunoId": "931a7155-f817-4ae8-8ae3-6a9037bfd29f",
           "src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/931a7155-f817-4ae8-8ae3-6a9037bfd29f.m4a",
-          "duration": 193.0
+          "duration": 193
         },
         {
           "title": "Stairway Onwards",
@@ -1290,7 +1902,7 @@
       "artist": "Mikey More Bounce",
       "type": "LP",
       "year": "2026",
-      "description": "STELLAR ABRAXAS\nConvergence Audio Archive SA-003 \u2014 Contact / Integration Cycle",
+      "description": "STELLAR ABRAXAS\nConvergence Audio Archive SA-003 — Contact / Integration Cycle",
       "cover": "https://cdn2.suno.ai/image_403c1365-41a4-4256-860d-08f2ab9a2e82.jpeg",
       "suno": "https://suno.com/album/a0857c29-edca-40de-839e-e9c90f1f19d5",
       "tracks": [
@@ -1374,7 +1986,7 @@
       "artist": "Mikey More Bounce",
       "type": "LP",
       "year": "2026",
-      "description": "XALLARAP XN-17989 Archive Audio Mission KM-100 \u2014 Cruise / Departure Cycle",
+      "description": "XALLARAP XN-17989 Archive Audio Mission KM-100 — Cruise / Departure Cycle",
       "cover": "https://cdn2.suno.ai/image_884603a8-187c-4223-a54d-55e124993ce5.jpeg",
       "suno": "https://suno.com/album/f65889c7-0752-4174-88d9-4c50c75466cf",
       "tracks": [
@@ -1424,7 +2036,7 @@
           "title": "4B. kceD noitavresbO / hctaW thgiN",
           "sunoId": "bea212cc-a3ab-454e-8aa5-5852151e735f",
           "src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/bea212cc-a3ab-454e-8aa5-5852151e735f.m4a",
-          "duration": 193.0
+          "duration": 193
         },
         {
           "title": "5A. Cruise Warp",
@@ -1460,7 +2072,7 @@
           "title": "7B. 0030 ta gnireenignE",
           "sunoId": "8acf51f3-d3b9-420b-83e8-1b195209ceb0",
           "src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/8acf51f3-d3b9-420b-83e8-1b195209ceb0.m4a",
-          "duration": 211.0
+          "duration": 211
         },
         {
           "title": "8A. Stars Between the Quiet",
@@ -1530,7 +2142,7 @@
       "artist": "Mikey More Bounce",
       "type": "LP",
       "year": "2026",
-      "description": "PARALLAX NX-98971 \nMission Audio Archive\nMK-001 \u2014 Departure / Cruise Cycle",
+      "description": "PARALLAX NX-98971 \nMission Audio Archive\nMK-001 — Departure / Cruise Cycle",
       "cover": "https://cdn2.suno.ai/image_588de456-7d35-4528-8882-8803e0e3a3c5.jpeg",
       "suno": "https://suno.com/album/12e49a4d-63d9-4e9a-ab0e-d3a26f9d2ff9",
       "tracks": [
@@ -1916,7 +2528,7 @@
           "title": "Gallery of Marbles VIP",
           "sunoId": "f73953ba-a1a5-4897-98b9-e54a9b14fbdd",
           "src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/f73953ba-a1a5-4897-98b9-e54a9b14fbdd.m4a",
-          "duration": 215.0
+          "duration": 215
         },
         {
           "title": "Joe's Bar VIP",
@@ -1976,7 +2588,7 @@
           "title": "Dat Good Feelin'",
           "sunoId": "89801896-39e2-46d6-aaf5-0699c60f7ca3",
           "src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/89801896-39e2-46d6-aaf5-0699c60f7ca3.m4a",
-          "duration": 188.0
+          "duration": 188
         },
         {
           "title": "Top Down",
@@ -2036,7 +2648,7 @@
           "title": "One Love, One Vibration",
           "sunoId": "55bfde80-ef2f-4d88-8ab8-06c08138a18b",
           "src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/55bfde80-ef2f-4d88-8ab8-06c08138a18b.m4a",
-          "duration": 182.0
+          "duration": 182
         },
         {
           "title": "Not Being Cool About It",
@@ -2108,7 +2720,7 @@
           "title": "Lil' Green Daydream",
           "sunoId": "880d7dd9-956b-4aff-979e-cc79860e3560",
           "src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/880d7dd9-956b-4aff-979e-cc79860e3560.m4a",
-          "duration": 172.0
+          "duration": 172
         },
         {
           "title": "Puffin' Freedom After Dark",
@@ -2156,7 +2768,7 @@
           "title": "Show N Tell",
           "sunoId": "311f9898-abbb-42d2-b44e-1feedc61797e",
           "src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/311f9898-abbb-42d2-b44e-1feedc61797e.m4a",
-          "duration": 175.0
+          "duration": 175
         },
         {
           "title": "Cali Glow",
@@ -2204,7 +2816,7 @@
           "title": "Slow Take",
           "sunoId": "25fd3648-bd61-47c4-a02f-d6c29616be4b",
           "src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/25fd3648-bd61-47c4-a02f-d6c29616be4b.m4a",
-          "duration": 158.0
+          "duration": 158
         },
         {
           "title": "Sunday Residue",
@@ -2252,7 +2864,7 @@
           "title": "Small Days Gold",
           "sunoId": "8a72e9af-2ed0-4441-a13b-3e97dfdd0136",
           "src": "https://d2lwuy8qc234o3.cloudfront.net/1/clip/8a72e9af-2ed0-4441-a13b-3e97dfdd0136.m4a",
-          "duration": 164.0
+          "duration": 164
         },
         {
           "title": "Knowledge Flow",

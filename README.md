@@ -465,3 +465,11 @@ npm run verify:pages
 ```
 
 Manual smoke test: create a freestyle, enter and rename lyrics, switch to Rhyme Finder and append a suggestion, reload to confirm local persistence, export a backup, reimport it without duplicates, and try a network-offline search. Also verify the existing Desk and DJ Decks still work.
+
+## November 2026: Seven new Suno releases and Writers Flow Bench
+
+The Vault now includes the seven public releases **Bonsai Bap, Head Nod Proof, Break The Matrix - The Soundtrack, G-Funktendo, Visions of the Wax, RTKO - Rip The Knob Off, and I-5 Nights**. This brings the committed Suno catalog to **26 albums / 476 track placements** (467 unique song IDs; nine *I-5 Nights* songs also appear on older albums). All 19 original albums and their 344 placements are retained. See [the verification record](docs/SUNO_CATALOG_RECONCILIATION_2026-11-03.md).
+
+**Writers → Flow Bench** adds a private, offline writing aid to the existing Freestyle Book. Choose a 4-, 8-, 16-, or 32-bar target, append numbered empty writing guides, inspect written-line counts, final words and rough syllable estimates, and explore an original scene/theme/twist prompt deck. Sparks are appended as notes only when explicitly requested and are excluded from the line count. The Flow Bench reads the selected local lyric page; it does not upload, analyze acoustics, or claim accurate syllabic/phonetic scansion. You can also copy lyrics or export a single page as `.txt` in addition to the existing full-book JSON backup.
+
+Verification: `node --test scripts/suno-import-2026-11.test.mjs scripts/writers-flow.test.mjs` plus the existing house tests, TypeScript, and both builds.
