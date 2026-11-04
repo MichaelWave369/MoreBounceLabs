@@ -258,6 +258,34 @@ export function BarReviewSampler({ page }: { page?: Page }) {
     window.setTimeout(() => URL.revokeObjectURL(url), 8000);
   }
 
+  function exportReviewSheet() {
+    if (!page || samples.length === 0) return;
+    const lines = [
+      "# " + (page.title || "Untitled freestyle") + " · Bar Review Sheet",
+      "Exported: " + new Date().toISOString(),
+      "Contains review text only, not recorded audio.",
+      ""
+    ];
+    for (const item of samples) {
+      lines.push("Sample: " + item.id, "Recorded: " + item.createdAt,
+        "Keeper: " + (item.keeper ? "Yes" : "No"),
+        "Your rating: " + (item.rating ? item.rating + "/5" : "Unrated"),
+        "Bar: " + item.text,
+        "Review: " + (item.reviewNote || "(none)"),
+        "Audio stored locally: " + (item.audio ? "Yes, export separately" : "No"),
+        "");
+    }
+    const url = URL.createObjectURL(new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = safeClipName(page.title || "freestyle") + "-bar-reviews.txt";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 8000);
+    setNotice("Review sheet exported as text. Audio clips must be exported individually.");
+  }
+
   async function copyBar(text: string) {
     try {
       await navigator.clipboard.writeText(text);
@@ -413,11 +441,19 @@ export function BarReviewSampler({ page }: { page?: Page }) {
 
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h4 className="font-display text-xl">Bar attempts</h4>
-            <span className="text-sm text-amber">{samples.length} / {MAX_BAR_SAMPLES_PER_PAGE} samples</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <button type="button" disabled={!samples.length || busy || capturing}
+                onClick={exportReviewSheet}
+                className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-amber/40 px-3 text-sm disabled:opacity-40">
+                <Download size={15} aria-hidden="true" /> Export review sheet
+              </button>
+              <span className="text-sm text-amber">{samples.length} / {MAX_BAR_SAMPLES_PER_PAGE} samples</span>
+            </div>
           </div>
           <p className="text-xs text-mist">
-            Try a different delivery and save another attempt. Audio stays in this browser's IndexedDB
-            and is NOT included in your lyric-book JSON backup. Export important takes individually.
+            Try a different delivery and save another attempt. Review edits need the Save review button.
+            Audio and review notes stay in this browser's IndexedDB and are NOT included in your lyric-book JSON backup.
+            Export important takes individually and use Export review sheet to back up review text.
           </p>
           {!samples.length && <p className="text-sm text-mist">No saved bar samples yet. Your first punchline awaits.</p>}
           <ul className="space-y-2">
