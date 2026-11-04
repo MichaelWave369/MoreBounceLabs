@@ -269,6 +269,11 @@ export function FreestyleDojo({ page }: { page?: LyricPage }) {
     } catch (error) {
       micStream.current?.getTracks().forEach(track => track.stop());
       micStream.current = null;
+      micSource.current?.disconnect();
+      micSource.current = null;
+      if (beatSource.current && recordDest.current) {
+        try { beatSource.current.disconnect(recordDest.current); } catch { /* not connected */ }
+      }
       if (recordDest.current) recordDest.current.stream.getTracks().forEach(track => track.stop());
       recordDest.current = null;
       setNotice(error instanceof Error ? error.message : "Could not start this practice session.");
@@ -386,7 +391,8 @@ export function FreestyleDojo({ page }: { page?: LyricPage }) {
           {beatUrl && <button type="button" onClick={removeBeat} disabled={running || starting}
             className="min-h-11 rounded-xl border border-line px-4 text-sm disabled:opacity-40">Remove beat</button>}
         </div>
-        {beatUrl && <audio ref={audioRef} src={beatUrl} controls preload="metadata" className="mt-4 w-full" />}
+        <audio ref={audioRef} src={beatUrl || undefined} controls preload="metadata"
+          className={"mt-4 w-full " + (beatUrl ? "" : "hidden")} aria-label="Local backing track player" />
         <label className="mt-3 flex min-h-11 items-center gap-2 text-sm text-cream">
           <input type="checkbox" checked={mixBeat} disabled={running || starting}
             onChange={e => setMixBeat(e.target.checked)} />
