@@ -15,13 +15,14 @@ export function emptyBook() {
   return { version: BOOK_VERSION, pages: [] };
 }
 
+/** @param {any} value */
 export function validateBook(value) {
   if (!value || typeof value !== "object" || value.version !== BOOK_VERSION ||
       !Array.isArray(value.pages) || value.pages.length > MAX_PAGES) {
     throw new Error("Not a supported MoreBounceLabs freestyle book (v1).");
   }
   const seen = new Set();
-  const pages = value.pages.map((page) => {
+  const pages = value.pages.map((/** @type {any} */ page) => {
     if (!page || typeof page !== "object" || typeof page.id !== "string" ||
         !/^[a-zA-Z0-9_-]{6,100}$/.test(page.id) || seen.has(page.id) ||
         typeof page.title !== "string" || page.title.length > MAX_TITLE ||
@@ -59,6 +60,7 @@ export function createPageId() {
 }
 
 /** Never replace an existing page silently. Divergent same-ID pages become copies. */
+/** @param {any} current @param {any} imported @param {() => string} [makeId] */
 export function mergeBooks(current, imported, makeId = createPageId) {
   const original = validateBook(current);
   const incoming = validateBook(imported);
@@ -84,6 +86,7 @@ export function mergeBooks(current, imported, makeId = createPageId) {
   return { book: validateBook({ version: BOOK_VERSION, pages }), added, skipped };
 }
 
+/** @param {string} text */
 export function rhymeTarget(text) {
   const trimmed = String(text || "").trim();
   const match = trimmed.match(/([\p{L}\p{N}'’-]+)[^\p{L}\p{N}'’-]*$/u);
@@ -91,6 +94,7 @@ export function rhymeTarget(text) {
 }
 
 /** Only the deliberately entered lookup term is sent to the third-party service. */
+/** @param {string} mode @param {string} term */
 export function lexicalUrl(mode, term) {
   if (!LEXICAL_MODES.includes(mode)) throw new Error("Unsupported lookup type.");
   if (typeof term !== "string" || !term.trim() || term.trim().length > 80) {
@@ -102,10 +106,11 @@ export function lexicalUrl(mode, term) {
   return "https://api.datamuse.com/words?" + params.toString();
 }
 
+/** @param {any} payload */
 export function cleanSuggestions(payload) {
   if (!Array.isArray(payload)) throw new Error("Unexpected word service response.");
   const seen = new Set();
-  return payload.slice(0, 64).flatMap((entry) => {
+  return payload.slice(0, 64).flatMap((/** @type {any} */ entry) => {
     if (!entry || typeof entry.word !== "string" || !entry.word.trim() ||
         entry.word.length > 80 || seen.has(entry.word.toLowerCase())) return [];
     seen.add(entry.word.toLowerCase());
