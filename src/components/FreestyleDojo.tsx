@@ -19,6 +19,7 @@ export function FreestyleDojo({ page }: { page?: LyricPage }) {
   const [running, setRunning] = useState(false);
   const [starting, setStarting] = useState(false);
   const [recording, setRecording] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [step, setStep] = useState<Step>(dojoBeat(-1, 16));
   const [beatUrl, setBeatUrl] = useState("");
   const [beatName, setBeatName] = useState("");
@@ -145,7 +146,10 @@ export function FreestyleDojo({ page }: { page?: LyricPage }) {
     active.current = false;
     if (audioRef.current) audioRef.current.pause();
     const rec = recorder.current;
-    if (rec?.state === "recording") rec.stop();
+    if (rec?.state === "recording") {
+      setSaving(true);
+      rec.stop();
+    }
     setRunning(false);
     setRecording(false);
     if (completed) setStep(dojoBeat(4 + bars * 4, bars));
@@ -195,6 +199,9 @@ export function FreestyleDojo({ page }: { page?: LyricPage }) {
     setStarting(true);
     setNotice(withMic ? "Requesting microphone access for a private recording..." : "Preparing metronome...");
     try {
+      if (withMic && pendingClip) {
+        throw new Error("Download your unsaved take before recording another one.");
+      }
       if (withMic && clips.length >= MAX_CLIPS_PER_PAGE) {
         throw new Error("This lyric page has 12 clips. Export and delete one before recording more.");
       }
@@ -245,7 +252,10 @@ export function FreestyleDojo({ page }: { page?: LyricPage }) {
           recorder.current = null;
           const blob = new Blob(chunks, { type: rec.mimeType || chunks[0]?.type || "audio/webm" });
           if (!blob.size) {
-            if (mounted.current) setNotice("No audio captured. Please check microphone permission.");
+            if (mounted.current) {
+              setSaving(false);
+              setNotice("No audio captured. Please check microphone permission.");
+            }
             return;
           }
           const clip: DojoClip = {
@@ -263,7 +273,7 @@ export function FreestyleDojo({ page }: { page?: LyricPage }) {
               setPendingClip(clip);
               setNotice("Browser storage failed. Download the unsaved recording below before leaving this room.");
             }
-          });
+          }).finally(() => { if (mounted.current) setSaving(false); });
         };
         rec.start(1000);
         setRecording(true);
@@ -369,7 +379,7 @@ export function FreestyleDojo({ page }: { page?: LyricPage }) {
             onClick={() => void start(false)} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-amber px-5 font-semibold text-ink disabled:opacity-40">
             <Play size={16} aria-hidden="true" /> Start practice
           </button>
-          <button type="button" disabled={!page || running || starting || clips.length >= MAX_CLIPS_PER_PAGE}
+          <button type="button" disabled={!page || running || starting || saving || !!pendingClip || clips.length >= MAX_CLIPS_PER_PAGE}
             onClick={() => void start(true)} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-amber/60 px-5 text-sm text-cream disabled:opacity-40">
             <Mic size={16} aria-hidden="true" /> Record a take
           </button>
@@ -384,6 +394,7 @@ export function FreestyleDojo({ page }: { page?: LyricPage }) {
         </div>
         <p aria-live="polite" className="mt-3 text-sm text-amber">{notice}</p>
         {recording && <p role="status" className="mt-2 text-sm font-bold text-heat">Recording live · Microphone permission granted · Stops at verse end</p>}
+        {saving && <p role="status" className="mt-2 text-sm text-amber">Saving local recording. Do not close this tab until the take appears below.</p>}
       </section>
 
       <section className="rounded-2xl border border-line bg-surface p-4 sm:p-6" aria-label="Local backing track">
