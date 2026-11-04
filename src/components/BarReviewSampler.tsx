@@ -3,8 +3,8 @@ import { BookOpen, Download, Mic, Play, RotateCcw, Save, Square, Trash2 } from "
 import { analyzeVerse } from "../../scripts/writers-flow.mjs";
 import { safeClipName } from "../../scripts/freestyle-dojo.mjs";
 import {
-  BAR_AUDIO_SECONDS, MAX_BAR_AUDIO_BYTES, MAX_BAR_SAMPLES_PER_PAGE, MAX_BAR_TEXT,
-  deleteBarSample, listBarSamples, saveBarSample, type BarSample
+  BAR_AUDIO_SECONDS, MAX_BAR_AUDIO_BYTES, MAX_BAR_REVIEW_NOTE, MAX_BAR_SAMPLES_PER_PAGE, MAX_BAR_TEXT,
+  deleteBarSample, listBarSamples, saveBarReview, saveBarSample, type BarReview, type BarSample
 } from "@/lib/dojoRecordings";
 
 type Page = { id: string; title: string; body: string };
@@ -12,6 +12,9 @@ export function BarReviewSampler({ page }: { page?: Page }) {
   const [barText, setBarText] = useState("");
   const [selectedLine, setSelectedLine] = useState("");
   const [samples, setSamples] = useState<BarSample[]>([]);
+  const [reviewDrafts, setReviewDrafts] = useState<Record<string, BarReview>>({});
+  const [compareA, setCompareA] = useState("");
+  const [compareB, setCompareB] = useState("");
   const [capturing, setCapturing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("Save a written bar, or record a short microphone delivery to hear it back.");
@@ -26,6 +29,9 @@ export function BarReviewSampler({ page }: { page?: Page }) {
   const stoppingRef = useRef(false);
   const startingRef = useRef(false);
   const lines = analyzeVerse(page?.body || "").rows.filter(row => row.written && row.text).slice(0, 60);
+  const audioSamples = samples.filter(sample => sample.audio);
+  const selectedA = audioSamples.find(sample => sample.id === compareA);
+  const selectedB = audioSamples.find(sample => sample.id === compareB);
 
   useEffect(() => { sourcePageRef.current = page?.id; }, [page?.id]);
 
@@ -46,6 +52,9 @@ export function BarReviewSampler({ page }: { page?: Page }) {
     setBarText("");
     setSelectedLine("");
     setSamples([]);
+    setReviewDrafts({});
+    setCompareA("");
+    setCompareB("");
     setFallback(null);
     if (previewUrl.current) URL.revokeObjectURL(previewUrl.current);
     previewUrl.current = "";
@@ -178,6 +187,64 @@ export function BarReviewSampler({ page }: { page?: Page }) {
     }
   }
 
+
+  function reviewFor(sample: BarSample): BarReview {
+    return reviewDrafts[sample.id] || {
+      note: sample.reviewNote || "",
+      rating: sample.rating || 0,
+      keeper: Boolean(sample.keeper)
+    };
+  }
+
+  function patchReview(sample: BarSample, change: Partial<BarReview>) {
+    setReviewDrafts(previous => ({
+      ...previous,
+      [sample.id]: { ...(previous[sample.id] || {
+        note: sample.reviewNote || "", rating: sample.rating || 0, keeper: Boolean(sample.keeper)
+      }), ...change }
+    }));
+  }
+
+  async function persistReview(sample: BarSample) {
+    if (!page || busy || capturing) return;
+    const targetPage = page.id;
+    const review = reviewFor(sample);
+    setBusy(true);
+    try {
+      await saveBarReview(targetPage, sample.id, review);
+      const refreshed = await listBarSamples(targetPage);
+      if (!mounted.current || sourcePageRef.current !== targetPage) return;
+      setSamples(refreshed);
+      // Keep unsaved notes in other cards; reconcile the unique keeper flag.
+      setReviewDrafts(previous => Object.fromEntries(refreshed.map(item => {
+        const otherDraft = previous[item.id];
+        return [item.id, {
+          note: item.id === sample.id ? review.note : (otherDraft?.note ?? item.reviewNote ?? ""),
+          rating: item.id === sample.id ? review.rating : (otherDraft?.rating ?? item.rating ?? 0),
+          keeper: Boolean(item.keeper)
+        }];
+      })));
+      setNotice(review.keeper ? "Keeper selected for this lyric page. Previous keeper cleared." :
+        "Bar review saved privately.");
+    } catch (error) {
+      if (mounted.current && sourcePageRef.current === targetPage) {
+        setNotice(error instanceof Error ? error.message : "Review could not be saved.");
+      }
+    } finally {
+      if (mounted.current) setBusy(false);
+    }
+  }
+
+  function pickAB(slot: "A" | "B", id: string) {
+    if (slot === "A") {
+      setCompareA(id);
+      if (id && id === compareB) setCompareB("");
+    } else {
+      setCompareB(id);
+      if (id && id === compareA) setCompareA("");
+    }
+  }
+
   function download(sample: BarSample) {
     if (!sample.audio) return;
     const url = URL.createObjectURL(sample.audio);
@@ -189,6 +256,34 @@ export function BarReviewSampler({ page }: { page?: Page }) {
     a.click();
     a.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 8000);
+  }
+
+  function exportReviewSheet() {
+    if (!page || samples.length === 0) return;
+    const lines = [
+      "# " + (page.title || "Untitled freestyle") + " · Bar Review Sheet",
+      "Exported: " + new Date().toISOString(),
+      "Contains review text only, not recorded audio.",
+      ""
+    ];
+    for (const item of samples) {
+      lines.push("Sample: " + item.id, "Recorded: " + item.createdAt,
+        "Keeper: " + (item.keeper ? "Yes" : "No"),
+        "Your rating: " + (item.rating ? item.rating + "/5" : "Unrated"),
+        "Bar: " + item.text,
+        "Review: " + (item.reviewNote || "(none)"),
+        "Audio stored locally: " + (item.audio ? "Yes, export separately" : "No"),
+        "");
+    }
+    const url = URL.createObjectURL(new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = safeClipName(page.title || "freestyle") + "-bar-reviews.txt";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 8000);
+    setNotice("Review sheet exported as text. Audio clips must be exported individually.");
   }
 
   async function copyBar(text: string) {
@@ -213,6 +308,8 @@ export function BarReviewSampler({ page }: { page?: Page }) {
     try {
       await deleteBarSample(sample.id);
       if (page?.id === sample.pageId) setSamples(await listBarSamples(page.id));
+      setCompareA(current => current === sample.id ? "" : current);
+      setCompareB(current => current === sample.id ? "" : current);
       if (preview?.id === sample.id) {
         if (previewUrl.current) URL.revokeObjectURL(previewUrl.current);
         previewUrl.current = "";
@@ -290,19 +387,79 @@ export function BarReviewSampler({ page }: { page?: Page }) {
               </div>
             </div>
           )}
+
+          <section aria-label="A/B comparison for bar deliveries" className="rounded-2xl border border-amber/30 bg-[#251b16] p-4">
+            <h4 className="font-display text-xl">A/B Bar Audition</h4>
+            <p className="mt-2 text-xs text-mist">
+              Select two recorded attempts and switch between them in one audio player. Compare delivery by ear;
+              no AI score or fabricated timing analysis. Your review ratings are entirely yours.
+            </p>
+            {audioSamples.length < 2 ? (
+              <p className="mt-3 text-sm text-mist">Record at least two audio takes on this lyric page to compare A and B.</p>
+            ) : (
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                {(["A", "B"] as const).map(slot => {
+                  const choice = slot === "A" ? compareA : compareB;
+                  const selected = slot === "A" ? selectedA : selectedB;
+                  return (
+                    <div key={slot} className="rounded-xl border border-line bg-bg p-4">
+                      <label className="block text-sm font-semibold text-amber" htmlFor={"bar-compare-" + slot}>
+                        Take {slot}
+                      </label>
+                      <select id={"bar-compare-" + slot} value={choice}
+                        onChange={event => pickAB(slot, event.target.value)}
+                        className="mt-2 min-h-11 w-full rounded-xl border border-line bg-surface px-3 text-sm">
+                        <option value="">Choose a recording</option>
+                        {audioSamples.map((item, index) => (
+                          <option key={item.id} value={item.id}>
+                            {"Sample " + (samples.length - samples.indexOf(item)) + " · " +
+                              new Date(item.createdAt).toLocaleString() + (item.keeper ? " · Keeper" : "")}
+                          </option>
+                        ))}
+                      </select>
+                      {selected && (
+                        <>
+                          <p className="mt-3 whitespace-pre-wrap break-words font-mono text-sm">{selected.text}</p>
+                          <p className="mt-2 text-xs text-mist">Your rating: {selected.rating || "Unrated"}/5
+                            {selected.keeper ? " · Keeper" : ""}</p>
+                          <p className="mt-1 whitespace-pre-wrap break-words text-xs text-mist">
+                            {selected.reviewNote || "No review note yet"}
+                          </p>
+                          <button type="button" onClick={() => listen(selected)}
+                            className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-xl bg-amber px-4 font-semibold text-ink">
+                            <Play size={16} aria-hidden="true" /> Listen to {slot}
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <p className="mt-3 text-xs text-mist">Playback uses the same audio player as the saved takes below. Select Listen A or Listen B to switch.</p>
+          </section>
+
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h4 className="font-display text-xl">Bar attempts</h4>
-            <span className="text-sm text-amber">{samples.length} / {MAX_BAR_SAMPLES_PER_PAGE} samples</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <button type="button" disabled={!samples.length || busy || capturing}
+                onClick={exportReviewSheet}
+                className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-amber/40 px-3 text-sm disabled:opacity-40">
+                <Download size={15} aria-hidden="true" /> Export review sheet
+              </button>
+              <span className="text-sm text-amber">{samples.length} / {MAX_BAR_SAMPLES_PER_PAGE} samples</span>
+            </div>
           </div>
           <p className="text-xs text-mist">
-            Try a different delivery and save another attempt. Audio stays in this browser's IndexedDB
-            and is NOT included in your lyric-book JSON backup. Export important takes individually.
+            Try a different delivery and save another attempt. Review edits need the Save review button.
+            Audio and review notes stay in this browser's IndexedDB and are NOT included in your lyric-book JSON backup.
+            Export important takes individually and use Export review sheet to back up review text.
           </p>
           {!samples.length && <p className="text-sm text-mist">No saved bar samples yet. Your first punchline awaits.</p>}
           <ul className="space-y-2">
             {samples.map((sample, i) => (
               <li key={sample.id} className="rounded-xl border border-line bg-bg p-3">
-                <p className="text-xs text-amber">Sample {samples.length - i} · {new Date(sample.createdAt).toLocaleString()}</p>
+                <p className="text-xs text-amber">Sample {samples.length - i} · {new Date(sample.createdAt).toLocaleString()}{sample.keeper ? " · KEEPER" : ""}</p>
                 <p className="mt-2 whitespace-pre-wrap break-words font-mono text-sm">{sample.text}</p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {sample.audio && <>
@@ -327,6 +484,39 @@ export function BarReviewSampler({ page }: { page?: Page }) {
                     className="inline-flex min-h-11 items-center gap-1 rounded-xl border border-heat/40 px-3 text-sm text-heat">
                     <Trash2 size={15} aria-hidden="true" /> Delete
                   </button>
+                </div>
+
+                <div className="mt-3 grid gap-3 rounded-xl border border-amber/20 bg-[#241b16] p-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+                  <label className="block text-xs text-mist">
+                    Review notes (delivery, flow, breath, punchline)
+                    <textarea rows={2} maxLength={MAX_BAR_REVIEW_NOTE} value={reviewFor(sample).note}
+                      disabled={busy || capturing} onChange={event => patchReview(sample, { note: event.target.value })}
+                      placeholder="What worked? What should change next take?"
+                      className="mt-2 block w-full resize-y rounded-lg border border-line bg-bg p-3 text-sm text-cream disabled:opacity-50" />
+                  </label>
+                  <div className="space-y-3">
+                    <label className="block text-xs text-mist">
+                      Your rating
+                      <select value={reviewFor(sample).rating} disabled={busy || capturing}
+                        onChange={event => patchReview(sample, { rating: Number(event.target.value) })}
+                        className="mt-2 block min-h-11 w-full rounded-lg border border-line bg-bg px-3 text-sm disabled:opacity-50">
+                        <option value={0}>Unrated</option>
+                        {[1, 2, 3, 4, 5].map(rating =>
+                          <option key={rating} value={rating}>{rating} / 5</option>
+                        )}
+                      </select>
+                    </label>
+                    <label className="flex min-h-11 items-center gap-2 text-xs text-amber">
+                      <input type="checkbox" checked={reviewFor(sample).keeper} disabled={busy || capturing}
+                        onChange={event => patchReview(sample, { keeper: event.target.checked })} />
+                      Mark as keeper
+                    </label>
+                    <button type="button" disabled={busy || capturing}
+                      onClick={() => void persistReview(sample)}
+                      className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-amber/50 px-4 text-sm text-cream disabled:opacity-40">
+                      <Save size={16} aria-hidden="true" /> Save review
+                    </button>
+                  </div>
                 </div>
               </li>
             ))}

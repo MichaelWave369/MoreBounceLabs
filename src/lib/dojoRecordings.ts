@@ -10,6 +10,25 @@ export const MAX_BAR_SAMPLES_PER_PAGE = 24;
 export const MAX_BAR_AUDIO_BYTES = 8 * 1024 * 1024;
 export const MAX_BAR_TEXT = 300;
 export const BAR_AUDIO_SECONDS = 12;
+export const MAX_BAR_REVIEW_NOTE = 600;
+
+export type BarReview = {
+  note: string;
+  rating: number;
+  keeper: boolean;
+};
+
+export function validateBarReview(review: BarReview): BarReview {
+  const note = review?.note;
+  const rating = review?.rating;
+  const keeper = review?.keeper;
+  if (typeof note !== "string" || note.length > MAX_BAR_REVIEW_NOTE ||
+      !Number.isInteger(rating) || rating < 0 || rating > 5 ||
+      typeof keeper !== "boolean") {
+    throw new Error("Review must have a note of at most 600 characters, a 0–5 rating, and a keeper choice.");
+  }
+  return { note, rating, keeper };
+}
 export type BarSample = {
   id: string;
   pageId: string;
@@ -17,6 +36,9 @@ export type BarSample = {
   createdAt: string;
   mimeType: string;
   audio?: Blob;
+  reviewNote?: string;
+  rating?: number;
+  keeper?: boolean;
 };
 export const MAX_CLIP_BYTES = 32 * 1024 * 1024;
 export const MAX_CLIPS_PER_PAGE = 12;
@@ -146,5 +168,46 @@ export async function deleteBarSample(id: string): Promise<void> {
     tx.oncomplete = () => { db.close(); resolve(); };
     tx.onerror = () => { db.close(); reject(tx.error || new Error("Could not delete bar sample.")); };
     tx.onabort = () => { db.close(); reject(tx.error || new Error("Bar sample deletion aborted.")); };
+  });
+}
+
+
+/**
+ * Atomically updates one page's review. When promoting a keeper, clears the
+ * previous keeper on that page only, retaining all recordings and notes.
+ * Works with pre-R2 samples that have no review fields.
+ */
+export async function saveBarReview(pageId: string, sampleId: string, review: BarReview): Promise<void> {
+  if (!pageId || !sampleId) throw new Error("Choose a saved bar sample first.");
+  const validated = validateBarReview(review);
+  const db = await openDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(BAR_STORE, "readwrite");
+    const store = tx.objectStore(BAR_STORE);
+    const request = store.index("pageId").getAll(pageId);
+    let issue: Error | null = null;
+    request.onsuccess = () => {
+      const existing = request.result as BarSample[];
+      const target = existing.find(item => item.id === sampleId);
+      if (!target) {
+        issue = new Error("Sample not found on the selected lyric page.");
+        tx.abort();
+        return;
+      }
+      if (validated.keeper) {
+        for (const item of existing) {
+          if (item.id !== sampleId && item.keeper) store.put({ ...item, keeper: false });
+        }
+      }
+      store.put({
+        ...target,
+        reviewNote: validated.note,
+        rating: validated.rating,
+        keeper: validated.keeper
+      } satisfies BarSample);
+    };
+    tx.oncomplete = () => { db.close(); resolve(); };
+    tx.onerror = () => { db.close(); reject(issue || tx.error || new Error("Could not save review.")); };
+    tx.onabort = () => { db.close(); reject(issue || tx.error || new Error("Review was not saved.")); };
   });
 }
