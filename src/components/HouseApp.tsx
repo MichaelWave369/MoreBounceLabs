@@ -65,6 +65,7 @@ export function HouseApp() {
       const target = e.target as HTMLElement;
       if (target.matches("input, textarea, select")) return;
       if (useHouse.getState().room === "decks") return; // Backspin owns booth keyboard shortcuts and audio.
+      if (useHouse.getState().room === "writers") return; // Dojo controls its own practice audio; avoid accidental house playback.
       if (e.code === "Space") {
         e.preventDefault();
         house.toggle();
