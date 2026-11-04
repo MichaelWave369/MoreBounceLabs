@@ -473,3 +473,11 @@ The Vault now includes the seven public releases **Bonsai Bap, Head Nod Proof, B
 **Writers → Flow Bench** adds a private, offline writing aid to the existing Freestyle Book. Choose a 4-, 8-, 16-, or 32-bar target, append numbered empty writing guides, inspect written-line counts, final words and rough syllable estimates, and explore an original scene/theme/twist prompt deck. Sparks are appended as notes only when explicitly requested and are excluded from the line count. The Flow Bench reads the selected local lyric page; it does not upload, analyze acoustics, or claim accurate syllabic/phonetic scansion. You can also copy lyrics or export a single page as `.txt` in addition to the existing full-book JSON backup.
 
 Verification: `node --test scripts/suno-import-2026-11.test.mjs scripts/writers-flow.test.mjs` plus the existing house tests, TypeScript, and both builds.
+
+## Freestyle Dojo (Writers Room R3)
+
+The Writers Room now includes a fifth tab, **Freestyle Dojo**, for 55–180 BPM practice with a four-count lead-in, 4/8/16/32-bar rounds, a spelling-based long-word end-pattern display, a local backing beat selector, and microphone recording. With a chosen local audio file and explicit mix enabled, the browser records the local backing beat together with the microphone; third-party Suno streaming remains separate.
+
+Each take is private-by-default in IndexedDB, linked to the active Freestyle Book page, with replay, download, and delete controls (12 takes/page, 32 MB per clip). **Book JSON backups do not contain audio**: export takes separately. Recording requires a compatible secure browser, microphone permission, local quota, and a deliberate click. The app never silently uploads or shares recordings.
+
+Read [Freestyle Dojo R1](docs/FREESTYLE_DOJO_R1.md) for behavior, constraints, and manual microphone/beat-mix verification. Automated checks: `node --test scripts/freestyle-dojo.test.mjs` and the PR/Pages CI workflows.
