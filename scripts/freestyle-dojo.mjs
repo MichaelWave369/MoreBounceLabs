@@ -60,5 +60,5 @@ export function multisyllablePatterns(lyrics) {
 
 /** @param {string} input */
 export function safeClipName(input) {
-  return (String(input || "freestyle").trim().replace(/[^a-zA-Z0-9_-]+/g, "-").slice(0, 56) || "freestyle");
+  return (String(input || "freestyle").trim().replace(/[^a-zA-Z0-9_-]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 56) || "freestyle");
 }
