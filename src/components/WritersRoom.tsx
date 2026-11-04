@@ -181,10 +181,10 @@ export function WritersRoom() {
         return cleanSuggestions(await response.json()) as Suggestion[];
       }));
       if (controller.signal.aborted) return;
-      const next: Group[] = modes.map((mode, index) => ({
-        name: mode.name,
-        words: responses[index].status === "fulfilled" ? responses[index].value : []
-      }));
+      const next: Group[] = modes.map((mode, index) => {
+        const response = responses[index];
+        return { name: mode.name, words: response.status === "fulfilled" ? response.value : [] };
+      });
       setGroups(next);
       const failures = responses.filter((value) => value.status === "rejected").length;
       setLookupNotice(failures
