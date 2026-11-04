@@ -481,3 +481,9 @@ The Writers Room now includes a fifth tab, **Freestyle Dojo**, for 55–180 BPM 
 Each take is private-by-default in IndexedDB, linked to the active Freestyle Book page, with replay, download, and delete controls (12 takes/page, 32 MB per clip). **Book JSON backups do not contain audio**: export takes separately. Recording requires a compatible secure browser, microphone permission, local quota, and a deliberate click. The app never silently uploads or shares recordings.
 
 Read [Freestyle Dojo R1](docs/FREESTYLE_DOJO_R1.md) for behavior, constraints, and manual microphone/beat-mix verification. Automated checks: `node --test scripts/freestyle-dojo.test.mjs` and the PR/Pages CI workflows.
+
+## Bar Review Sampler and updated Vault order
+
+The Vault now shows the **26 Suno albums at the top** and the original **SoundCloud archives below**. Sorting and layouts still apply to Suno releases; the SoundCloud shelf retains its own filtering and official playback.
+
+Inside **Writers → Freestyle Dojo**, the **Bar Review Sampler** lets you select or type a single sentence, save its text, record short microphone performances of that bar, replay different attempts and export each take. These samples are held in a new, separately indexed browser-local store; existing full-length Dojo clips are preserved by a non-destructive IndexedDB version upgrade. All audio backups remain manual. Read [the sampler guide](docs/BAR_REVIEW_SAMPLER_R1.md).

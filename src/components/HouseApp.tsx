@@ -397,8 +397,8 @@ function Vault({
           ))}
         </div>
       </div>
-      <SoundCloudShelf query={query} selectedId={selectedSoundCloud} onSelect={onSelectSoundCloud} />
       <h2 className="mt-8 font-display text-2xl">Suno releases</h2>
+      <p className="mt-2 text-sm text-mist">{fullCatalog.length} official Suno albums, newest additions listed first when using As listed. The SoundCloud archives are below.</p>
       {albums.length === 0 && <p className="mt-6 text-mist">No Suno records match that search.</p>}
       {albums.length > 0 && layout === "bin" ? (
         <div className="bin mt-5 flex gap-4 overflow-x-auto pb-4">
@@ -439,6 +439,7 @@ function Vault({
           ))}
         </div>
       )}
+      <SoundCloudShelf query={query} selectedId={selectedSoundCloud} onSelect={onSelectSoundCloud} />
     </section>
   );
 }
