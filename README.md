@@ -493,3 +493,9 @@ Inside **Writers → Freestyle Dojo**, the **Bar Review Sampler** lets you selec
 The Writers Room's **Freestyle Dojo → Bar Review Sampler** now supports a user-controlled **A/B Bar Audition** for two short recorded takes, editable **review notes**, artist-provided **0–5 rating**, and **one keeper per lyric page**. Marking a keeper never deletes the other takes. Save review changes explicitly and download a text-only review sheet for backups; audio recordings must still be downloaded individually.
 
 Existing local samples and full-length recordings remain intact; no Suno audio is copied, and no lyric or audio data is uploaded. Details and acceptance testing: [Bar Review R2](docs/BAR_REVIEW_R2.md).
+
+## Continuous Radio R1: local artist-approved audio
+
+**Radio → Continuous Radio · Local Audio** now supports user-selected audio files and music folders. After a single click on **Play continuous radio**, the browser's owned HTML5 audio player moves to the next selected file on the genuine `ended` event, with optional Shuffle and Repeat all. It can play all local files or conservatively map filenames to the current MBL station's catalog song titles. Console Next/Previous/Power controls operate the local player while it's active; selecting an official Suno station stops that local source.
+
+This solves continuous playback for explicitly chosen and authorized local files, **not for Suno's cross-origin embeds**. There is no supported reliable Suno `ended`/autoplay control API in MBL. No music is uploaded, scraped or persisted; leaving Radio/reloading clears the selected local files. See [Continuous Radio R1](docs/RADIO_CONTINUOUS_LOCAL_R1.md) for caveats, verification and the longer-term authorized streaming path.

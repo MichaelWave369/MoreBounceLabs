@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Disc3,
   Heart,
@@ -48,6 +48,9 @@ export function HouseApp() {
   const [egg, setEgg] = useState(0);
   const [sharedTrack, setSharedTrack] = useState("");
   const [selectedSoundCloud, setSelectedSoundCloud] = useState<string | null>(null);
+  const [localRadioActive, setLocalRadioActive] = useState(false);
+  const localRadioActiveRef = useRef(false);
+  const onLocalRadioState = (active: boolean) => { localRadioActiveRef.current = active; setLocalRadioActive(active); };
 
   useEffect(() => {
     void house.loadCatalog();
@@ -65,6 +68,7 @@ export function HouseApp() {
       const target = e.target as HTMLElement;
       if (target.matches("input, textarea, select")) return;
       if (useHouse.getState().room === "decks") return; // Backspin owns booth keyboard shortcuts and audio.
+      if (useHouse.getState().room === "radio" && localRadioActiveRef.current) return; // Local radio owns playback.
       if (useHouse.getState().room === "writers") return; // Dojo controls its own practice audio; avoid accidental house playback.
       if (e.code === "Space") {
         e.preventDefault();
@@ -266,7 +270,7 @@ export function HouseApp() {
           />
         )}
         {house.room === "lab" && <InfinityLensStage reduced={reduced} />}
-        {house.room === "radio" && <RadioConsole albums={albums} onPlay={house.playStation} reduced={reduced} />}
+        {house.room === "radio" && <RadioConsole albums={albums} onPlay={house.playStation} reduced={reduced} onLocalActiveChange={onLocalRadioState} />}
         {house.room === "decks" && <BackspinDecks />}
         {house.room === "desk" && (
           <FieldDesk
@@ -281,7 +285,7 @@ export function HouseApp() {
         {house.ready && house.room === "album" && !openAlbum && <p>That album is not in the catalog.</p>}
       </main>
 
-      {house.room !== "decks" && !(house.room === "vault" && selectedSoundCloud) && <Player onQueue={() => navigateRoom("desk")} inLab={house.room === "lab" || house.room === "desk" || house.room === "writers"} />}
+      {house.room !== "decks" && !(house.room === "vault" && selectedSoundCloud) && !(house.room === "radio" && localRadioActive) && <Player onQueue={() => navigateRoom("desk")} inLab={house.room === "lab" || house.room === "desk" || house.room === "writers"} />}
     </div>
   );
 }
