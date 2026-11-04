@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { AlertCircle, Headphones, RadioTower, RotateCcw } from "lucide-react";
 import { buildRadioProgram, RADIO_PROGRAMS, stationBandIndices } from "../../scripts/radio-programs.mjs";
 import { currentTrack, useHouse, type Album, type QueueItem } from "@/lib/engine";
+import { LocalContinuousRadio, type LocalRadioControls } from "@/components/LocalContinuousRadio";
 
 type Band = "AM" | "FM" | "SAT" | "ALL";
 type MotionKey = "ambient" | "pulse" | "sweep" | "trails" | "dust";
@@ -32,10 +33,11 @@ const rect = (x: number, y: number, w: number, h: number): CSSProperties => ({
 });
 const hot = (v: { x: number; y: number; w: number; h: number }) => rect(v.x, v.y, v.w, v.h);
 
-export function RadioConsole({ albums, onPlay, reduced }: {
+export function RadioConsole({ albums, onPlay, reduced, onLocalActiveChange }: {
   albums: Album[];
   onPlay: (items: QueueItem[]) => void;
   reduced: boolean;
+  onLocalActiveChange: (active: boolean) => void;
 }) {
   const house = useHouse();
   const [stationIndex, setStationIndex] = useState(0);
@@ -48,6 +50,9 @@ export function RadioConsole({ albums, onPlay, reduced }: {
   const [viz, setViz] = useState<"spectrum" | "pulse" | "quiet">("spectrum");
   const [message, setMessage] = useState("");
   const [artReady, setArtReady] = useState<boolean | null>(null);
+  const localController = useRef<LocalRadioControls | null>(null);
+  const [localActive, setLocalActive] = useState(false);
+  function setLocalState(value: boolean) { setLocalActive(value); onLocalActiveChange(value); }
 
   const selected = STATION_PRESETS[stationIndex];
   const available = useMemo(() => STATION_PRESETS.map((preset) => buildRadioProgram(albums, preset.id)), [albums]);
@@ -76,6 +81,7 @@ export function RadioConsole({ albums, onPlay, reduced }: {
       setMessage("There are no MBL songs mapped to this station yet.");
       return;
     }
+    localController.current?.stop();
     setStationIndex(index);
     setMessage(play
       ? "Tuned to " + STATION_PRESETS[index].title + ": " + items.length + " real MBL catalog songs queued. Use Play inside the official Suno player."
@@ -100,8 +106,9 @@ export function RadioConsole({ albums, onPlay, reduced }: {
   }
 
   function togglePower() {
+    if (localActive) { localController.current?.toggle(); return; }
     if (isEmbedded) {
-      setMessage("SoundCloud is not involved here. Suno owns its iframe Play control below the console.");
+      setMessage("Suno owns its iframe Play control. Use Continuous Local Radio for hands-free playback.");
       return;
     }
     if (!house.queue.length || house.status === "idle") {
@@ -194,10 +201,10 @@ export function RadioConsole({ albums, onPlay, reduced }: {
               () => setFrequencyBand(b), band === b,
             ))}
             {control("Power, play or pause radio", rect(46.8, 65.8, 6.9, 8.8), togglePower, liveOutput)}
-            {control("Previous station or track", rect(42.2, 67.0, 4.6, 6.5), () => house.queue.length ? house.prev() : scan(-1))}
-            {control("Next station or track", rect(53.7, 67.0, 4.5, 6.5), () => house.queue.length ? house.next() : scan(1))}
-            {control("Shuffle radio", rect(37.1, 67.0, 4.4, 6.5), house.setShuffle, house.shuffle)}
-            {control("Cycle radio repeat mode", rect(58.8, 67.0, 4.6, 6.5), house.setRepeat, house.repeat !== "off")}
+            {control("Previous station or track", rect(42.2, 67.0, 4.6, 6.5), () => localActive ? localController.current?.prev() : house.queue.length ? house.prev() : scan(-1))}
+            {control("Next station or track", rect(53.7, 67.0, 4.5, 6.5), () => localActive ? localController.current?.next() : house.queue.length ? house.next() : scan(1))}
+            {control("Shuffle radio", rect(37.1, 67.0, 4.4, 6.5), () => localActive ? localController.current?.shuffle() : house.setShuffle(), localActive || house.shuffle)}
+            {control("Cycle radio repeat mode", rect(58.8, 67.0, 4.6, 6.5), () => localActive ? localController.current?.repeat() : house.setRepeat(), localActive || house.repeat !== "off")}
             {control("Scan next available station", rect(29.5, 80.0, 8.7, 6.9), () => scan(1))}
             {control("Tune frequency left", rect(41.4, 80.8, 3.8, 6.2), () => scan(-1))}
             {control("Turn tuning dial to next station", rect(45.9, 78.0, 9.4, 12.5), () => scan(1))}
@@ -272,8 +279,11 @@ export function RadioConsole({ albums, onPlay, reduced }: {
           </div>
         </div>
         <p className="mt-3 flex items-start gap-2 text-xs text-mist" role="status" aria-live="polite"><AlertCircle size={14} className="mt-0.5 shrink-0" /> {message || (reduced ? "Your reduced-motion setting is active." : "Click a station or a radio control. Each knob hotspot has a keyboard-accessible action.")}</p>
-        <p className="mt-2 text-xs text-mist">Five programmed stations use verified, deliberately selected MBL albums. AM, FM and SAT denote listening themes, not live terrestrial RF streams. Signal effects are ambient unless authorized native audio is playing. Suno may require pressing Play in its official iframe below.</p>
+        <p className="mt-2 text-xs text-mist">Five programmed stations use real catalog song IDs. AM/FM/SAT are themes, not RF broadcasts. Suno needs its own iframe controls. For a hands-free continuous playlist, select your own local audio below.</p>
       </div>
+      <LocalContinuousRadio stationId={selected.id} stationTitle={selected.title}
+        stationSongs={selectedSongs} controllerRef={localController}
+        onLocalActiveChange={setLocalState} onStart={house.suspendForExternal} />
     </section>
   );
 }
