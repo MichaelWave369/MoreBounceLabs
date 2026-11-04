@@ -15,6 +15,7 @@ import {
 import { fmt, parseHash, runtime, safeEmbed, sharedTrackIndex } from "../../scripts/house-logic.mjs";
 import { currentTrack, getAudio, useHouse, type Album } from "@/lib/engine";
 import { FieldDesk } from "@/components/FieldDesk";
+import { WritersRoom } from "@/components/WritersRoom";
 import { InfinityLensStage } from "@/components/InfinityLensStage";
 import { BackspinDecks } from "@/components/BackspinDecks";
 import { SoundCloudShelf } from "@/components/SoundCloudShelf";
@@ -32,6 +33,7 @@ const ROOMS = [
   ["radio", "Radio"],
   ["decks", "Decks"],
   ["desk", "Desk"],
+  ["writers", "Writers"],
 ] as const;
 
 export function HouseApp() {
@@ -157,7 +159,7 @@ export function HouseApp() {
   }
 
   return (
-    <div className={`${house.embed ? (house.room === "lab" || house.room === "desk" ? "player-safe-embed-lab" : "player-safe-embed") : "player-safe"} min-h-screen bg-bg text-cream`}>
+    <div className={`${house.embed ? (house.room === "lab" || house.room === "desk" || house.room === "writers" ? "player-safe-embed-lab" : "player-safe-embed") : "player-safe"} min-h-screen bg-bg text-cream`}>
       <header className="sticky top-0 z-20 border-b border-line bg-bg/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
           <button
@@ -274,10 +276,11 @@ export function HouseApp() {
             onPlay={house.playQueue}
           />
         )}
+        {house.room === "writers" && <WritersRoom />}
         {house.ready && house.room === "album" && !openAlbum && <p>That album is not in the catalog.</p>}
       </main>
 
-      {house.room !== "decks" && !(house.room === "vault" && selectedSoundCloud) && <Player onQueue={() => navigateRoom("desk")} inLab={house.room === "lab" || house.room === "desk"} />}
+      {house.room !== "decks" && !(house.room === "vault" && selectedSoundCloud) && <Player onQueue={() => navigateRoom("desk")} inLab={house.room === "lab" || house.room === "desk" || house.room === "writers"} />}
     </div>
   );
 }
