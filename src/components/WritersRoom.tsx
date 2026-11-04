@@ -163,7 +163,7 @@ export function WritersRoom() {
 
   async function lookup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (tab === "book") return;
+    if (tab === "book" || tab === "flow") return;
     const target = tab === "rhymes" ? rhymeTarget(term) : term.trim();
     if (!target) {
       setLookupNotice("Enter a word or phrase first.");
