@@ -3,7 +3,21 @@
  * This database is independent of the versioned JSON Freestyle Book backup.
  */
 const DB_NAME = "mbl-freestyle-dojo-v1";
+const DB_VERSION = 2;
 const STORE = "clips";
+const BAR_STORE = "bar-samples";
+export const MAX_BAR_SAMPLES_PER_PAGE = 24;
+export const MAX_BAR_AUDIO_BYTES = 8 * 1024 * 1024;
+export const MAX_BAR_TEXT = 300;
+export const BAR_AUDIO_SECONDS = 12;
+export type BarSample = {
+  id: string;
+  pageId: string;
+  text: string;
+  createdAt: string;
+  mimeType: string;
+  audio?: Blob;
+};
 export const MAX_CLIP_BYTES = 32 * 1024 * 1024;
 export const MAX_CLIPS_PER_PAGE = 12;
 export const MAX_RECORD_SECONDS = 180;
@@ -25,12 +39,16 @@ function openDb(): Promise<IDBDatabase> {
       reject(new Error("IndexedDB unavailable in this browser."));
       return;
     }
-    const request = indexedDB.open(DB_NAME, 1);
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
     request.onupgradeneeded = () => {
       const db = request.result;
       if (!db.objectStoreNames.contains(STORE)) {
         const store = db.createObjectStore(STORE, { keyPath: "id" });
         store.createIndex("pageId", "pageId", { unique: false });
+      }
+      if (!db.objectStoreNames.contains(BAR_STORE)) {
+        const samples = db.createObjectStore(BAR_STORE, { keyPath: "id" });
+        samples.createIndex("pageId", "pageId", { unique: false });
       }
     };
     request.onsuccess = () => resolve(request.result);
@@ -82,5 +100,51 @@ export async function deleteDojoClip(id: string): Promise<void> {
     tx.oncomplete = () => { db.close(); resolve(); };
     tx.onerror = () => { db.close(); reject(tx.error || new Error("Could not delete the recording.")); };
     tx.onabort = () => { db.close(); reject(tx.error || new Error("Recording deletion aborted.")); };
+  });
+}
+
+
+/** All samples remain browser-local; old full-length takes in clips store are untouched. */
+export async function listBarSamples(pageId: string): Promise<BarSample[]> {
+  const db = await openDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(BAR_STORE, "readonly");
+    const request = tx.objectStore(BAR_STORE).index("pageId").getAll(pageId);
+    let samples: BarSample[] = [];
+    request.onsuccess = () => { samples = request.result as BarSample[]; };
+    tx.oncomplete = () => { db.close(); resolve(samples.sort((a, b) => b.createdAt.localeCompare(a.createdAt))); };
+    tx.onerror = () => { db.close(); reject(tx.error || new Error("Could not load saved bars.")); };
+    tx.onabort = () => { db.close(); reject(tx.error || new Error("Bar read aborted.")); };
+  });
+}
+
+export async function saveBarSample(sample: BarSample): Promise<void> {
+  if (!sample.id || !sample.pageId || !sample.text.trim() || sample.text.length > MAX_BAR_TEXT ||
+      (sample.audio && (!(sample.audio instanceof Blob) || !sample.audio.size ||
+        sample.audio.size > MAX_BAR_AUDIO_BYTES))) {
+    throw new Error("Bar text or audio is missing, invalid, or too large.");
+  }
+  const existing = await listBarSamples(sample.pageId);
+  if (existing.length >= MAX_BAR_SAMPLES_PER_PAGE) {
+    throw new Error("This page has 24 bar samples. Export and delete one before adding more.");
+  }
+  const db = await openDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(BAR_STORE, "readwrite");
+    tx.objectStore(BAR_STORE).add(sample);
+    tx.oncomplete = () => { db.close(); resolve(); };
+    tx.onerror = () => { db.close(); reject(tx.error || new Error("Bar sample storage failed.")); };
+    tx.onabort = () => { db.close(); reject(tx.error || new Error("Bar sample storage quota exceeded.")); };
+  });
+}
+
+export async function deleteBarSample(id: string): Promise<void> {
+  const db = await openDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(BAR_STORE, "readwrite");
+    tx.objectStore(BAR_STORE).delete(id);
+    tx.oncomplete = () => { db.close(); resolve(); };
+    tx.onerror = () => { db.close(); reject(tx.error || new Error("Could not delete bar sample.")); };
+    tx.onabort = () => { db.close(); reject(tx.error || new Error("Bar sample deletion aborted.")); };
   });
 }
