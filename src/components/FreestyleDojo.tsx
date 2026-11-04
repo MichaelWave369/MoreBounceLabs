@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { AudioLines, BookOpen, Download, Mic, Pause, Play, RotateCcw, Trash2 } from "lucide-react";
+import { useHouse } from "@/lib/engine";
 import { dojoBeat, dojoBpm, dojoPlan, DOJO_BARS, multisyllablePatterns, safeClipName } from "../../scripts/freestyle-dojo.mjs";
 import {
   deleteDojoClip, listDojoClips, MAX_CLIPS_PER_PAGE, MAX_RECORD_SECONDS,
@@ -197,7 +198,10 @@ export function FreestyleDojo({ page }: { page?: LyricPage }) {
       if (withMic && clips.length >= MAX_CLIPS_PER_PAGE) {
         throw new Error("This lyric page has 12 clips. Export and delete one before recording more.");
       }
+      // Keep the Suno/house player separate from this local practice mix.
+      useHouse.getState().suspendForExternal();
       const ctx = await ensureAudio();
+      if (!mounted.current) { void ctx.close().catch(() => {}); return; }
       if (withMic) {
         if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
           throw new Error("Recording requires microphone permissions and a supported secure browser.");
@@ -205,6 +209,7 @@ export function FreestyleDojo({ page }: { page?: LyricPage }) {
         const mic = await navigator.mediaDevices.getUserMedia({ audio: {
           echoCancellation: true, noiseSuppression: true, autoGainControl: false
         } });
+        if (!mounted.current) { mic.getTracks().forEach(track => track.stop()); return; }
         micStream.current = mic;
         const destination = ctx.createMediaStreamDestination();
         recordDest.current = destination;
@@ -267,6 +272,7 @@ export function FreestyleDojo({ page }: { page?: LyricPage }) {
       setNotice(withMic ? "Recording microphone" + (mixBeat && beatUrl ? " plus local beat." : " only.") +
         " One-bar count-in, then your verse." : "Practice running. One-bar count-in, then your verse.");
     } catch (error) {
+      if (recorder.current?.state === "recording") recorder.current.stop();
       micStream.current?.getTracks().forEach(track => track.stop());
       micStream.current = null;
       micSource.current?.disconnect();
