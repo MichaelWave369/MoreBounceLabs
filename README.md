@@ -440,3 +440,28 @@ Independent browser tests using the agent-created **Golden Hour to Funk Peak and
 - No WebMCP or `navigator.modelContext` write/autoplay tooling is registered; agents retain only validated, explicit read-only inspection.
 
 Regression tests cover the annotated Golden Hour set, duplicate-save overwrite semantics, compact import order, canonical track-title display/export, typed whitespace validation, public Pages agent discovery, and a real Chromium double-save and above-fold UI check.
+
+
+## Writers Room: Freestyle Book, Rhymes and Word Connections
+
+Open **Writers** in the house navigation or visit `#/writers`. This is a creative workspace, separate from the Desk's DJ and playlist tools.
+
+- **Freestyle Book** holds up to 120 browser-local pages for freestyles, lyrics, verses, hooks and ideas. Each page has an editable title, collection type and up to 16,000 characters. Search by lyric content or title and filter by collection.
+- **Rhyme Finder** returns rhymes and near-rhymes for a word or the last word of a lyric line.
+- **Word Connections** finds words and phrases with similar meanings and associated ideas. Tap a result to append it to the selected page, or copy it.
+- **Export book** downloads versioned JSON. **Import book** merges pages without replacing existing ones, retaining divergent same-ID pages as imported copies. Malformed and oversized imports are rejected.
+- **Privacy**: pages live in this browser's `localStorage`, without account sync, publishing, cloud backup or encryption. Browser data can be deleted. Export backups regularly and avoid shared devices for sensitive lyrics. If storage is unreadable the UI warns rather than silently replacing existing data.
+- **Word search boundary**: only the word or phrase you explicitly search is sent to Datamuse over HTTPS. No lyric page, book, playlist or catalog is uploaded. Online searches need an internet connection and can return approximate or imperfect suggestions.
+
+**Provider note (2027)**: Datamuse's official documentation says an API key will become mandatory on February 1, 2027. The lexical adapter in `scripts/writers-room.mjs` is deliberately isolated so a future authorized server-side proxy or replacement can be added without hardcoding a private key in GitHub Pages client JavaScript. A failed lookup never disables the local writing tools.
+
+### Writers Room verification
+
+```bash
+node --test scripts/writers-room.test.mjs scripts/desk-room.test.mjs
+npm run typecheck
+npm run build:pages
+npm run verify:pages
+```
+
+Manual smoke test: create a freestyle, enter and rename lyrics, switch to Rhyme Finder and append a suggestion, reload to confirm local persistence, export a backup, reimport it without duplicates, and try a network-offline search. Also verify the existing Desk and DJ Decks still work.
