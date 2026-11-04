@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
-import { BookOpen, Copy, Download, FileUp, Lightbulb, PenLine, Plus, Search, Trash2 } from "lucide-react";
+import { BarChart3, BookOpen, Copy, Dices, Download, FileUp, Lightbulb, PenLine, Plus, Search, Trash2 } from "lucide-react";
 import {
   BOOK_KEY, MAX_BODY, MAX_PAGES, MAX_TITLE, PAGE_KINDS,
   cleanSuggestions, emptyBook, lexicalUrl, mergeBooks, newPage, rhymeTarget, validateBook
 } from "../../scripts/writers-room.mjs";
+import { analyzeVerse, appendBarGuide, appendSpark, BAR_TARGETS, freestylePrompt } from "../../scripts/writers-flow.mjs";
 
 type PageKind = "freestyle" | "lyrics" | "verse" | "hook" | "ideas";
 type Page = { id: string; title: string; kind: PageKind; body: string; createdAt: string; updatedAt: string };
 type Book = { version: number; pages: Page[] };
 type Suggestion = { word: string; syllables: number | null };
 type Group = { name: string; words: Suggestion[] };
-type Tab = "book" | "rhymes" | "related";
+type Tab = "book" | "rhymes" | "related" | "flow";
 
 function readSaved(): { book: Book; blocked: boolean; warning: string } {
   if (typeof window === "undefined") return { book: emptyBook(), blocked: false, warning: "" };
@@ -28,7 +29,8 @@ function readSaved(): { book: Book; blocked: boolean; warning: string } {
 const TAB_NAMES: Array<{ id: Tab; title: string; detail: string }> = [
   { id: "book", title: "Freestyle Book", detail: "Lyrics, hooks and loose ideas" },
   { id: "rhymes", title: "Rhyme Finder", detail: "Exact and near rhymes" },
-  { id: "related", title: "Word Connections", detail: "Similar words and phrase sparks" }
+  { id: "related", title: "Word Connections", detail: "Similar words and phrase sparks" },
+  { id: "flow", title: "Flow Bench", detail: "Bars, cadence estimates and prompts" }
 ];
 
 const LOOKUPS = {
@@ -55,10 +57,14 @@ export function WritersRoom() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [lookupBusy, setLookupBusy] = useState(false);
   const [lookupNotice, setLookupNotice] = useState("");
+  const [barTarget, setBarTarget] = useState(16);
+  const [sparkIndex, setSparkIndex] = useState(0);
   const request = useRef<AbortController | null>(null);
   useEffect(() => () => request.current?.abort(), []);
 
   const page = book.pages.find((item) => item.id === activeId);
+  const verse = analyzeVerse(page?.body || "");
+  const spark = freestylePrompt(sparkIndex);
   const filtered = book.pages
     .filter((item) => (kindFilter === "all" || item.kind === kindFilter) &&
       [item.title, item.body].join(" ").toLowerCase().includes(filter.toLowerCase().trim()))
@@ -203,6 +209,59 @@ export function WritersRoom() {
     }
   }
 
+  function insertBarGuide() {
+    if (!page) {
+      setNotice("Create or select a lyric page first.");
+      return;
+    }
+    const updated = appendBarGuide(page.body, barTarget);
+    if (updated.length > MAX_BODY) {
+      setNotice("Page is full; export it or create another page before adding a guide.");
+      return;
+    }
+    editPage({ body: updated });
+    setNotice("Appended a " + barTarget + "-bar guide without replacing your lyrics.");
+  }
+
+  function insertPrompt() {
+    if (!page) {
+      setNotice("Create or select a lyric page first.");
+      return;
+    }
+    const updated = appendSpark(page.body, spark);
+    if (updated.length > MAX_BODY) {
+      setNotice("Page is full; export it or create another page before inserting this spark.");
+      return;
+    }
+    editPage({ body: updated });
+    setNotice("Added the freestyle spark as notes, outside the bar count.");
+  }
+
+  async function copyLyrics() {
+    if (!page) return;
+    try {
+      await navigator.clipboard.writeText(page.body);
+      setNotice("Copied this page's lyrics.");
+    } catch {
+      setNotice("Clipboard access unavailable. Select the writing to copy it manually.");
+    }
+  }
+
+  function exportPageText() {
+    if (!page) return;
+    const blob = new Blob([page.body], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    const safeName = page.title.trim().replace(/[^a-zA-Z0-9_-]+/g, "-").slice(0, 60) || "freestyle";
+    a.download = safeName + ".txt";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setNotice("Downloaded this page as plain text.");
+  }
+
   function addWord(word: string) {
     if (!page) {
       setLookupNotice("Create or select a page in Freestyle Book first.");
@@ -242,7 +301,7 @@ export function WritersRoom() {
         </div>
       </header>
 
-      <div role="tablist" aria-label="Writers Room tools" className="grid gap-2 sm:grid-cols-3">
+      <div role="tablist" aria-label="Writers Room tools" className="grid gap-2 sm:grid-cols-4">
         {TAB_NAMES.map((item) => (
           <button key={item.id} type="button" role="tab" aria-selected={tab === item.id}
             onClick={() => switchTab(item.id)}
@@ -321,6 +380,8 @@ export function WritersRoom() {
                   <span>{page.body.trim() ? page.body.trim().split(/\s+/).length : 0} words · {page.body.length}/{MAX_BODY} characters</span>
                   <span>Updated {new Date(page.updatedAt).toLocaleString()}</span>
                 </p>
+                <button type="button" onClick={() => switchTab("flow")}
+                  className="min-h-11 rounded-xl border border-amber/40 px-4 text-sm text-amber">Open Flow Bench for this page</button>
               </>
             ) : (
               <div className="flex min-h-[300px] flex-col items-center justify-center gap-3 text-center">
@@ -331,6 +392,85 @@ export function WritersRoom() {
               </div>
             )}
           </div>
+        </div>
+      ) : tab === "flow" ? (
+        <div role="tabpanel" className="space-y-5 rounded-2xl border border-line bg-surface p-4 sm:p-6" aria-label="Flow Bench">
+          <header>
+            <h2 className="flex items-center gap-2 font-display text-2xl"><BarChart3 aria-hidden="true" /> Flow Bench</h2>
+            <p className="mt-2 max-w-2xl text-sm text-mist">
+              Explore the rhythm of your selected Freestyle Book page. Every written lyric line counts as a possible bar;
+              section labels and empty numbered guide lines do not. Syllable counts are rough English spelling estimates,
+              not beat detection or judgments about how you rap.
+            </p>
+          </header>
+          <div className="flex flex-wrap items-center gap-3">
+            <label htmlFor="flow-target" className="text-sm text-amber">Verse target</label>
+            <select id="flow-target" value={barTarget} onChange={(event) => setBarTarget(Number(event.target.value))}
+              className="min-h-11 rounded-xl border border-line bg-bg px-3 text-cream">
+              {BAR_TARGETS.map((count) => <option key={count} value={count}>{count} bars</option>)}
+            </select>
+            <button type="button" disabled={!page} onClick={insertBarGuide}
+              className="min-h-11 rounded-xl border border-amber/50 px-4 text-sm text-cream disabled:opacity-40">
+              Append {barTarget}-bar guide
+            </button>
+            <button type="button" disabled={!page} onClick={() => void copyLyrics()}
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-line px-4 text-sm disabled:opacity-40">
+              <Copy size={16} aria-hidden="true" /> Copy lyrics
+            </button>
+            <button type="button" disabled={!page} onClick={exportPageText}
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-line px-4 text-sm disabled:opacity-40">
+              <Download size={16} aria-hidden="true" /> Export .txt
+            </button>
+          </div>
+          <section className="rounded-xl border border-amber/25 bg-[#24190f] p-4" aria-label="Verse progress">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="font-semibold">{page ? (page.title || "Untitled page") : "No page selected"}</p>
+              <p className="text-sm text-amber">{Math.min(verse.writtenBars, barTarget)} / {barTarget} written bars toward target</p>
+            </div>
+            <div role="progressbar" aria-label="Bar target progress" aria-valuemin={0} aria-valuemax={barTarget}
+              aria-valuenow={Math.min(verse.writtenBars, barTarget)}
+              className="mt-3 h-3 overflow-hidden rounded-full bg-black/50">
+              <div className="h-full rounded-full bg-amber transition-all"
+                style={{ width: (Math.min(verse.writtenBars, barTarget) / barTarget * 100) + "%" }} />
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-3 text-center sm:grid-cols-4">
+              <p className="rounded-lg bg-black/20 p-3"><strong className="block text-xl text-amber">{verse.writtenBars}</strong><span className="text-xs text-mist">Written lines</span></p>
+              <p className="rounded-lg bg-black/20 p-3"><strong className="block text-xl text-amber">{verse.plannedSlots}</strong><span className="text-xs text-mist">Bar slots</span></p>
+              <p className="rounded-lg bg-black/20 p-3"><strong className="block text-xl text-amber">{verse.totalSyllables}</strong><span className="text-xs text-mist">Approx. syllables</span></p>
+              <p className="rounded-lg bg-black/20 p-3"><strong className="block text-xl text-amber">{verse.averageSyllables}</strong><span className="text-xs text-mist">Approx. per written line</span></p>
+            </div>
+          </section>
+          <section aria-label="Lyric line endings">
+            <h3 className="font-display text-xl">End-word map</h3>
+            <p className="mt-1 text-xs text-mist">See line endings and rough syllable density while editing your book. This is not a phonetic rhyme-scheme detector.</p>
+            {!verse.rows.length ? <p className="mt-3 text-sm text-mist">Write some bars or append a guide in Freestyle Book, then return here.</p> : (
+              <ol className="mt-3 max-h-80 space-y-1 overflow-y-auto">
+                {verse.rows.map((row, index) => (
+                  <li key={row.lineNumber} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-lg border border-line bg-bg px-3 py-2 text-sm">
+                    <span className="w-10 shrink-0 text-amber">{String(index + 1).padStart(2, "0")}</span>
+                    <span className="min-w-0 flex-1 break-words">{row.written ? row.text : "Blank guide line"}</span>
+                    <span className="text-xs text-mist">{row.written ? row.syllables + " approx. syl." : "draft slot"}</span>
+                    {row.endWord && <span className="rounded-full bg-amber/10 px-2 py-1 text-xs text-amber">ends: {row.endWord}</span>}
+                  </li>
+                ))}
+              </ol>
+            )}
+          </section>
+          <section className="rounded-2xl border border-amber/25 bg-gradient-to-br from-[#34231a] to-[#181322] p-4 sm:p-5" aria-label="Freestyle prompt deck">
+            <h3 className="flex items-center gap-2 font-display text-xl"><Dices aria-hidden="true" /> Freestyle Spark Deck</h3>
+            <p className="mt-2 text-sm text-mist">Original offline writing prompts. No account, model, or network required.</p>
+            <dl className="mt-4 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-xl bg-black/25 p-3"><dt className="text-xs uppercase text-amber">Scene</dt><dd className="mt-2 text-sm">{spark.setting}</dd></div>
+              <div className="rounded-xl bg-black/25 p-3"><dt className="text-xs uppercase text-amber">Theme</dt><dd className="mt-2 text-sm">{spark.theme}</dd></div>
+              <div className="rounded-xl bg-black/25 p-3"><dt className="text-xs uppercase text-amber">Twist</dt><dd className="mt-2 text-sm">{spark.twist}</dd></div>
+            </dl>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button type="button" onClick={() => setSparkIndex((n) => n + 1)}
+                className="min-h-11 rounded-xl bg-amber px-4 font-semibold text-ink">Deal another spark</button>
+              <button type="button" disabled={!page} onClick={insertPrompt}
+                className="min-h-11 rounded-xl border border-amber/50 px-4 text-sm disabled:opacity-40">Save spark to selected page</button>
+            </div>
+          </section>
         </div>
       ) : (
         <div role="tabpanel" className="rounded-2xl border border-line bg-surface p-4 sm:p-6">
