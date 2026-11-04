@@ -86,8 +86,8 @@ export function mergeBooks(current, imported, makeId = createPageId) {
 
 export function rhymeTarget(text) {
   const trimmed = String(text || "").trim();
-  const match = trimmed.match(/[\p{L}\p{N}'’-]+$/u);
-  return match ? match[0] : "";
+  const match = trimmed.match(/([\p{L}\p{N}'’-]+)[^\p{L}\p{N}'’-]*$/u);
+  return match ? match[1] : "";
 }
 
 /** Only the deliberately entered lookup term is sent to the third-party service. */
