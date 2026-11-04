@@ -45,6 +45,7 @@ export function rhymePattern(word) {
 /** @param {string} lyrics */
 export function multisyllablePatterns(lyrics) {
   const lines = analyzeVerse(lyrics).rows.filter(r => r.written && r.endWord);
+  /** @type {Map<string, {line:number, word:string, syllables:number}[]>} */
   const buckets = new Map();
   for (const line of lines) {
     const key = rhymePattern(line.endWord);
