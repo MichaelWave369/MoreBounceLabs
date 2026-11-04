@@ -146,7 +146,6 @@ export function LocalContinuousRadio({
       }).catch(() => setMessage("Browser blocked audio. Press Play in the local audio controls."));
     } else {
       audio.pause();
-      playingRef.current = false;
       setPlaying(false);
     }
   }
