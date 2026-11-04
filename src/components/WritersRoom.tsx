@@ -110,7 +110,7 @@ export function WritersRoom() {
   }
 
   function deletePage() {
-    if (!page || !window.confirm("Delete this page from this browser? This cannot be undone. Export a backup first if you need one.")) return;
+    if (!page || !window.confirm("Delete this lyric page? Any private audio takes linked to its page ID may become inaccessible. Export lyrics and recordings first. This cannot be undone.")) return;
     const pages = book.pages.filter((item) => item.id !== page.id);
     commit({ version: 1, pages }, "Page deleted from this browser.");
     setActiveId(pages[0]?.id || "");
