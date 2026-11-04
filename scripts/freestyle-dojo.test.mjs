@@ -42,7 +42,7 @@ test("multisyllabic spelling patterns do not claim dictionary-verified phonetic 
 });
 
 test("download names are safe filename fragments", () => {
-  assert.equal(safeClipName("../../My :* freestyle?!"), "My-freestyle-");
+  assert.equal(safeClipName("../../My :* freestyle?!"), "My-freestyle");
   assert.equal(safeClipName(""), "freestyle");
   assert.ok(safeClipName("x".repeat(200)).length <= 56);
 });
