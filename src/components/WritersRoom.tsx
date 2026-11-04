@@ -5,13 +5,14 @@ import {
   cleanSuggestions, emptyBook, lexicalUrl, mergeBooks, newPage, rhymeTarget, validateBook
 } from "../../scripts/writers-room.mjs";
 import { analyzeVerse, appendBarGuide, appendSpark, BAR_TARGETS, freestylePrompt } from "../../scripts/writers-flow.mjs";
+import { FreestyleDojo } from "@/components/FreestyleDojo";
 
 type PageKind = "freestyle" | "lyrics" | "verse" | "hook" | "ideas";
 type Page = { id: string; title: string; kind: PageKind; body: string; createdAt: string; updatedAt: string };
 type Book = { version: number; pages: Page[] };
 type Suggestion = { word: string; syllables: number | null };
 type Group = { name: string; words: Suggestion[] };
-type Tab = "book" | "rhymes" | "related" | "flow";
+type Tab = "book" | "rhymes" | "related" | "flow" | "dojo";
 
 function readSaved(): { book: Book; blocked: boolean; warning: string } {
   if (typeof window === "undefined") return { book: emptyBook(), blocked: false, warning: "" };
@@ -30,7 +31,8 @@ const TAB_NAMES: Array<{ id: Tab; title: string; detail: string }> = [
   { id: "book", title: "Freestyle Book", detail: "Lyrics, hooks and loose ideas" },
   { id: "rhymes", title: "Rhyme Finder", detail: "Exact and near rhymes" },
   { id: "related", title: "Word Connections", detail: "Similar words and phrase sparks" },
-  { id: "flow", title: "Flow Bench", detail: "Bars, cadence estimates and prompts" }
+  { id: "flow", title: "Flow Bench", detail: "Bars, cadence estimates and prompts" },
+  { id: "dojo", title: "Freestyle Dojo", detail: "Practice, record and keep your takes" }
 ];
 
 const LOOKUPS = {
@@ -163,7 +165,7 @@ export function WritersRoom() {
 
   async function lookup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (tab === "book" || tab === "flow") return;
+    if (tab === "book" || tab === "flow" || tab === "dojo") return;
     const target = tab === "rhymes" ? rhymeTarget(term) : term.trim();
     if (!target) {
       setLookupNotice("Enter a word or phrase first.");
@@ -301,7 +303,7 @@ export function WritersRoom() {
         </div>
       </header>
 
-      <div role="tablist" aria-label="Writers Room tools" className="grid gap-2 sm:grid-cols-4">
+      <div role="tablist" aria-label="Writers Room tools" className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
         {TAB_NAMES.map((item) => (
           <button key={item.id} type="button" role="tab" aria-selected={tab === item.id}
             onClick={() => switchTab(item.id)}
@@ -393,6 +395,8 @@ export function WritersRoom() {
             )}
           </div>
         </div>
+      ) : tab === "dojo" ? (
+        <FreestyleDojo page={page ? { id: page.id, title: page.title, body: page.body } : undefined} />
       ) : tab === "flow" ? (
         <div role="tabpanel" className="space-y-5 rounded-2xl border border-line bg-surface p-4 sm:p-6" aria-label="Flow Bench">
           <header>
