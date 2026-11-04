@@ -487,3 +487,9 @@ Read [Freestyle Dojo R1](docs/FREESTYLE_DOJO_R1.md) for behavior, constraints, a
 The Vault now shows the **26 Suno albums at the top** and the original **SoundCloud archives below**. Sorting and layouts still apply to Suno releases; the SoundCloud shelf retains its own filtering and official playback.
 
 Inside **Writers → Freestyle Dojo**, the **Bar Review Sampler** lets you select or type a single sentence, save its text, record short microphone performances of that bar, replay different attempts and export each take. These samples are held in a new, separately indexed browser-local store; existing full-length Dojo clips are preserved by a non-destructive IndexedDB version upgrade. All audio backups remain manual. Read [the sampler guide](docs/BAR_REVIEW_SAMPLER_R1.md).
+
+## Bar Review R2: A/B delivery lab
+
+The Writers Room's **Freestyle Dojo → Bar Review Sampler** now supports a user-controlled **A/B Bar Audition** for two short recorded takes, editable **review notes**, artist-provided **0–5 rating**, and **one keeper per lyric page**. Marking a keeper never deletes the other takes. Save review changes explicitly and download a text-only review sheet for backups; audio recordings must still be downloaded individually.
+
+Existing local samples and full-length recordings remain intact; no Suno audio is copied, and no lyric or audio data is uploaded. Details and acceptance testing: [Bar Review R2](docs/BAR_REVIEW_R2.md).
