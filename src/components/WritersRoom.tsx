@@ -148,6 +148,7 @@ export function WritersRoom() {
 
   function switchTab(next: Tab) {
     request.current?.abort();
+    request.current = null;
     setLookupBusy(false);
     setLookupNotice("");
     setGroups([]);
