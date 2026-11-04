@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type MutableRefObject } from "react";
-import { FolderOpen, Headphones, ListMusic, Pause, Play, Repeat, Shuffle, SkipBack, SkipForward, Square, Upload } from "lucide-react";
+import { FolderOpen, Headphones, Pause, Play, Repeat, Shuffle, SkipBack, SkipForward, Square, Upload } from "lucide-react";
 import { acceptableRadioFile, matchRadioFiles, MAX_RADIO_FILES, nextRadioIndex } from "../../scripts/radio-local.mjs";
 
 type StationSong = { albumId: string; index: number; title: string; albumTitle: string };
@@ -36,7 +36,6 @@ export function LocalContinuousRadio({
   const sourceRef = useRef("");
   const stationRef = useRef(stationId);
   const mountedRef = useRef(true);
-  const playingRef = useRef(false);
 
   const matched = useMemo(() => matchRadioFiles(files, stationSongs), [files, stationSongs]);
   const queue = useMemo<LocalItem[]>(() => mode === "station" ? matched : files.map((file, fileIndex) => ({
@@ -56,7 +55,6 @@ export function LocalContinuousRadio({
       audio.load();
     }
     releaseUrl();
-    playingRef.current = false;
     setPlaying(false);
     setActive(false);
     setIndex(-1);
@@ -106,7 +104,6 @@ export function LocalContinuousRadio({
     setIndex(next);
     setPlaying(false);
     if (!auto) return;
-    playingRef.current = true;
     setActive(true);
     onLocalActiveChange(true);
     void audio.play().then(() => {
@@ -115,7 +112,6 @@ export function LocalContinuousRadio({
         setMessage("Playing a locally selected file. The next track loads automatically.");
       }
     }).catch(() => {
-      playingRef.current = false;
       if (mountedRef.current) {
         setPlaying(false);
         setMessage("Browser blocked playback or cannot decode this file. Press Play, or try MP3/WAV.");
@@ -134,7 +130,6 @@ export function LocalContinuousRadio({
     if (index >= 0 && audioRef.current?.src && active) {
       const audio = audioRef.current;
       void audio.play().then(() => {
-        playingRef.current = true;
         setPlaying(true);
         setMessage("Local radio resumed.");
       }).catch(() => setMessage("Play was blocked. Try pressing Play again."));
@@ -147,8 +142,7 @@ export function LocalContinuousRadio({
     if (!audio) return;
     if (audio.paused) {
       void audio.play().then(() => {
-        playingRef.current = true;
-        setPlaying(true);
+          setPlaying(true);
       }).catch(() => setMessage("Browser blocked audio. Press Play in the local audio controls."));
     } else {
       audio.pause();
