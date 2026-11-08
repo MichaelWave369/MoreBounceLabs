@@ -175,7 +175,7 @@ export function BackspinDecks({ standalone = false }: { standalone?: boolean } =
       let parentPath = "";
       try { parentPath = window.parent.location.pathname; } catch { return; }
       if (!isTrustedCommonsParent(event.origin, window.location.origin, parentPath)) return;
-      const parsed = parseCommonsXRCommand(event.data);
+      const parsed = parseCommonsXRCommand(event.data) as { type: string; deck?: Deck; value?: number } | null;
       if (!parsed) return;
       const reply = (type: string, detail: Record<string, unknown>) => {
         window.parent.postMessage({ channel: COMMONS_XR_CHANNEL, version: COMMONS_XR_VERSION, type, ...detail }, event.origin);
