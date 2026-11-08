@@ -2,6 +2,7 @@ export const COMMONS_XR_CHANNEL = "phi.commons.backspin-xr.v1";
 export const COMMONS_XR_VERSION = 1;
 
 // A bounded command surface. No URLs, file paths, imports, secrets or arbitrary DOM IDs.
+/** @param {{ channel?: unknown, version?: unknown, type?: unknown, deck?: unknown, value?: unknown } | null | undefined} message */
 export function parseCommonsXRCommand(message) {
   if (!message || typeof message !== "object" || Array.isArray(message)) return null;
   if (message.channel !== COMMONS_XR_CHANNEL || message.version !== COMMONS_XR_VERSION) return null;
@@ -16,6 +17,7 @@ export function parseCommonsXRCommand(message) {
   return null;
 }
 
+/** @param {string} origin @param {string} parentOrigin @param {string} parentPath */
 export function isTrustedCommonsParent(origin, parentOrigin, parentPath) {
   return origin === parentOrigin && parentPath.startsWith("/Infinite-Commons/");
 }
