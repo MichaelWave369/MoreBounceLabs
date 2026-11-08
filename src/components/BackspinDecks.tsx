@@ -3,6 +3,7 @@ import { Disc3, Headphones, Maximize2, Pause, Play, RotateCcw, ShieldAlert } fro
 import { hasMixInProgress, isOriginalRigVisible, normalizeWorkspace, WORKSPACE_MODES } from "../../scripts/backspin-workspace.mjs";
 import { BackspinPreflight } from "./BackspinPreflight";
 import { BackspinSetLedger } from "./BackspinSetLedger";
+import { COMMONS_XR_CHANNEL, COMMONS_XR_VERSION, parseCommonsXRCommand, isTrustedCommonsParent } from "../../scripts/commons-xr-protocol.mjs";
 
 const BASE = import.meta.env.BASE_URL;
 const BOOTH_URL = `${BASE}backspin96/`;
@@ -38,6 +39,7 @@ const clamp = (value: number, lo: number, hi: number) => Math.min(hi, Math.max(l
 export function BackspinDecks({ standalone = false }: { standalone?: boolean } = {}) {
   const [status, setStatus] = useState<BoothStatus>("checking");
   const [bridgeReady, setBridgeReady] = useState(false);
+  const [allowCommonsXR, setAllowCommonsXR] = useState(false);
   const [posterReady, setPosterReady] = useState(true);
   const [expanded, setExpanded] = useState(false);
   const [workspace, setWorkspace] = useState<"vinyl" | "console" | "studio">(() => {
@@ -164,6 +166,49 @@ export function BackspinDecks({ standalone = false }: { standalone?: boolean } =
     changeRange("crossfader", value);
   }
 
+  // Receive only a tiny, versioned, opt-in control vocabulary from our
+  // explicitly trusted Commons parent. Never open crates/files or unlock audio
+  // on behalf of a message; those require direct human interaction in the booth.
+  useEffect(() => {
+    const receive = (event: MessageEvent) => {
+      if (window.parent === window || event.source !== window.parent) return;
+      let parentPath = "";
+      try { parentPath = window.parent.location.pathname; } catch { return; }
+      if (!isTrustedCommonsParent(event.origin, window.location.origin, parentPath)) return;
+      const parsed = parseCommonsXRCommand(event.data);
+      if (!parsed) return;
+      const reply = (type: string, detail: Record<string, unknown>) => {
+        window.parent.postMessage({ channel: COMMONS_XR_CHANNEL, version: COMMONS_XR_VERSION, type, ...detail }, event.origin);
+      };
+      if (parsed.type === "hello") {
+        reply("hello", { enabled: allowCommonsXR, ready: bridgeReady && snapshot.ready });
+        return;
+      }
+      if (!allowCommonsXR || !bridgeReady) {
+        reply("blocked", { reason: "Enable Commons XR control inside Backspin and start the local audio engine." });
+        return;
+      }
+      const rig = adapter();
+      if (!rig) return;
+      if (parsed.type === "snapshot") {
+        reply("snapshot", { snapshot: rig.snapshot() });
+        return;
+      }
+      if (!rig.snapshot().ready) {
+        reply("blocked", { reason: "Start Dual Audio and import authorized local music in Backspin first." });
+        return;
+      }
+      if (parsed.type === "scratch") rig.scratch(parsed.deck as Deck, parsed.value as number);
+      else if (parsed.type === "release") rig.release(parsed.deck as Deck);
+      else if (parsed.type === "crossfade") crossfade(parsed.value as number);
+      else if (parsed.type === "play" || parsed.type === "cue") {
+        command(`${(parsed.deck as Deck).toLowerCase()}-${parsed.type}`, `Commons XR ${parsed.type} ${parsed.deck}`);
+      }
+    };
+    window.addEventListener("message", receive);
+    return () => window.removeEventListener("message", receive);
+  }, [allowCommonsXR, bridgeReady, snapshot.ready, resetKey]);
+
   function platterAngle(event: ReactPointerEvent<HTMLButtonElement>) {
     const rect = event.currentTarget.getBoundingClientRect();
     return Math.atan2(event.clientY - (rect.top + rect.height / 2),
@@ -257,6 +302,17 @@ export function BackspinDecks({ standalone = false }: { standalone?: boolean } =
             <span className="rounded-lg border border-line px-3 py-2">Deck B: {snapshot.B.playing ? "Playing" : snapshot.B.loaded ? "Loaded" : "Empty"}</span>
           </div>
         </div>
+      )}
+      {standalone && (
+        <label className="mb-4 flex items-start gap-3 rounded-xl border border-cyan-400/30 bg-[#0e2131] p-4 text-sm text-cyan-100">
+          <input type="checkbox" className="mt-1 h-5 w-5" checked={allowCommonsXR}
+            onChange={(event) => setAllowCommonsXR(event.target.checked)} />
+          <span><strong>Allow Infinite Commons XR controls in this session</strong><br />
+            Default off. Only the same-origin /Infinite-Commons/ parent can send
+            versioned Play/Cue/Scratch/Release/Crossfader commands. Local file
+            import, audio unlock, recording, Auto Mix and emergency stop are
+            never controlled remotely. Turn this off at any time.</span>
+        </label>
       )}
       {standalone && (
         <BackspinPreflight key={resetKey} manifestStatus={status} bridgeReady={bridgeReady} snapshot={snapshot} />
