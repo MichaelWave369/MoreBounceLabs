@@ -17,7 +17,11 @@ export function parseCommonsXRCommand(message) {
   return null;
 }
 
-/** @param {string} origin @param {string} parentOrigin @param {string} parentPath */
+/**
+ * @param {string} origin
+ * @param {string} parentOrigin
+ * @param {string} parentPath
+ */
 export function isTrustedCommonsParent(origin, parentOrigin, parentPath) {
   return origin === parentOrigin && parentPath.startsWith("/Infinite-Commons/");
 }
